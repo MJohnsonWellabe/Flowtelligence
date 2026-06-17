@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flowtelligence Pulse – Executive Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <style>
+    .dash-wrap { background:#0B1C2C; border-radius:14px; overflow:hidden; border:1px solid rgba(18,181,204,.18); box-shadow:0 8px 40px rgba(0,0,0,.45); }
+    .dash-header { background:#091828; padding:.65rem 1.25rem; display:flex; align-items:center; gap:.75rem; border-bottom:1px solid rgba(242,195,0,.3); }
+    .dash-title { font-weight:700; color:#fff; font-size:.92rem; font-family:"EB Garamond",Georgia,serif; flex:1; }
+    .dash-live { font-size:.65rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#12B5CC; background:rgba(18,181,204,.12); border:1px solid rgba(18,181,204,.3); padding:.18rem .6rem; border-radius:999px; }
+    .dash-date { font-size:.72rem; color:rgba(255,255,255,.4); font-family:monospace; }
+
+    /* KPI row */
+    .kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:0; border-bottom:1px solid rgba(255,255,255,.06); }
+    .kpi { padding:1.1rem 1.25rem; border-right:1px solid rgba(255,255,255,.06); }
+    .kpi:last-child { border-right:none; }
+    .kpi-label { font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:.3rem; }
+    .kpi-val { font-family:"EB Garamond",Georgia,serif; font-size:1.9rem; font-weight:700; color:#fff; line-height:1; }
+    .kpi-val.gold { color:#F2C300; }
+    .kpi-val.teal { color:#12B5CC; }
+    .kpi-delta { font-size:.72rem; margin-top:.2rem; display:flex; align-items:center; gap:.25rem; }
+    .delta-up { color:#48BB78; }
+    .delta-dn { color:#FC8181; }
+    .delta-flat { color:rgba(255,255,255,.35); }
+
+    /* Main body */
+    .dash-body { display:grid; grid-template-columns:1.4fr 1fr; min-height:360px; }
+    .dash-left { border-right:1px solid rgba(255,255,255,.06); }
+    .dash-right { }
+    .dash-section { padding:1rem 1.25rem; border-bottom:1px solid rgba(255,255,255,.06); }
+    .dash-section:last-child { border-bottom:none; }
+    .ds-label { font-size:.62rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:.65rem; }
+
+    /* Bar chart */
+    .bar-chart { display:flex; flex-direction:column; gap:.35rem; }
+    .bar-row { display:flex; align-items:center; gap:.75rem; }
+    .bar-name { font-size:.75rem; color:rgba(255,255,255,.7); min-width:100px; }
+    .bar-track { flex:1; height:8px; background:rgba(255,255,255,.07); border-radius:4px; overflow:hidden; }
+    .bar-fill { height:100%; border-radius:4px; transition:width .6s ease; }
+    .bar-val { font-size:.72rem; font-weight:700; color:rgba(255,255,255,.55); min-width:36px; text-align:right; font-family:monospace; }
+
+    /* Line sparkline SVG */
+    .spark-wrap { position:relative; height:80px; margin:.25rem 0; }
+
+    /* Agent table */
+    .agent-table { width:100%; border-collapse:collapse; }
+    .agent-table th { font-size:.6rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.3); padding:.3rem .5rem; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
+    .agent-table td { font-size:.78rem; padding:.42rem .5rem; border-bottom:1px solid rgba(255,255,255,.04); color:rgba(255,255,255,.75); }
+    .agent-table tr:last-child td { border-bottom:none; }
+    .at-rank { color:rgba(255,255,255,.3); font-family:monospace; }
+    .at-name { font-weight:600; color:#fff; }
+    .at-apps { color:#12B5CC; font-weight:700; font-family:monospace; text-align:right; }
+    .at-stp { text-align:right; font-family:monospace; }
+    .stp-hi { color:#48BB78; }
+    .stp-mid { color:#F2C300; }
+    .stp-lo { color:#FC8181; }
+    .at-state { color:rgba(255,255,255,.4); text-align:center; font-family:monospace; font-size:.72rem; }
+
+    /* Donut */
+    .donut-wrap { display:flex; align-items:center; gap:1.25rem; }
+    .donut-legend { display:flex; flex-direction:column; gap:.4rem; flex:1; }
+    .dl-item { display:flex; align-items:center; gap:.5rem; font-size:.75rem; color:rgba(255,255,255,.7); }
+    .dl-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    /* Pipeline funnel */
+    .funnel { display:flex; flex-direction:column; gap:.3rem; }
+    .funnel-step { display:flex; align-items:center; gap:.75rem; }
+    .funnel-label { font-size:.72rem; color:rgba(255,255,255,.6); min-width:110px; }
+    .funnel-bar { height:22px; border-radius:3px; display:flex; align-items:center; padding:0 .6rem; font-size:.7rem; font-weight:700; color:#fff; white-space:nowrap; min-width:40px; }
+    .funnel-val { font-size:.72rem; color:rgba(255,255,255,.45); font-family:monospace; margin-left:.35rem; }
+
+    /* Footer row */
+    .dash-footer { padding:.65rem 1.25rem; background:#091828; display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(255,255,255,.06); }
+    .df-note { font-size:.65rem; color:rgba(255,255,255,.28); font-family:monospace; }
+    .df-alert { font-size:.65rem; font-weight:700; color:#F2C300; background:rgba(242,195,0,.1); border:1px solid rgba(242,195,0,.3); padding:.18rem .65rem; border-radius:6px; }
+
+    /* Map overlay */
+    .map-container { position:relative; background:linear-gradient(135deg,#091828,#0C3B4F); min-height:200px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .map-svg { width:100%; opacity:.55; }
+    .pulse-pin { position:absolute; width:9px; height:9px; border-radius:50%; background:#F2C300; box-shadow:0 0 0 3px rgba(242,195,0,.3),0 0 10px rgba(242,195,0,.4); transform:translate(-50%,-50%); }
+    @keyframes pulse-ring { 0%{transform:translate(-50%,-50%) scale(1);opacity:.8} 100%{transform:translate(-50%,-50%) scale(2.5);opacity:0} }
+    .pulse-pin::after { content:''; position:absolute; inset:-3px; border-radius:50%; background:rgba(242,195,0,.3); animation:pulse-ring 2s ease-out infinite; }
+
+    @media(max-width:768px){ .kpi-row{grid-template-columns:repeat(2,1fr);} .dash-body{grid-template-columns:1fr;} }
+  .brand-a { color:#F2C300; }
+.fxe-e   { color:#F2C300; font-weight:700; }
+</style>
+</head>
+<body>
+<!-- nav inlined -->
+
+<style>
+  :root {
+    --navy:#0B1C2C!important; --navy-mid:#0C3B4F!important;
+    --aqua:#12B5CC!important; --aqua-light:#2DC8DE!important;
+    --aqua-pale:#E6F9FC!important; --gold:#F2C300; --gold-lt:#FFD84D;
+  }
+  #site-nav {
+    position:fixed;top:0;left:0;right:0;height:68px;
+    background:#0B1C2C;z-index:1000;
+    display:flex;align-items:center;padding:0 1.75rem;gap:.75rem;
+    box-shadow:0 2px 16px rgba(0,0,0,.3);border-bottom:2px solid #F2C300;
+  }
+  .nav-brand{font-family:"EB Garamond",Georgia,serif;font-size:1.45rem;font-weight:700;color:#fff;text-decoration:none;display:inline-flex;flex-direction:column;line-height:1.2;vertical-align:middle;}
+  .nav-wordmark{display:block;white-space:nowrap;line-height:1;}
+  .nav-brand .brand-a { color:#F2C300; }
+  .nav-tagline{font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.02em;font-family:"DM Sans",system-ui,sans-serif;margin-top:2px;white-space:nowrap;display:block;}
+  .nav-spacer{flex:1;}
+  /* Top link row */
+  .tl-nav{display:flex;align-items:center;gap:.1rem;list-style:none;margin:0;padding:0;}
+  .tl-nav>li{position:relative;}
+  .tl-nav>li>a,.tl-nav>li>button{display:flex;align-items:center;gap:.25rem;padding:.48rem .8rem;color:rgba(255,255,255,.82);font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;font-weight:500;background:none;border:none;cursor:pointer;border-radius:6px;white-space:nowrap;transition:background .18s,color .18s;}
+  .tl-nav>li>a:hover,.tl-nav>li>button:hover{background:rgba(255,255,255,.1);color:#fff;}
+  .tlchev{font-size:.55rem;opacity:.6;transition:transform .2s;}
+  .tl-nav li.tlo>.tlchev{transform:rotate(180deg);}
+  /* Dropdown */
+  .tl-dd{display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:220px;background:#fff;border-radius:10px;border:1px solid #D9E2EE;box-shadow:0 8px 32px rgba(11,28,44,.18);padding:.35rem 0;z-index:2000;}
+  .tl-dd.open{display:block;animation:tldrop .18s ease;}
+  @keyframes tldrop{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+  .tl-dd a{display:block;padding:.55rem 1.1rem;font-size:.85rem;color:#0B1C2C;font-weight:500;font-family:"DM Sans",system-ui,sans-serif;transition:background .15s,color .15s;text-decoration:none;}
+  .tl-dd a:hover{background:#E6F9FC;color:#0B7A8C;}
+  .tl-dd a.dd-head{font-weight:700;border-bottom:1px solid #D9E2EE;margin-bottom:.2rem;padding-bottom:.65rem;}
+  .tl-dd .dd-sub{padding-left:1.75rem;font-size:.8rem;color:#4A6070;}
+  .tl-dd .dd-sub:hover{color:#0B7A8C;}
+  /* CTA */
+  .nav-cta-btn{padding:.42rem 1.1rem;background:#F2C300;color:#0B1C2C!important;font-weight:700;border-radius:6px;margin-left:.25rem;white-space:nowrap;font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;text-decoration:none;transition:background .18s;flex-shrink:0;}
+  .nav-cta-btn:hover{background:#FFD84D;}
+  /* Hamburger */
+  #hamburger{width:40px;height:40px;display:flex;flex-direction:column;justify-content:center;gap:6px;cursor:pointer;flex-shrink:0;}
+  #hamburger span{display:block;height:2px;background:#fff;border-radius:2px;transition:all .25s;}
+  #hamburger.open span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  #hamburger.open span:nth-child(2){opacity:0;}
+  #hamburger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+  /* Sidebar */
+  #sidebar{position:fixed;top:68px;left:-310px;width:290px;bottom:0;background:#0C3B4F;z-index:999;overflow-y:auto;transition:left .28s ease;padding:1rem 0;}
+  #sidebar.open{left:0;}
+  #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;top:68px;}
+  #sidebar-overlay.open{display:block;}
+  .sb-menu{list-style:none;padding:0;margin:0;}
+  .sb-menu li{position:relative;}
+  .sb-link,.sb-toggle{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;color:rgba(255,255,255,.85);font-weight:500;font-size:.93rem;border-left:3px solid transparent;transition:all .18s;cursor:pointer;font-family:"DM Sans",system-ui,sans-serif;text-decoration:none;width:100%;background:none;border-top:none;border-right:none;border-bottom:none;text-align:left;}
+  .sb-link:hover,.sb-toggle:hover{background:rgba(242,195,0,.1);color:#F2C300;border-left-color:#F2C300;}
+  .sb-link.active{color:#F2C300;border-left-color:#F2C300;background:rgba(242,195,0,.08);}
+  .sb-arr{font-size:.65rem;transition:transform .2s;opacity:.6;}
+  li.sbopen .sb-arr{transform:rotate(90deg);}
+  /* Submenu */
+  .sb-sub{list-style:none;max-height:0;overflow:hidden;transition:max-height .3s ease;background:rgba(0,0,0,.18);}
+  li.sbopen .sb-sub{max-height:600px;}
+  .sb-sub li a{display:block;padding:.55rem 1.4rem .55rem 2.2rem;color:rgba(255,255,255,.7);font-size:.88rem;font-family:"DM Sans",system-ui,sans-serif;transition:color .15s;text-decoration:none;}
+  .sb-sub li a:hover{color:#F2C300;}
+  .sb-sub li a.sb-indent{padding-left:3rem;font-size:.8rem;opacity:.75;}
+  .sb-sub li a.sb-indent:hover{opacity:1;color:#F2C300;}
+  @media(max-width:820px){.tl-nav{display:none;}.nav-cta-btn{display:none;}}
+</style>
+<nav id="site-nav">
+  <div id="hamburger" aria-label="Toggle menu" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+  <a class="nav-brand" href="../index.html">
+    <span class="nav-wordmark">Flow<span class="brand-a">telligence</span></span>
+    <span class="nav-tagline">Where workflow meets intelligence.</span>
+  </a>
+  <span class="nav-spacer"></span>
+  <ul class="tl-nav" id="tl-nav">
+    <li><a href="../pages/about.html">About</a></li>
+    <li id="tl-p">
+      <button onclick="tlOpen('tl-p','dd-p')">Products <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-p">
+        <a class="dd-head" href="../pages/products.html">All Products</a>
+        <a href="../pages/medicare-supplement.html">Medicare Supplement</a>
+        <a href="../pages/preneed.html">Preneed</a>
+        <a href="../pages/final-expense.html">Final Expense</a>
+        <a href="../pages/annuity.html">Annuity</a>
+        <a href="../pages/ancillary-health.html">Ancillary Health</a>
+      </div>
+    </li>
+    <li id="tl-t">
+      <button onclick="tlOpen('tl-t','dd-t')">Platform <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-t">
+        <a class="dd-head" href="../pages/tools.html">Platform Suite</a>
+        <a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a>
+        <a class="dd-sub" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a>
+        <a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a>
+        <a class="dd-sub" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a>
+        <a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a>
+        <a class="dd-sub" href="../pages/activity-map.html">&#8627; Activity Map</a>
+        <a class="dd-sub" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a>
+        <a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a>
+        <a class="dd-sub" href="../pages/my-easy-match.html">&#8627; MatchIQ</a>
+        <a class="dd-sub" href="../pages/messaging.html">&#8627; Flowtelligence Link</a>
+        <a class="dd-sub" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a>
+        <a class="dd-sub" href="../pages/app-scanning.html">&#8627; ScanIQ</a>
+        <a class="dd-sub" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a>
+        <a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a>
+      </div>
+    </li>
+    <li id="tl-c">
+      <button onclick="tlOpen('tl-c','dd-c')">Case Studies <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-c">
+        <a class="dd-head" href="../pages/case-study-growth.html">All Case Studies</a>
+        <a href="../pages/case-study-stm.html">Time to Market</a>
+        <a href="../pages/case-study-growth.html">Business Growth</a>
+        <a href="../pages/case-study-qob.html">Quality of Business</a>
+        <a href="../pages/case-study-satisfaction.html">Agent Satisfaction</a>
+      </div>
+    </li>
+    <li><a href="../pages/join-the-team.html">Join the Team</a></li>
+  </ul>
+  <a class="nav-cta-btn" href="../pages/contact.html">Contact Us</a>
+</nav>
+<div id="sidebar">
+  <ul class="sb-menu">
+    <li><a class="sb-link" href="../pages/about.html">About Us</a></li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Our Products <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/products.html">All Products</a></li>
+        <li><a href="../pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="../pages/preneed.html">Preneed</a></li>
+        <li><a href="../pages/final-expense.html">Final Expense</a></li>
+        <li><a href="../pages/annuity.html">Annuity</a></li>
+        <li><a href="../pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Platform Suite <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/tools.html">Full Platform Suite</a></li>
+        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a class="sb-indent" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a class="sb-indent" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a class="sb-indent" href="../pages/activity-map.html">&#8627; Activity Map</a></li>
+        <li><a class="sb-indent" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a class="sb-indent" href="../pages/my-easy-match.html">&#8627; MatchIQ</a></li>
+        <li><a class="sb-indent" href="../pages/messaging.html">&#8627; Flowtelligence Link</a></li>
+        <li><a class="sb-indent" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a></li>
+        <li><a class="sb-indent" href="../pages/app-scanning.html">&#8627; ScanIQ</a></li>
+        <li><a class="sb-indent" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Case Studies <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/case-study-stm.html">Time to Market</a></li>
+        <li><a href="../pages/case-study-growth.html">Business Growth</a></li>
+        <li><a href="../pages/case-study-qob.html">Quality of Business</a></li>
+        <li><a href="../pages/case-study-satisfaction.html">Agent Satisfaction</a></li>
+      </ul>
+    </li>
+    <li><a class="sb-link" href="../pages/join-the-team.html">Join the Team</a></li>
+    <li><a class="sb-link" href="../pages/contact.html" style="color:#F2C300;font-weight:700;">Contact Us</a></li>
+  </ul>
+</div>
+<div id="sidebar-overlay"></div>
+<div class="page-content">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="tools.html?tab=pulse">Flowtelligence Pulse</a> &rsaquo; Executive Dashboard</div>
+    <h1>Flowtelligence Pulse</h1>
+    <p class="page-subtitle">Executive Dashboard &amp; Analytics</p>
+    <p>Real-time visibility across your entire distribution operation — agent performance, pipeline health, STP ratios, and placement trends in one executive view.</p>
+  </div>
+
+  <section class="section" style="background:#0C3B4F;">
+    <div class="container">
+      <div class="section-title">
+        <span class="eyebrow" style="color:var(--aqua);">What Flowtelligence Pulse gives you</span>
+        <h2 style="color:#fff;">Decision-ready intelligence, not just data</h2>
+        <div class="divider-aqua" style="background:#F2C300;"></div>
+        <p style="color:rgba(255,255,255,.72);max-width:680px;margin:0 auto;">Most carriers are running blind — waiting for weekly reports that are already a week stale. Pulse surfaces what's happening right now, so you can act before trends become problems.</p>
+      </div>
+      <div class="grid-3" style="margin-bottom:0;">
+        <div class="card"><h3>Live Activity Map</h3><p>See where your carrier footprint is active, where applications are flowing, and which states are producing. Geographic visibility at a glance.</p></div>
+        <div class="card"><h3>Agent Scorecards</h3><p>Rank agents by production volume, STP rate, quality score, and engagement level. Know who's performing before the month closes.</p></div>
+        <div class="card"><h3>Pipeline Health</h3><p>See your full application funnel in real time — submitted, pending, approved, issued, and declined — by product, channel, and state.</p></div>
+        <div class="card"><h3>STP Tracking</h3><p>Monitor your straight-through processing rate across products and agents. Identify where friction is costing you placements and speed.</p></div>
+        <div class="card"><h3>Placement Rate Trends</h3><p>Track week-over-week and month-over-month placement rates. Spot emerging patterns before they affect your in-force book.</p></div>
+        <div class="card"><h3>Configurable Alerts</h3><p>Set thresholds on any metric. Get notified when approval rates drop, agent activity stalls, or STP ratios shift outside normal range.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--navy);">
+    <div class="container">
+      <div class="section-title">
+        <span class="eyebrow" style="color:var(--aqua);">Dashboard Preview</span>
+        <h2 style="color:#fff;">Executive view — live production data</h2>
+        <div class="divider-aqua" style="background:#F2C300;"></div>
+        <p style="color:rgba(255,255,255,.6);max-width:600px;margin:0 auto 2rem;font-size:.9rem;">Representative dashboard — contact us for a live walkthrough of the production Pulse interface.</p>
+      </div>
+
+      <div class="dash-wrap">
+        <!-- Header -->
+        <div class="dash-header">
+          <div class="dash-title">Flowtelligence Pulse — Executive Overview</div>
+          <div class="dash-live">&#9679; Live</div>
+          <div class="dash-date">June 7, 2026 &nbsp; 2:41 PM CT</div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-label">Apps Today</div>
+            <div class="kpi-val gold">247</div>
+            <div class="kpi-delta delta-up">&#8593; 18% vs yesterday</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">STP Rate</div>
+            <div class="kpi-val teal">74.3%</div>
+            <div class="kpi-delta delta-up">&#8593; 2.1 pts this week</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Issued Today</div>
+            <div class="kpi-val">183</div>
+            <div class="kpi-delta delta-up">&#8593; 22% vs 30-day avg</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Active Agents</div>
+            <div class="kpi-val">91</div>
+            <div class="kpi-delta delta-flat">&#8212; Same as last week</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Pending Review</div>
+            <div class="kpi-val" style="color:#FC8181;">14</div>
+            <div class="kpi-delta delta-dn">&#8595; 3 need attention</div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="dash-body">
+          <!-- Left -->
+          <div class="dash-left">
+            <!-- Activity by product -->
+            <div class="dash-section">
+              <div class="ds-label">Applications by Product — Today</div>
+              <div class="bar-chart">
+                <div class="bar-row">
+                  <div class="bar-name">Med Supp</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:88%;background:#12B5CC;"></div></div>
+                  <div class="bar-val">141</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-name">Final Expense</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:52%;background:#F2C300;"></div></div>
+                  <div class="bar-val">63</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-name">Preneed</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:23%;background:#0B7A8C;"></div></div>
+                  <div class="bar-val">28</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-name">Annuity</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:10%;background:#2DC8DE;"></div></div>
+                  <div class="bar-val">15</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7-day trend sparkline -->
+            <div class="dash-section">
+              <div class="ds-label">7-Day Application Trend</div>
+              <svg viewBox="0 0 280 60" class="map-svg" style="height:60px;opacity:1;">
+                <polyline points="0,48 40,44 80,50 120,35 160,28 200,22 240,18 280,12"
+                  fill="none" stroke="#12B5CC" stroke-width="2" stroke-linejoin="round"/>
+                <polyline points="0,48 40,44 80,50 120,35 160,28 200,22 240,18 280,12 280,60 0,60"
+                  fill="rgba(18,181,204,.08)" stroke="none"/>
+                <circle cx="280" cy="12" r="3" fill="#F2C300"/>
+                <text x="272" y="8" font-size="8" fill="rgba(255,255,255,.5)" text-anchor="end" font-family="monospace">247</text>
+              </svg>
+              <div style="display:flex;justify-content:space-between;font-size:.62rem;color:rgba(255,255,255,.28);font-family:monospace;margin-top:.15rem;">
+                <span>May 31</span><span>Jun 1</span><span>Jun 2</span><span>Jun 3</span><span>Jun 4</span><span>Jun 5</span><span>Jun 6</span><span>Today</span>
+              </div>
+            </div>
+
+            <!-- Pipeline funnel -->
+            <div class="dash-section">
+              <div class="ds-label">Pipeline — Active Applications</div>
+              <div class="funnel">
+                <div class="funnel-step">
+                  <div class="funnel-label">Submitted</div>
+                  <div class="funnel-bar" style="width:100%;background:#0C3B4F;">
+                    <span>247 apps</span>
+                  </div>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-label">STP / Auto-issued</div>
+                  <div class="funnel-bar" style="width:74%;background:#12B5CC;">
+                    <span>183 (74.3%)</span>
+                  </div>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-label">Pending UW</div>
+                  <div class="funnel-bar" style="width:20%;background:#F2C300;">
+                    <span>50 apps</span>
+                  </div>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-label">Action Required</div>
+                  <div class="funnel-bar" style="width:6%;background:#FC8181;min-width:60px;">
+                    <span>14 apps</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right -->
+          <div class="dash-right">
+            <!-- Top agents -->
+            <div class="dash-section">
+              <div class="ds-label">Top Agents — Apps This Week</div>
+              <table class="agent-table">
+                <thead>
+                  <tr>
+                    <th>#</th><th>Agent</th><th>State</th><th style="text-align:right;">Apps</th><th style="text-align:right;">STP%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td class="at-rank">1</td><td class="at-name">R. Martinez</td><td class="at-state">TX</td><td class="at-apps">34</td><td class="at-stp stp-hi">91%</td></tr>
+                  <tr><td class="at-rank">2</td><td class="at-name">K. Ostrowski</td><td class="at-state">OH</td><td class="at-apps">28</td><td class="at-stp stp-hi">85%</td></tr>
+                  <tr><td class="at-rank">3</td><td class="at-name">D. Franklin</td><td class="at-state">FL</td><td class="at-apps">24</td><td class="at-stp stp-mid">72%</td></tr>
+                  <tr><td class="at-rank">4</td><td class="at-name">J. Whitfield</td><td class="at-state">IA</td><td class="at-apps">22</td><td class="at-stp stp-hi">88%</td></tr>
+                  <tr><td class="at-rank">5</td><td class="at-name">M. Nguyen</td><td class="at-state">IL</td><td class="at-apps">19</td><td class="at-stp stp-lo">61%</td></tr>
+                  <tr><td class="at-rank">6</td><td class="at-name">P. Callahan</td><td class="at-state">MO</td><td class="at-apps">17</td><td class="at-stp stp-mid">77%</td></tr>
+                  <tr><td class="at-rank">7</td><td class="at-name">T. Abernathy</td><td class="at-state">GA</td><td class="at-apps">16</td><td class="at-stp stp-hi">81%</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Placement by state -->
+            <div class="dash-section">
+              <div class="ds-label">Placement Rate by Top States — MTD</div>
+              <div class="bar-chart">
+                <div class="bar-row">
+                  <div class="bar-name" style="min-width:40px;">TX</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:91%;background:#48BB78;"></div></div>
+                  <div class="bar-val">91%</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-name" style="min-width:40px;">IA</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:88%;background:#48BB78;"></div></div>
+                  <div class="bar-val">88%</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-name" style="min-width:40px;">OH</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:85%;background:#F2C300;"></div></div>
+                  <div class="bar-val">85%</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-name" style="min-width:40px;">FL</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:79%;background:#F2C300;"></div></div>
+                  <div class="bar-val">79%</div>
+                </div>
+                <div class="bar-row">
+                  <div class="bar-name" style="min-width:40px;">IL</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:68%;background:#FC8181;"></div></div>
+                  <div class="bar-val">68%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="dash-footer">
+          <div class="df-note">Data refreshes every 90 seconds &nbsp;&bull;&nbsp; All times CT &nbsp;&bull;&nbsp; Flowtelligence Pulse v2.4</div>
+          <div class="df-alert">&#9888; 3 applications awaiting document upload</div>
+        </div>
+      </div>
+
+      <p style="text-align:center;font-size:.8rem;color:rgba(255,255,255,.35);margin-top:.75rem;">Representative dashboard — data shown is for illustration purposes. Contact us for a live demo.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:#0C3B4F;">
+    <div class="container" style="text-align:center;max-width:700px;">
+      <span class="eyebrow" style="color:var(--aqua);">What Pulse includes</span>
+      <h2 style="color:#fff;">Every view you need. Zero BI setup.</h2>
+      <div class="divider-aqua" style="background:#F2C300;"></div>
+      <p style="color:rgba(255,255,255,.72);margin-bottom:2rem;">Pulse comes with six built-in executive dashboard views — no BI developer required, no data warehouse to configure. Connect to Orchestrator and Enroller and your data surfaces automatically.</p>
+      <div class="grid-2" style="text-align:left;gap:1rem;margin-bottom:2rem;">
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(18,181,204,.15);border-radius:10px;padding:1.1rem;">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C300;margin-bottom:.4rem;">Executive Summary</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.75);">KPIs, daily trend, pipeline health, and alert status. The view leadership checks first thing every morning.</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(18,181,204,.15);border-radius:10px;padding:1.1rem;">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C300;margin-bottom:.4rem;">Agent Performance</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.75);">Agent-level scorecards with production, STP rate, quality score, and state coverage. Sortable by any metric.</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(18,181,204,.15);border-radius:10px;padding:1.1rem;">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C300;margin-bottom:.4rem;">Geographic Activity</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.75);">State-level activity map with application volume, placement rates, and carrier footprint visibility.</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(18,181,204,.15);border-radius:10px;padding:1.1rem;">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C300;margin-bottom:.4rem;">Underwriting Outcomes</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.75);">Approval, decline, refer, and STP rates broken down by product, agent, and state. Spot quality trends early.</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(18,181,204,.15);border-radius:10px;padding:1.1rem;">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C300;margin-bottom:.4rem;">Pipeline Detail</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.75);">Full application funnel from submitted to issued. Every pending case, every action-required item, every bottleneck.</div>
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(18,181,204,.15);border-radius:10px;padding:1.1rem;">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C300;margin-bottom:.4rem;">Custom Alerts</div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.75);">Set thresholds on any metric. Email and in-platform alerts when something moves outside expected range.</div>
+        </div>
+      </div>
+      <a href="contact.html" class="btn btn-primary">Request a Pulse Demo</a>
+      <a href="activity-map.html" class="btn btn-navy" style="margin-left:1rem;">View Activity Map</a>
+    </div>
+  </section>
+</div>
+
+<!-- footer inlined -->
+<footer id="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Flow<span class="brand-a">telligence</span></div>
+      <p style="color:rgba(255,255,255,.58);font-size:.87rem;margin-top:.5rem;max-width:260px;line-height:1.55;">
+        Intelligence in motion.
+      </p>
+    </div>
+    <div>
+      <h4>Products</h4>
+      <ul>
+        <li><a href="../pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="../pages/preneed.html">Preneed</a></li>
+        <li><a href="../pages/final-expense.html">Final Expense</a></li>
+        <li><a href="../pages/annuity.html">Annuity</a></li>
+        <li><a href="../pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="../pages/about.html">About Us</a></li>
+        <li><a href="../pages/case-study-growth.html">Case Studies</a></li>
+        <li><a href="../pages/join-the-team.html">Join the Team</a></li>
+        <li><a href="../pages/contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; <span id="footer-year"></span> Flowtelligence. All rights reserved.</div>
+</footer>
+<script>
+
+window.tlOpen = function(liId, ddId) {
+  var all = document.querySelectorAll('.tl-nav li');
+  var allDd = document.querySelectorAll('.tl-dd');
+  var li = document.getElementById(liId);
+  var dd = document.getElementById(ddId);
+  var wasOpen = dd.classList.contains('open');
+  all.forEach(function(l){ l.classList.remove('tlo'); });
+  allDd.forEach(function(d){ d.classList.remove('open'); });
+  if (!wasOpen) { li.classList.add('tlo'); dd.classList.add('open'); }
+};
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#tl-nav')) {
+    document.querySelectorAll('.tl-dd').forEach(function(d){ d.classList.remove('open'); });
+    document.querySelectorAll('.tl-nav li').forEach(function(l){ l.classList.remove('tlo'); });
+  }
+});
+window.sbToggle = function(btn) {
+  var li = btn.parentElement;
+  var isOpen = li.classList.contains('sbopen');
+  document.querySelectorAll('.sb-menu li.sbopen').forEach(function(l){ l.classList.remove('sbopen'); });
+  if (!isOpen) li.classList.add('sbopen');
+};
+var _ham = document.getElementById('hamburger');
+var _sb  = document.getElementById('sidebar');
+var _ov  = document.getElementById('sidebar-overlay');
+function _toggleSB(){ _ham.classList.toggle('open'); _sb.classList.toggle('open'); _ov.classList.toggle('open'); }
+if(_ham) _ham.addEventListener('click', _toggleSB);
+if(_ov)  _ov.addEventListener('click', _toggleSB);
+var _path = window.location.pathname.split('/').pop();
+document.querySelectorAll('.sb-menu a').forEach(function(a){
+  var href = a.getAttribute('href') || '';
+  if(href.split('/').pop().split('?')[0] === _path) a.classList.add('active');
+});
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+</script>
+<script src="../assets/js/chatbot.js"></script>
+<script src="../assets/js/features.js"></script>
+</body>
+</html>

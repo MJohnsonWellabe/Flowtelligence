@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>See Enroller in Action – Flowtelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <style>
+    /* ── Demo shell ── */
+    .demo-shell {
+      background: #F0F4F8;
+      border-radius: 20px;
+      box-shadow: 0 8px 48px rgba(11,31,74,0.18);
+      max-width: 820px;
+      margin: 0 auto;
+      /* No overflow:hidden here — that creates a stacking context
+         that traps fixed-position elements like the chatbot */
+    }
+    .demo-topbar {
+      background: var(--navy);
+      padding: 0 1.5rem;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 20px 20px 0 0;
+    }
+    .demo-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .demo-dot-r { background: #FF5F57; }
+    .demo-dot-y { background: #FFBD2E; }
+    .demo-dot-g { background: #28CA41; }
+    .demo-topbar-label {
+      margin-left: auto;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      font-family: var(--font-body);
+      letter-spacing: 0.05em;
+    }
+    .demo-body {
+      padding: 2rem;
+      min-height: 520px;
+      background: #F0F4F8;
+      border-radius: 0 0 20px 20px;
+    }
+
+    /* ── Progress bar ── */
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 2rem;
+    }
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+      position: relative;
+    }
+    .progress-step::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: #D9E2EE;
+      z-index: 0;
+    }
+    .progress-step:last-child::after { display: none; }
+    .progress-step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      font-family: var(--font-body);
+      position: relative; z-index: 1;
+      transition: all 0.3s ease;
+    }
+    .progress-step-num.done {
+      background: var(--aqua);
+      color: var(--navy);
+    }
+    .progress-step-num.active {
+      background: var(--navy);
+      color: white;
+      box-shadow: 0 0 0 4px rgba(0,181,200,0.25);
+    }
+    .progress-step-num.pending {
+      background: white;
+      color: #A0AEC0;
+      border: 2px solid #D9E2EE;
+    }
+    .progress-step-label {
+      font-size: 10px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #718096;
+      text-align: center;
+      max-width: 70px;
+      line-height: 1.25;
+    }
+    .progress-step-label.active { color: var(--navy); }
+    .progress-step-label.done { color: var(--aqua); }
+
+    /* ── Card ── */
+    .demo-card {
+      background: white;
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 2px 16px rgba(11,31,74,0.08);
+      animation: cardFadeIn 0.3s ease;
+    }
+    @keyframes cardFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .demo-card-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.25rem;
+    }
+    .demo-card-sub {
+      font-size: 0.88rem;
+      color: #718096;
+      font-family: var(--font-body);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── Form elements ── */
+    .field-group {
+      margin-bottom: 1.25rem;
+    }
+    .field-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #4A5568;
+      font-family: var(--font-body);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.4rem;
+    }
+    .field-input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.96rem;
+      color: #1A202C;
+      background: #F7FAFC;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field-input:focus {
+      outline: none;
+      border-color: var(--aqua);
+      box-shadow: 0 0 0 3px rgba(0,181,200,0.15);
+      background: white;
+    }
+    .field-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A5568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+      position: relative;
+      z-index: 10;
+      pointer-events: auto !important;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* ── Product selector tiles ── */
+    .product-tiles {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .product-tile {
+      border: 2px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 1rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+      font-family: var(--font-body);
+    }
+    .product-tile:hover {
+      border-color: var(--aqua);
+      background: #E6F9FC;
+    }
+    .product-tile.selected {
+      border-color: var(--navy);
+      background: var(--navy);
+    }
+    .product-tile-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+    .product-tile-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #2D3748;
+      line-height: 1.25;
+    }
+    .product-tile.selected .product-tile-name { color: white; }
+    .product-tile.selected .product-tile-icon { filter: brightness(10); }
+
+    /* ── Yes/No toggles ── */
+    .yn-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid #EDF2F7;
+    }
+    .yn-row:last-child { border-bottom: none; }
+    .yn-question {
+      font-size: 0.94rem;
+      color: #2D3748;
+      font-family: var(--font-body);
+      flex: 1;
+      padding-right: 1rem;
+    }
+    .yn-btns { display: flex; gap: 6px; }
+    .yn-btn {
+      padding: 0.35rem 1rem;
+      border-radius: 6px;
+      border: 1.5px solid #E2E8F0;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: white;
+      color: #4A5568;
+    }
+    .yn-btn.active-yes {
+      background: var(--aqua);
+      border-color: var(--aqua);
+      color: var(--navy);
+    }
+    .yn-btn.active-no {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: white;
+    }
+
+    /* ── Qualification results ── */
+    .qual-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border: 2px solid #E2E8F0;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+    .qual-item:hover { border-color: var(--aqua); }
+    .qual-item.selected {
+      border-color: var(--navy);
+      background: linear-gradient(135deg, #F0F7FF, white);
+    }
+    .qual-check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid #CBD5E0;
+      margin-right: 1rem;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .qual-item.selected .qual-check {
+      background: var(--aqua);
+      border-color: var(--aqua);
+    }
+    .qual-check-inner {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--navy);
+      display: none;
+    }
+    .qual-item.selected .qual-check-inner { display: block; }
+    .qual-info { flex: 1; }
+    .qual-product {
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--navy);
+      font-family: var(--font-body);
+    }
+    .qual-detail {
+      font-size: 0.82rem;
+      color: #718096;
+      font-family: var(--font-body);
+      margin-top: 1px;
+    }
+    .qual-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+    }
+    .badge-green { background: #C6F6D5; color: #22543D; }
+    .badge-blue  { background: #BEE3F8; color: #2A4365; }
+
+    /* ── Sys message ── */
+    .sys-message {
+      background: linear-gradient(135deg, #EBF8FF, #E6FFFA);
+      border-left: 4px solid var(--aqua);
+      border-radius: 0 10px 10px 0;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      color: var(--navy);
+      font-weight: 500;
+    }
+
+    /* ── Issue summary ── */
+    .issue-header {
+      background: linear-gradient(135deg, var(--navy), #0C3B4F);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .issue-header-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .issue-header h3 {
+      color: white;
+      font-size: 1.2rem;
+      font-family: var(--font-display);
+      margin-bottom: 0.25rem;
+    }
+    .issue-header p {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.88rem;
+      font-family: var(--font-body);
+      margin: 0;
+    }
+    .policy-card {
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: white;
+    }
+    .policy-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .policy-icon-ms { background: #BEE3F8; }
+    .policy-icon-ca { background: #C6F6D5; }
+    .policy-icon-fe { background: #FEFCBF; }
+    .policy-info { flex: 1; }
+    .policy-product {
+      font-weight: 700;
+      font-size: 0.94rem;
+      color: var(--navy);
+      font-family: var(--font-body);
+    }
+    .policy-num {
+      font-size: 0.82rem;
+      color: #718096;
+      font-family: 'Courier New', monospace;
+      margin-top: 2px;
+    }
+    .policy-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #22543D;
+      font-family: var(--font-body);
+    }
+    .policy-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #48BB78;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .policy-packet-link {
+      font-size: 0.82rem;
+      color: var(--aqua);
+      font-family: var(--font-body);
+      cursor: pointer;
+      margin-top: 2px;
+      text-decoration: underline;
+      display: block;
+    }
+
+    /* ── Nav buttons ── */
+    .demo-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #EDF2F7;
+    }
+    .demo-btn-back {
+      padding: 0.65rem 1.4rem;
+      border: 1.5px solid #CBD5E0;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #4A5568;
+      background: white;
+      cursor: pointer;
+      transition: background 0.18s, border-color 0.18s;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+    .demo-btn-back:hover { background: #F7FAFC; border-color: #A0AEC0; }
+    .demo-btn-restart:hover { background: #E6F9FC; }
+    .demo-btn-next {
+      padding: 0.7rem 2rem;
+      background: var(--navy);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.02em;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      touch-action: manipulation;
+    }
+    .demo-btn-next:hover { background: #0C3B4F; box-shadow: 0 4px 16px rgba(11,31,74,0.3); }
+    .demo-btn-next:active { background: #091828; }
+    .demo-btn-restart {
+      padding: 0.65rem 1.4rem;
+      border: 1.5px solid var(--aqua);
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--aqua);
+      background: white;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .demo-btn-restart:hover { background: #E6F9FC; }
+
+    /* ── Step labels ── */
+    .step-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--aqua);
+      font-family: var(--font-body);
+      margin-bottom: 0.3rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .product-tiles { grid-template-columns: repeat(3, 1fr); }
+      .form-row, .form-row-3 { grid-template-columns: 1fr; }
+      .demo-body { padding: 1.25rem; }
+      .progress-step-label { display: none; }
+    }
+    /* ── Chatbot stacking fix for demo page ── */
+    /* Ensure select dropdowns always render above other elements */
+    select { position: relative; z-index: 10; pointer-events: auto !important; }
+    /* demo-shell uses overflow:hidden only on topbar/body children, not parent */
+    /* Force chatbot widget above everything on this page */
+    #me-chat-widget {
+      z-index: 2147483647 !important;
+    }
+    #me-chat-window {
+      z-index: 2147483647 !important;
+    }
+    #me-chat-toggle {
+      z-index: 2147483647 !important;
+    }
+
+    @media (max-width: 480px) {
+      .product-tiles { grid-template-columns: repeat(2, 1fr); }
+    }
+  .brand-a { color:#F2C300; }
+.fxe-e   { color:#F2C300; font-weight:700; }
+</style>
+</head>
+<body>
+<!-- nav inlined -->
+
+<style>
+  :root {
+    --navy:#0B1C2C!important; --navy-mid:#0C3B4F!important;
+    --aqua:#12B5CC!important; --aqua-light:#2DC8DE!important;
+    --aqua-pale:#E6F9FC!important; --gold:#F2C300; --gold-lt:#FFD84D;
+  }
+  #site-nav {
+    position:fixed;top:0;left:0;right:0;height:68px;
+    background:#0B1C2C;z-index:1000;
+    display:flex;align-items:center;padding:0 1.75rem;gap:.75rem;
+    box-shadow:0 2px 16px rgba(0,0,0,.3);border-bottom:2px solid #F2C300;
+  }
+  .nav-brand{font-family:"EB Garamond",Georgia,serif;font-size:1.45rem;font-weight:700;color:#fff;text-decoration:none;display:inline-flex;flex-direction:column;line-height:1.2;vertical-align:middle;}
+  .nav-wordmark{display:block;white-space:nowrap;line-height:1;}
+  .nav-brand .brand-a { color:#F2C300; }
+  .nav-tagline{font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.02em;font-family:"DM Sans",system-ui,sans-serif;margin-top:2px;white-space:nowrap;display:block;}
+  .nav-spacer{flex:1;}
+  /* Top link row */
+  .tl-nav{display:flex;align-items:center;gap:.1rem;list-style:none;margin:0;padding:0;}
+  .tl-nav>li{position:relative;}
+  .tl-nav>li>a,.tl-nav>li>button{display:flex;align-items:center;gap:.25rem;padding:.48rem .8rem;color:rgba(255,255,255,.82);font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;font-weight:500;background:none;border:none;cursor:pointer;border-radius:6px;white-space:nowrap;transition:background .18s,color .18s;}
+  .tl-nav>li>a:hover,.tl-nav>li>button:hover{background:rgba(255,255,255,.1);color:#fff;}
+  .tlchev{font-size:.55rem;opacity:.6;transition:transform .2s;}
+  .tl-nav li.tlo>.tlchev{transform:rotate(180deg);}
+  /* Dropdown */
+  .tl-dd{display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:220px;background:#fff;border-radius:10px;border:1px solid #D9E2EE;box-shadow:0 8px 32px rgba(11,28,44,.18);padding:.35rem 0;z-index:2000;}
+  .tl-dd.open{display:block;animation:tldrop .18s ease;}
+  @keyframes tldrop{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+  .tl-dd a{display:block;padding:.55rem 1.1rem;font-size:.85rem;color:#0B1C2C;font-weight:500;font-family:"DM Sans",system-ui,sans-serif;transition:background .15s,color .15s;text-decoration:none;}
+  .tl-dd a:hover{background:#E6F9FC;color:#0B7A8C;}
+  .tl-dd a.dd-head{font-weight:700;border-bottom:1px solid #D9E2EE;margin-bottom:.2rem;padding-bottom:.65rem;}
+  .tl-dd .dd-sub{padding-left:1.75rem;font-size:.8rem;color:#4A6070;}
+  .tl-dd .dd-sub:hover{color:#0B7A8C;}
+  /* CTA */
+  .nav-cta-btn{padding:.42rem 1.1rem;background:#F2C300;color:#0B1C2C!important;font-weight:700;border-radius:6px;margin-left:.25rem;white-space:nowrap;font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;text-decoration:none;transition:background .18s;flex-shrink:0;}
+  .nav-cta-btn:hover{background:#FFD84D;}
+  /* Hamburger */
+  #hamburger{width:40px;height:40px;display:flex;flex-direction:column;justify-content:center;gap:6px;cursor:pointer;flex-shrink:0;}
+  #hamburger span{display:block;height:2px;background:#fff;border-radius:2px;transition:all .25s;}
+  #hamburger.open span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  #hamburger.open span:nth-child(2){opacity:0;}
+  #hamburger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+  /* Sidebar */
+  #sidebar{position:fixed;top:68px;left:-310px;width:290px;bottom:0;background:#0C3B4F;z-index:999;overflow-y:auto;transition:left .28s ease;padding:1rem 0;}
+  #sidebar.open{left:0;}
+  #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;top:68px;}
+  #sidebar-overlay.open{display:block;}
+  .sb-menu{list-style:none;padding:0;margin:0;}
+  .sb-menu li{position:relative;}
+  .sb-link,.sb-toggle{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;color:rgba(255,255,255,.85);font-weight:500;font-size:.93rem;border-left:3px solid transparent;transition:all .18s;cursor:pointer;font-family:"DM Sans",system-ui,sans-serif;text-decoration:none;width:100%;background:none;border-top:none;border-right:none;border-bottom:none;text-align:left;}
+  .sb-link:hover,.sb-toggle:hover{background:rgba(242,195,0,.1);color:#F2C300;border-left-color:#F2C300;}
+  .sb-link.active{color:#F2C300;border-left-color:#F2C300;background:rgba(242,195,0,.08);}
+  .sb-arr{font-size:.65rem;transition:transform .2s;opacity:.6;}
+  li.sbopen .sb-arr{transform:rotate(90deg);}
+  /* Submenu */
+  .sb-sub{list-style:none;max-height:0;overflow:hidden;transition:max-height .3s ease;background:rgba(0,0,0,.18);}
+  li.sbopen .sb-sub{max-height:600px;}
+  .sb-sub li a{display:block;padding:.55rem 1.4rem .55rem 2.2rem;color:rgba(255,255,255,.7);font-size:.88rem;font-family:"DM Sans",system-ui,sans-serif;transition:color .15s;text-decoration:none;}
+  .sb-sub li a:hover{color:#F2C300;}
+  .sb-sub li a.sb-indent{padding-left:3rem;font-size:.8rem;opacity:.75;}
+  .sb-sub li a.sb-indent:hover{opacity:1;color:#F2C300;}
+  @media(max-width:820px){.tl-nav{display:none;}.nav-cta-btn{display:none;}}
+</style>
+<nav id="site-nav">
+  <div id="hamburger" aria-label="Toggle menu" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+  <a class="nav-brand" href="../index.html">
+    <span class="nav-wordmark">Flow<span class="brand-a">telligence</span></span>
+    <span class="nav-tagline">Where workflow meets intelligence.</span>
+  </a>
+  <span class="nav-spacer"></span>
+  <ul class="tl-nav" id="tl-nav">
+    <li><a href="../pages/about.html">About</a></li>
+    <li id="tl-p">
+      <button onclick="tlOpen('tl-p','dd-p')">Products <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-p">
+        <a class="dd-head" href="../pages/products.html">All Products</a>
+        <a href="../pages/medicare-supplement.html">Medicare Supplement</a>
+        <a href="../pages/preneed.html">Preneed</a>
+        <a href="../pages/final-expense.html">Final Expense</a>
+        <a href="../pages/annuity.html">Annuity</a>
+        <a href="../pages/ancillary-health.html">Ancillary Health</a>
+      </div>
+    </li>
+    <li id="tl-t">
+      <button onclick="tlOpen('tl-t','dd-t')">Platform <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-t">
+        <a class="dd-head" href="../pages/tools.html">Platform Suite</a>
+        <a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a>
+        <a class="dd-sub" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a>
+        <a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a>
+        <a class="dd-sub" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a>
+        <a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a>
+        <a class="dd-sub" href="../pages/activity-map.html">&#8627; Activity Map</a>
+        <a class="dd-sub" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a>
+        <a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a>
+        <a class="dd-sub" href="../pages/my-easy-match.html">&#8627; MatchIQ</a>
+        <a class="dd-sub" href="../pages/messaging.html">&#8627; Flowtelligence Link</a>
+        <a class="dd-sub" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a>
+        <a class="dd-sub" href="../pages/app-scanning.html">&#8627; ScanIQ</a>
+        <a class="dd-sub" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a>
+        <a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a>
+      </div>
+    </li>
+    <li id="tl-c">
+      <button onclick="tlOpen('tl-c','dd-c')">Case Studies <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-c">
+        <a class="dd-head" href="../pages/case-study-growth.html">All Case Studies</a>
+        <a href="../pages/case-study-stm.html">Time to Market</a>
+        <a href="../pages/case-study-growth.html">Business Growth</a>
+        <a href="../pages/case-study-qob.html">Quality of Business</a>
+        <a href="../pages/case-study-satisfaction.html">Agent Satisfaction</a>
+      </div>
+    </li>
+    <li><a href="../pages/join-the-team.html">Join the Team</a></li>
+  </ul>
+  <a class="nav-cta-btn" href="../pages/contact.html">Contact Us</a>
+</nav>
+<div id="sidebar">
+  <ul class="sb-menu">
+    <li><a class="sb-link" href="../pages/about.html">About Us</a></li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Our Products <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/products.html">All Products</a></li>
+        <li><a href="../pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="../pages/preneed.html">Preneed</a></li>
+        <li><a href="../pages/final-expense.html">Final Expense</a></li>
+        <li><a href="../pages/annuity.html">Annuity</a></li>
+        <li><a href="../pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Platform Suite <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/tools.html">Full Platform Suite</a></li>
+        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a class="sb-indent" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a class="sb-indent" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a class="sb-indent" href="../pages/activity-map.html">&#8627; Activity Map</a></li>
+        <li><a class="sb-indent" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a class="sb-indent" href="../pages/my-easy-match.html">&#8627; MatchIQ</a></li>
+        <li><a class="sb-indent" href="../pages/messaging.html">&#8627; Flowtelligence Link</a></li>
+        <li><a class="sb-indent" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a></li>
+        <li><a class="sb-indent" href="../pages/app-scanning.html">&#8627; ScanIQ</a></li>
+        <li><a class="sb-indent" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Case Studies <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/case-study-stm.html">Time to Market</a></li>
+        <li><a href="../pages/case-study-growth.html">Business Growth</a></li>
+        <li><a href="../pages/case-study-qob.html">Quality of Business</a></li>
+        <li><a href="../pages/case-study-satisfaction.html">Agent Satisfaction</a></li>
+      </ul>
+    </li>
+    <li><a class="sb-link" href="../pages/join-the-team.html">Join the Team</a></li>
+    <li><a class="sb-link" href="../pages/contact.html" style="color:#F2C300;font-weight:700;">Contact Us</a></li>
+  </ul>
+</div>
+<div id="sidebar-overlay"></div>
+<div class="page-content">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="../index.html">Home</a> › See It in Action</div>
+    <h1>See Flowtelligence Enroller in Action</h1>
+    <p>Walk through a live demo of Flowtelligence Enroller — from product selection to issued policy in under 4 minutes.</p>
+  </div>
+
+  <section class="section section-alt">
+    <div class="container" style="max-width:880px;">
+      <div class="section-title" style="text-align:center;margin-bottom:2.5rem;">
+        <span class="eyebrow">Interactive Demo</span>
+        <h2>A Scripted Walk-Through of the Full Enrollment Flow</h2>
+        <div class="divider-aqua"></div>
+        <p style="max-width:580px;margin:0 auto;">This is a guided demo — fields are pre-filled and outcomes are scripted to illustrate a real enrollment path. No real data is submitted.</p>
+      </div>
+
+      <!-- Demo Shell -->
+      <div class="demo-shell">
+        <div class="demo-topbar">
+          <div class="demo-dot demo-dot-r"></div>
+          <div class="demo-dot demo-dot-y"></div>
+          <div class="demo-dot demo-dot-g"></div>
+          <span class="demo-topbar-label">flowtelligence.com · Guided Demo Mode</span>
+        </div>
+        <div class="demo-body">
+          <div id="demo-root"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What you saw -->
+  <section class="section">
+    <div class="container" style="max-width:880px;">
+      <div class="section-title">
+        <span class="eyebrow">What the Demo Shows</span>
+        <h2>From Intake to Issued Policy in One Sitting</h2>
+        <div class="divider-aqua"></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Real-Time Qualification</h3>
+          <p>The platform evaluates eligibility at the point of sale — surfacing what the applicant qualifies for before moving to product selection. No back-and-forth with underwriting.</p>
+        </div>
+        <div class="card">
+          <h3>One Application, Multiple Products</h3>
+          <p>Shared intake data flows across all selected products. Agents enter information once and the platform routes it appropriately across Medicare Supplement, Cancer, Final Expense, and more.</p>
+        </div>
+        <div class="card">
+          <h3>Instant Issuance</h3>
+          <p>Qualified applicants receive policy numbers immediately at the point of sale. The experience ends with confirmation — not a promise to follow up.</p>
+        </div>
+        <div class="card">
+          <h3>Carrier-Defined Guardrails</h3>
+          <p>Every decision in this flow reflects configurable carrier rules. The platform enforces underwriting intent automatically — the agent simply guides the applicant through.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- footer inlined -->
+
+<!-- Demo App -->
+<script>
+(function() {
+
+  var STEPS = [
+    { num: 1, label: 'Product\n& State' },
+    { num: 2, label: 'Applicant\nInfo'    },
+    { num: 3, label: 'Payment\n& Flags'  },
+    { num: 4, label: 'Qualifi-\ncation'  },
+    { num: 5, label: 'Final\nExpense UW' },
+    { num: 6, label: 'Issued!'           },
+  ];
+
+  var state = {
+    step: 1,
+    product: 'all',
+    stateCode: 'IA',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    dob: '1950-03-14',
+    gender: 'Female',
+    street: '1842 Walnut Drive',
+    city: 'Des Moines',
+    zip: '50309',
+    paymentMethod: 'Bank Draft',
+    paymentFreq: 'Monthly',
+    livesWithAnother: 'no',
+    openEnrollment: 'yes',
+    tobacco: 'no',
+    selectedProducts: { ms: true, cancer: true, fe: true },
+    uwDead: 'no',
+    uwDying: 'no',
+  };
+
+  var root = document.getElementById('demo-root');
+
+  function render() {
+    root.innerHTML = '';
+    root.appendChild(buildProgressBar());
+    root.appendChild(buildStep());
+  }
+
+  function buildProgressBar() {
+    var bar = el('div', { className: 'progress-bar' });
+    STEPS.forEach(function(s) {
+      var isDone   = s.num < state.step;
+      var isActive = s.num === state.step;
+      var isPend   = s.num > state.step;
+      var stepEl   = el('div', { className: 'progress-step' });
+      var numEl    = el('div', {
+        className: 'progress-step-num ' + (isDone ? 'done' : isActive ? 'active' : 'pending'),
+        textContent: isDone ? '✓' : String(s.num),
+      });
+      var lblEl = el('div', {
+        className: 'progress-step-label ' + (isDone ? 'done' : isActive ? 'active' : ''),
+        textContent: s.label.replace('\n', ' '),
+      });
+      stepEl.appendChild(numEl);
+      stepEl.appendChild(lblEl);
+      bar.appendChild(stepEl);
+    });
+    return bar;
+  }
+
+  function buildStep() {
+    switch (state.step) {
+      case 1: return buildStep1();
+      case 2: return buildStep2();
+      case 3: return buildStep3();
+      case 4: return buildStep4();
+      case 5: return buildStep5();
+      case 6: return buildStep6();
+    }
+    return el('div');
+  }
+
+  /* ── STEP 1: Product + State ── */
+  function buildStep1() {
+    var card = makeCard('Product & State', 'Select what you\'d like to explore and confirm your state.');
+
+    var eyebrow = el('div', { className: 'step-eyebrow', textContent: 'What are you looking for?' });
+    card.appendChild(eyebrow);
+
+    var products = [
+      { id: 'all',    icon: '🔍', name: 'All Products' },
+      { id: 'ms',     icon: '🏥', name: 'Medicare Supplement' },
+      { id: 'cancer', icon: '🩺', name: 'Cancer' },
+      { id: 'fe',     icon: '🛡️', name: 'Final Expense' },
+      { id: 'ann',    icon: '📈', name: 'Annuity' },
+    ];
+    var tiles = el('div', { className: 'product-tiles' });
+    products.forEach(function(p) {
+      var tile = el('div', { className: 'product-tile' + (state.product === p.id ? ' selected' : '') });
+      tile.innerHTML = '<div class="product-tile-icon">' + p.icon + '</div><div class="product-tile-name">' + p.name + '</div>';
+      tile.addEventListener('click', function() {
+        state.product = p.id;
+        render();
+      });
+      tiles.appendChild(tile);
+    });
+    card.appendChild(tiles);
+
+    var stateGroup = el('div', { className: 'field-group' });
+    var stateLbl = el('label', { className: 'field-label', textContent: 'State' });
+    var stateStates = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+    var stateSelect = el('select', { className: 'field-input field-select' });
+    stateStates.forEach(function(s) {
+      var opt = el('option', { value: s, textContent: s });
+      if (s === state.stateCode) opt.selected = true;
+      stateSelect.appendChild(opt);
+    });
+    stateSelect.addEventListener('change', function() { state.stateCode = this.value; });
+    stateGroup.appendChild(stateLbl);
+    stateGroup.appendChild(stateSelect);
+    card.appendChild(stateGroup);
+
+    card.appendChild(makeNav(null, function() { state.step = 2; render(); }, 'Continue'));
+    return card;
+  }
+
+  /* ── STEP 2: Applicant Identity ── */
+  function buildStep2() {
+    var card = makeCard('Applicant Information', 'Basic demographic information for enrollment intake.');
+
+    var row1 = el('div', { className: 'form-row' });
+    row1.appendChild(makeField('First Name', 'text', state.firstName, function(v){ state.firstName = v; }));
+    row1.appendChild(makeField('Last Name',  'text', state.lastName,  function(v){ state.lastName  = v; }));
+    card.appendChild(row1);
+
+    var row2 = el('div', { className: 'form-row' });
+    row2.appendChild(makeField('Date of Birth', 'date', state.dob, function(v){ state.dob = v; }));
+    var genderGroup = el('div', { className: 'field-group' });
+    var gLbl = el('label', { className: 'field-label', textContent: 'Gender' });
+    var gSel = el('select', { className: 'field-input field-select' });
+    ['Female','Male','Other'].forEach(function(g) {
+      var opt = el('option', { value: g, textContent: g });
+      if (g === state.gender) opt.selected = true;
+      gSel.appendChild(opt);
+    });
+    gSel.addEventListener('change', function() { state.gender = this.value; });
+    genderGroup.appendChild(gLbl);
+    genderGroup.appendChild(gSel);
+    row2.appendChild(genderGroup);
+    card.appendChild(row2);
+
+    card.appendChild(makeField('Street Address', 'text', state.street, function(v){ state.street = v; }));
+
+    var row3 = el('div', { className: 'form-row-3' });
+    row3.appendChild(makeField('City', 'text', state.city, function(v){ state.city = v; }));
+    row3.appendChild(makeField('State', 'text', state.stateCode, function(v){})); // read-only from step 1
+    row3.appendChild(makeField('ZIP', 'text', state.zip, function(v){ state.zip = v; }));
+    card.appendChild(row3);
+
+    card.appendChild(makeNav(function(){ state.step = 1; render(); },
+                             function(){ state.step = 3; render(); }, 'Continue'));
+    return card;
+  }
+
+  /* ── STEP 3: Payment + Flags ── */
+  function buildStep3() {
+    var card = makeCard('Payment & Eligibility', 'Payment preferences and a few quick eligibility questions.');
+
+    var row = el('div', { className: 'form-row' });
+    var pmGroup = el('div', { className: 'field-group' });
+    var pmLbl = el('label', { className: 'field-label', textContent: 'Payment Method' });
+    var pmSel = el('select', { className: 'field-input field-select' });
+    ['Bank Draft','Credit Card','Check'].forEach(function(m){
+      var opt = el('option', { value: m, textContent: m });
+      if (m === state.paymentMethod) opt.selected = true;
+      pmSel.appendChild(opt);
+    });
+    pmSel.addEventListener('change', function(){ state.paymentMethod = this.value; });
+    pmGroup.appendChild(pmLbl);
+    pmGroup.appendChild(pmSel);
+    row.appendChild(pmGroup);
+
+    var pfGroup = el('div', { className: 'field-group' });
+    var pfLbl = el('label', { className: 'field-label', textContent: 'Payment Frequency' });
+    var pfSel = el('select', { className: 'field-input field-select' });
+    ['Monthly','Quarterly','Semi-Annual','Annual'].forEach(function(f){
+      var opt = el('option', { value: f, textContent: f });
+      if (f === state.paymentFreq) opt.selected = true;
+      pfSel.appendChild(opt);
+    });
+    pfSel.addEventListener('change', function(){ state.paymentFreq = this.value; });
+    pfGroup.appendChild(pfLbl);
+    pfGroup.appendChild(pfSel);
+    row.appendChild(pfGroup);
+    card.appendChild(row);
+
+    var ynWrap = el('div');
+    var ynItems = [
+      { q: 'Do you live with another person age 50 or older?', key: 'livesWithAnother' },
+      { q: 'Are you eligible for Open Enrollment?',            key: 'openEnrollment'   },
+      { q: 'Have you used tobacco in the past 12 months?',     key: 'tobacco'          },
+    ];
+    ynItems.forEach(function(item) {
+      var row = el('div', { className: 'yn-row' });
+      var q = el('div', { className: 'yn-question', textContent: item.q });
+      var btns = el('div', { className: 'yn-btns' });
+      var yes = el('button', {
+        className: 'yn-btn' + (state[item.key] === 'yes' ? ' active-yes' : ''),
+        textContent: 'Yes',
+      });
+      var no = el('button', {
+        className: 'yn-btn' + (state[item.key] === 'no' ? ' active-no' : ''),
+        textContent: 'No',
+      });
+      yes.addEventListener('click', function(){ state[item.key] = 'yes'; render(); });
+      no.addEventListener('click',  function(){ state[item.key] = 'no';  render(); });
+      btns.appendChild(yes);
+      btns.appendChild(no);
+      row.appendChild(q);
+      row.appendChild(btns);
+      ynWrap.appendChild(row);
+    });
+    card.appendChild(ynWrap);
+
+    card.appendChild(makeNav(function(){ state.step = 2; render(); },
+                             function(){ state.step = 4; render(); }, 'See What I Qualify For'));
+    return card;
+  }
+
+  /* ── STEP 4: Qualification Results ── */
+  function buildStep4() {
+    var card = makeCard('Qualification Results', 'Based on your information, here is what you qualify for. Select the products you\'d like to proceed with.');
+
+    var sysMsg = el('div', { className: 'sys-message',
+      textContent: 'System evaluated applicant data and returned the following qualification results in real time.' });
+    card.appendChild(sysMsg);
+
+    var quals = [
+      { id: 'ms',     icon: '🏥', name: 'Medicare Supplement', detail: 'Underwritten — Standard rates apply', badge: 'Qualified', badgeClass: 'badge-green' },
+      { id: 'cancer', icon: '🩺', name: 'Cancer Insurance',    detail: 'No exclusions identified', badge: 'Qualified', badgeClass: 'badge-green' },
+      { id: 'fe',     icon: '🛡️', name: 'Final Expense',       detail: 'Graded Benefit — 2-year waiting period', badge: 'Graded Benefit', badgeClass: 'badge-blue' },
+      { id: 'ann',    icon: '📈', name: 'Annuity',             detail: 'Fixed rate available in ' + state.stateCode, badge: 'Qualified', badgeClass: 'badge-green' },
+    ];
+
+    quals.forEach(function(q) {
+      var item = el('div', {
+        className: 'qual-item' + (state.selectedProducts[q.id] ? ' selected' : ''),
+      });
+      item.innerHTML =
+        '<div class="qual-check"><div class="qual-check-inner"></div></div>' +
+        '<div class="qual-info">' +
+          '<div class="qual-product">' + q.icon + ' ' + q.name + '</div>' +
+          '<div class="qual-detail">' + q.detail + '</div>' +
+        '</div>' +
+        '<span class="qual-badge ' + q.badgeClass + '">' + q.badge + '</span>';
+      item.addEventListener('click', function() {
+        state.selectedProducts[q.id] = !state.selectedProducts[q.id];
+        render();
+      });
+      card.appendChild(item);
+    });
+
+    card.appendChild(makeNav(
+      function(){ state.step = 3; render(); },
+      function(){
+        // If Final Expense selected, go to UW questions; else skip to issue
+        if (state.selectedProducts.fe) {
+          state.step = 5;
+        } else {
+          state.step = 6;
+        }
+        render();
+      },
+      'Proceed with Selected Products'
+    ));
+    return card;
+  }
+
+  /* ── STEP 5: Final Expense UW ── */
+  function buildStep5() {
+    var card = makeCard('Final Expense Underwriting', 'A couple of quick underwriting questions before we proceed.');
+
+    var sysMsg = el('div', { className: 'sys-message',
+      textContent: 'To continue with Final Expense, we need to confirm a couple of underwriting items.' });
+    card.appendChild(sysMsg);
+
+    var ynWrap = el('div');
+    var uwItems = [
+      { q: 'Are you dead?',             key: 'uwDead'  },
+      { q: 'Are you planning on dying?', key: 'uwDying' },
+    ];
+    uwItems.forEach(function(item) {
+      var row = el('div', { className: 'yn-row' });
+      var q = el('div', { className: 'yn-question', textContent: item.q });
+      var btns = el('div', { className: 'yn-btns' });
+      var yes = el('button', {
+        className: 'yn-btn' + (state[item.key] === 'yes' ? ' active-yes' : ''),
+        textContent: 'Yes',
+      });
+      var no = el('button', {
+        className: 'yn-btn' + (state[item.key] === 'no' ? ' active-no' : ''),
+        textContent: 'No',
+      });
+      yes.addEventListener('click', function(){ state[item.key] = 'yes'; render(); });
+      no.addEventListener('click',  function(){ state[item.key] = 'no';  render(); });
+      btns.appendChild(yes);
+      btns.appendChild(no);
+      row.appendChild(q);
+      row.appendChild(btns);
+      ynWrap.appendChild(row);
+    });
+    card.appendChild(ynWrap);
+
+    card.appendChild(makeNav(
+      function(){ state.step = 4; render(); },
+      function(){ state.step = 6; render(); },
+      'Complete Application'
+    ));
+    return card;
+  }
+
+  /* ── STEP 6: Issue Summary ── */
+  function buildStep6() {
+    var card = makeCard('', '');
+
+    var header = el('div', { className: 'issue-header' });
+    header.innerHTML =
+      '<div class="issue-header-icon">🎉</div>' +
+      '<h3>Application Complete — Policies Issued</h3>' +
+      '<p>' + state.firstName + ' ' + state.lastName + ' · ' + state.stateCode + ' · Effective Today</p>';
+    card.appendChild(header);
+
+    var policies = [];
+    if (state.selectedProducts.ms)     policies.push({ icon: '🏥', iconClass: 'policy-icon-ms', name: 'Medicare Supplement', detail: 'Underwritten — Plan G', policyNum: 'ME-2025-' + randNum() });
+    if (state.selectedProducts.cancer) policies.push({ icon: '🩺', iconClass: 'policy-icon-ca', name: 'Cancer Insurance',    detail: 'Standard Coverage',     policyNum: 'CA-2025-' + randNum() });
+    if (state.selectedProducts.fe)     policies.push({ icon: '🛡️', iconClass: 'policy-icon-fe', name: 'Final Expense',       detail: 'Graded Benefit',        policyNum: 'FE-2025-' + randNum() });
+
+    policies.forEach(function(p) {
+      var pc = el('div', { className: 'policy-card' });
+      var iconWrap = el('div', { className: 'policy-icon ' + p.iconClass });
+      iconWrap.textContent = p.icon;
+      var info = el('div', { className: 'policy-info' });
+      var nameEl = el('div', { className: 'policy-product', textContent: p.name });
+      var numEl  = el('div', { className: 'policy-num', textContent: 'Policy #' + p.policyNum });
+      var link   = el('a',   { className: 'policy-packet-link', textContent: 'Click here to view your policy packet →' });
+      link.href = '#';
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('In a live environment, your policy packet for ' + p.name + ' (Policy #' + p.policyNum + ') would open or be sent to your email on file.\n\nPolicy packets are typically delivered within 1–3 business days.');
+      });
+      var status = el('div', { className: 'policy-status' });
+      status.innerHTML = '<div class="policy-dot"></div> Issued';
+      info.appendChild(nameEl);
+      info.appendChild(numEl);
+      info.appendChild(link);
+      pc.appendChild(iconWrap);
+      pc.appendChild(info);
+      pc.appendChild(status);
+      card.appendChild(pc);
+    });
+
+    var nav = el('div', { className: 'demo-nav' });
+    var restart = el('button', { className: 'demo-btn-restart', textContent: '← Run Demo Again' });
+    restart.addEventListener('click', function() {
+      state.step = 1;
+      state.selectedProducts = { ms: true, cancer: true, fe: true };
+      render();
+    });
+    var cta = el('a', { className: 'demo-btn-next', textContent: 'Request a Live Demo' });
+    cta.href = 'contact.html';
+    cta.style.textDecoration = 'none';
+    cta.style.display = 'inline-flex';
+    cta.style.alignItems = 'center';
+    nav.appendChild(restart);
+    nav.appendChild(cta);
+    card.appendChild(nav);
+
+    return card;
+  }
+
+  /* ── Helpers ── */
+  function el(tag, props) {
+    var e = document.createElement(tag);
+    if (props) Object.keys(props).forEach(function(k) { e[k] = props[k]; });
+    return e;
+  }
+
+  function makeCard(title, subtitle) {
+    var card = el('div', { className: 'demo-card' });
+    if (title) {
+      var t = el('div', { className: 'demo-card-title', textContent: title });
+      card.appendChild(t);
+    }
+    if (subtitle) {
+      var s = el('div', { className: 'demo-card-sub', textContent: subtitle });
+      card.appendChild(s);
+    }
+    return card;
+  }
+
+  function makeField(label, type, value, onChange) {
+    var group = el('div', { className: 'field-group' });
+    var lbl   = el('label', { className: 'field-label', textContent: label });
+    var inp   = el('input', { className: 'field-input', type: type, value: value });
+    inp.addEventListener('input', function() { onChange(this.value); });
+    group.appendChild(lbl);
+    group.appendChild(inp);
+    return group;
+  }
+
+  function makeNav(onBack, onNext, nextLabel) {
+    var nav = el('div', { className: 'demo-nav' });
+    if (onBack) {
+      var back = el('button', { className: 'demo-btn-back', type: 'button' });
+      back.textContent = '← Back';
+      back.addEventListener('click', function(e) {
+        e.stopPropagation();
+        onBack();
+      });
+      nav.appendChild(back);
+    } else {
+      nav.appendChild(el('div')); // spacer
+    }
+    if (onNext) {
+      var next = el('button', { className: 'demo-btn-next', type: 'button' });
+      next.textContent = nextLabel || 'Continue →';
+      // Simple click handler only — pointerdown with preventDefault was
+      // inadvertently blocking child input events (selects, text fields).
+      next.addEventListener('click', function(e) {
+        e.stopPropagation();
+        onNext();
+      });
+      nav.appendChild(next);
+    }
+    return nav;
+  }
+
+  function randNum() {
+    return Math.floor(100000 + Math.random() * 900000);
+  }
+
+  render();
+})();
+</script>
+<footer id="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Flow<span class="brand-a">telligence</span></div>
+      <p style="color:rgba(255,255,255,.58);font-size:.87rem;margin-top:.5rem;max-width:260px;line-height:1.55;">
+        Intelligence in motion.
+      </p>
+    </div>
+    <div>
+      <h4>Products</h4>
+      <ul>
+        <li><a href="../pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="../pages/preneed.html">Preneed</a></li>
+        <li><a href="../pages/final-expense.html">Final Expense</a></li>
+        <li><a href="../pages/annuity.html">Annuity</a></li>
+        <li><a href="../pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="../pages/about.html">About Us</a></li>
+        <li><a href="../pages/case-study-growth.html">Case Studies</a></li>
+        <li><a href="../pages/join-the-team.html">Join the Team</a></li>
+        <li><a href="../pages/contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; <span id="footer-year"></span> Flowtelligence. All rights reserved.</div>
+</footer>
+<script>
+
+window.tlOpen = function(liId, ddId) {
+  var all = document.querySelectorAll('.tl-nav li');
+  var allDd = document.querySelectorAll('.tl-dd');
+  var li = document.getElementById(liId);
+  var dd = document.getElementById(ddId);
+  var wasOpen = dd.classList.contains('open');
+  all.forEach(function(l){ l.classList.remove('tlo'); });
+  allDd.forEach(function(d){ d.classList.remove('open'); });
+  if (!wasOpen) { li.classList.add('tlo'); dd.classList.add('open'); }
+};
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#tl-nav')) {
+    document.querySelectorAll('.tl-dd').forEach(function(d){ d.classList.remove('open'); });
+    document.querySelectorAll('.tl-nav li').forEach(function(l){ l.classList.remove('tlo'); });
+  }
+});
+window.sbToggle = function(btn) {
+  var li = btn.parentElement;
+  var isOpen = li.classList.contains('sbopen');
+  document.querySelectorAll('.sb-menu li.sbopen').forEach(function(l){ l.classList.remove('sbopen'); });
+  if (!isOpen) li.classList.add('sbopen');
+};
+var _ham = document.getElementById('hamburger');
+var _sb  = document.getElementById('sidebar');
+var _ov  = document.getElementById('sidebar-overlay');
+function _toggleSB(){ _ham.classList.toggle('open'); _sb.classList.toggle('open'); _ov.classList.toggle('open'); }
+if(_ham) _ham.addEventListener('click', _toggleSB);
+if(_ov)  _ov.addEventListener('click', _toggleSB);
+var _path = window.location.pathname.split('/').pop();
+document.querySelectorAll('.sb-menu a').forEach(function(a){
+  var href = a.getAttribute('href') || '';
+  if(href.split('/').pop().split('?')[0] === _path) a.classList.add('active');
+});
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+</script>
+<script src="../assets/js/chatbot.js"></script>
+<script src="../assets/js/features.js"></script>
+</body>
+</html>

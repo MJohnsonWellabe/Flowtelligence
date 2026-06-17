@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flowtelligence — Where Workflow Meets Intelligence.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+<style>
+    /* ── Flowtelligence palette ── */
+    :root {
+      --navy:#0B1C2C!important; --navy-mid:#0C3B4F!important;
+      --aqua:#12B5CC!important; --aqua-light:#2DC8DE!important;
+      --aqua-pale:#E6F9FC!important; --gold:#F2C300; --gold-lt:#FFD84D;
+    }
+
+    /* ── Nav bar ── */
+    #site-nav {
+      position:fixed;top:0;left:0;right:0;height:68px;
+      background:#0B1C2C;z-index:1000;
+      display:flex;align-items:center;padding:0 1.75rem;gap:.75rem;
+      box-shadow:0 2px 16px rgba(0,0,0,.3);border-bottom:2px solid #F2C300;
+    }
+    .nav-brand{font-family:var(--font-display);font-size:1.45rem;font-weight:700;color:#fff;text-decoration:none;display:inline-flex;flex-direction:column;line-height:1.2;margin-right:auto;}
+    .nav-wordmark{display:block;white-space:nowrap;line-height:1;}
+    .nav-brand .brand-a { color:#F2C300; }
+    .nav-tagline{font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.02em;font-family:var(--font-body);margin-top:2px;white-space:nowrap;display:block;}
+
+    /* ── Top dropdown links (matches components.js) ── */
+    .tl-nav{display:flex;align-items:center;gap:.1rem;list-style:none;margin:0;padding:0;}
+    .tl-nav>li{position:relative;}
+    .tl-nav>li>a,.tl-nav>li>button{display:flex;align-items:center;gap:.25rem;padding:.48rem .8rem;color:rgba(255,255,255,.82);font-family:var(--font-body);font-size:.86rem;font-weight:500;background:none;border:none;cursor:pointer;border-radius:6px;white-space:nowrap;transition:background .18s,color .18s;}
+    .tl-nav>li>a:hover,.tl-nav>li>button:hover{background:rgba(255,255,255,.1);color:#fff;}
+    .tlchev{font-size:.55rem;opacity:.6;transition:transform .2s;}
+    .tl-nav li.tlo>.tlchev{transform:rotate(180deg);}
+    .tl-dd{display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:220px;background:#fff;border-radius:10px;border:1px solid #D9E2EE;box-shadow:0 8px 32px rgba(11,28,44,.18);padding:.35rem 0;z-index:2000;}
+    .tl-dd.open{display:block;animation:tldrop .18s ease;}
+    @keyframes tldrop{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+    .tl-dd a{display:block;padding:.55rem 1.1rem;font-size:.85rem;color:#0B1C2C;font-weight:500;font-family:var(--font-body);transition:background .15s,color .15s;text-decoration:none;}
+    .tl-dd a:hover{background:#E6F9FC;color:#0B7A8C;}
+    .tl-dd a.dd-head{font-weight:700;border-bottom:1px solid #D9E2EE;margin-bottom:.2rem;padding-bottom:.65rem;}
+    .tl-dd .dd-sub{padding-left:1.75rem;font-size:.8rem;color:#4A6070;}
+    .tl-dd .dd-sub:hover{color:#0B7A8C;}
+    .nav-cta-btn{padding:.42rem 1.1rem;background:#F2C300;color:#0B1C2C!important;font-weight:700;border-radius:6px;white-space:nowrap;font-family:var(--font-body);font-size:.86rem;text-decoration:none;transition:background .18s;flex-shrink:0;}
+    .nav-cta-btn:hover{background:#FFD84D;}
+
+    /* ── Hamburger ── */
+    #hamburger{width:40px;height:40px;display:flex;flex-direction:column;justify-content:center;gap:6px;cursor:pointer;flex-shrink:0;}
+    #hamburger span{display:block;height:2px;background:#fff;border-radius:2px;transition:all .25s;}
+    #hamburger.open span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+    #hamburger.open span:nth-child(2){opacity:0;}
+    #hamburger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+
+    /* ── Sidebar (matches components.js) ── */
+    #sidebar{position:fixed;top:68px;left:-310px;width:290px;bottom:0;background:#0C3B4F;z-index:999;overflow-y:auto;transition:left .28s ease;padding:1rem 0;}
+    #sidebar.open{left:0;}
+    #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;top:68px;}
+    #sidebar-overlay.open{display:block;}
+    .sb-menu{list-style:none;padding:0;margin:0;}
+    .sb-link,.sb-toggle{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;color:rgba(255,255,255,.85);font-weight:500;font-size:.93rem;border-left:3px solid transparent;transition:all .18s;cursor:pointer;font-family:var(--font-body);text-decoration:none;width:100%;background:none;border-top:none;border-right:none;border-bottom:none;text-align:left;}
+    .sb-link:hover,.sb-toggle:hover,.sb-link.active{background:rgba(242,195,0,.1);color:#F2C300;border-left-color:#F2C300;}
+    .sb-arr{font-size:.65rem;transition:transform .2s;opacity:.6;}
+    li.sbopen>.sb-arr,.sbopen .sb-arr{transform:rotate(90deg);}
+    .sb-sub{list-style:none;max-height:0;overflow:hidden;transition:max-height .35s ease;background:rgba(0,0,0,.18);}
+    li.sbopen>.sb-sub{max-height:800px;}
+    .sb-sub li a{display:block;padding:.55rem 1.4rem .55rem 2.2rem;color:rgba(255,255,255,.7);font-size:.88rem;font-family:var(--font-body);transition:color .15s;text-decoration:none;}
+    .sb-sub li a:hover{color:#F2C300;}
+    .sb-sub li a.sb-indent{padding-left:3rem;font-size:.8rem;opacity:.72;}
+    .sb-sub li a.sb-indent:hover{opacity:1;color:#F2C300;}
+
+    @media(max-width:820px){.tl-nav{display:none;}.nav-cta-btn{display:none;}}
+
+    /* ── Hero ── */
+    .hero { min-height:100vh; position:relative; display:flex; align-items:center; overflow:hidden; background:var(--navy); padding-top:68px; }
+    .hero-slides { position:absolute; inset:0; }
+    .hero-slide { position:absolute; inset:0; opacity:0; transition:opacity 1.2s ease; }
+    .hero-slide.active { opacity:1; }
+    .hero-slide img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+    .hero-overlay { position:absolute; inset:0; background:linear-gradient(120deg,rgba(11,31,74,0.93) 0%,rgba(11,31,74,0.74) 55%,rgba(0,181,200,0.15) 100%); }
+    .hero-content { position:relative; z-index:2; max-width:680px; padding:2rem max(2rem,6vw); }
+    .hero-eyebrow { font-size:0.78rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--aqua); margin-bottom:1rem; }
+    .hero-content h1 { color:var(--white); margin-bottom:1.25rem; }
+    .hero-content > p { color:rgba(255,255,255,0.82); font-size:1.1rem; margin-bottom:2rem; }
+    .hero-btns { display:flex; gap:1rem; flex-wrap:wrap; }
+    .hero-dots { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:3; }
+    .hero-dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.35); cursor:pointer; transition:all 0.25s; }
+    .hero-dot.active { background:var(--aqua); transform:scale(1.35); }
+
+    /* ── Section helpers ── */
+    .sec { padding:3.5rem 2rem; }
+    .sec-alt { background:var(--gray-50); }
+    .sec-navy { background:var(--navy); }
+    .wrap { max-width:1140px; margin:0 auto; }
+    .eyebrow { display:block; text-align:center; font-size:0.76rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--aqua); margin-bottom:0.4rem; }
+    .sec-h2 { text-align:center; margin-bottom:0.75rem; }
+    .bar { width:46px; height:3px; background:#F2C300; border-radius:2px; margin:0 auto 2rem; }
+
+    /* ── Mission / Vision cards ── */
+    .mv-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.75rem; }
+    .mv-card { background:var(--white); border-radius:14px; border-top:3px solid var(--aqua); padding:2rem 1.75rem; box-shadow:0 2px 12px rgba(11,31,74,0.07); }
+    .mv-card .ico { margin-bottom:1rem; line-height:0; }
+    .mv-card .ico svg { display:block; }
+    .mv-card h3 { font-size:1.12rem; color:var(--navy); margin-bottom:0.55rem; }
+    .mv-card p { color:var(--gray-600); font-size:0.93rem; margin:0; line-height:1.65; }
+    /* Dark section overrides */
+    [style*="navy-mid"] .mv-card { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-top:3px solid #F2C300; }
+    [style*="navy-mid"] .mv-card h3 { color:var(--white); }
+    [style*="navy-mid"] .mv-card p { color:rgba(255,255,255,0.72); }
+    [style*="navy-mid"] .sec-h2 { color:var(--white); }
+    [style*="navy-mid"] .eyebrow { color:var(--aqua); }
+    [style*="navy-mid"] .proven-stats-label { color:var(--aqua); }
+
+    /* ── Proven Results stats strip ── */
+    .proven-stats {
+      margin-top: 2.75rem;
+      background: var(--navy);
+      border-radius: 16px;
+      padding: 2.25rem 2.5rem;
+    }
+    .proven-stats-label {
+      font-size: 0.74rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--aqua); margin-bottom: 1.5rem; text-align: center;
+    }
+    .proven-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0;
+    }
+    .ps-item {
+      text-align: center;
+      padding: 0 1rem;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .ps-item:last-child { border-right: none; }
+    .ps-num {
+      font-family: var(--font-display);
+      font-size: 2.1rem; font-weight: 700;
+      color: var(--aqua); line-height: 1;
+    }
+    .ps-desc {
+      font-size: 0.76rem; color: rgba(255,255,255,0.65);
+      margin-top: 0.4rem; line-height: 1.4;
+    }
+    @media(max-width:960px){
+      .proven-stats-grid { grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+      .ps-item { border-right: none; }
+    }
+    @media(max-width:600px){
+      .proven-stats-grid { grid-template-columns: repeat(2,1fr); gap: 1.25rem; }
+      .proven-stats { padding: 1.75rem 1.25rem; }
+    }
+
+    /* ── Platform accordion items ── */
+    .pa-accordion { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem; }
+    .pa-item { border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+    .pa-item-trigger {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 0.9rem 1.1rem;
+      background: var(--white); border: none; cursor: pointer;
+      font-family: var(--font-body); font-size: 0.94rem; font-weight: 600;
+      color: var(--navy); text-align: left;
+      transition: background 0.18s;
+    }
+    .pa-item-trigger:hover { background: var(--aqua-pale); }
+    .pa-item.open .pa-item-trigger { background: var(--aqua-pale); }
+    .pa-item-plus {
+      flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+      background: var(--aqua); color: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; line-height: 1;
+      transition: transform 0.22s, background 0.18s;
+    }
+    .pa-item.open .pa-item-plus { transform: rotate(45deg); background: var(--navy); color: var(--white); }
+    .pa-item-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.2s;
+      padding: 0 1.1rem;
+      background: var(--gray-50);
+      font-size: 0.91rem; color: var(--gray-600); line-height: 1.6;
+      border-top: 1px solid transparent;
+    }
+    .pa-item.open .pa-item-body {
+      max-height: 200px; padding: 0.85rem 1.1rem;
+      border-top-color: var(--gray-200);
+    }
+
+    /* ── Platform Advantage card ── */
+    .pa-card { display:grid; grid-template-columns:210px 1fr; border-radius:16px; overflow:hidden; box-shadow:0 6px 32px rgba(11,31,74,0.13); border:1px solid var(--gray-200); background:var(--white); }
+    .pa-tabs { background:var(--navy); padding:0.5rem 0; display:flex; flex-direction:column; }
+    .pa-tab {
+      padding:0.9rem 1.3rem; color:rgba(255,255,255,0.62);
+      cursor:pointer; font-size:0.86rem; font-weight:500;
+      font-family:var(--font-body); border:none; background:none;
+      text-align:left; border-left:3px solid transparent;
+      transition:all 0.2s; line-height:1.3;
+    }
+    .pa-tab:hover { color:var(--white); background:rgba(255,255,255,0.06); }
+    .pa-tab.active { color:var(--aqua); background:rgba(0,181,200,0.12); border-left-color:var(--aqua); }
+    .pa-content { padding:2.5rem; }
+    .pa-panel { display:none; animation:fadeUp 0.22s ease; }
+    .pa-panel.active { display:block; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:none} }
+    .pa-panel .pe { font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--aqua); margin-bottom:0.35rem; }
+    .pa-panel .pe .fxe-e   { color:#F2C300; font-weight:700; }
+    .pa-panel h3 { color:var(--navy); margin-bottom:0.9rem; font-size:1.25rem; }
+    .pa-bullets { list-style:none; padding:0; margin:0; }
+    .pa-bullets li { display:flex; align-items:flex-start; gap:0.6rem; margin-bottom:0.75rem; color:var(--gray-600); font-size:0.92rem; line-height:1.5; }
+    .pa-bullets li::before { content:'→'; color:var(--aqua); font-weight:700; flex-shrink:0; margin-top:1px; }
+    .pa-bullets li strong { color:var(--navy); }
+    /* Stats panel */
+    .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--gray-200); }
+    .stat-box { text-align:center; }
+    .stat-n { font-family:var(--font-display); font-size:2rem; font-weight:700; color:var(--aqua); line-height:1; }
+    .stat-d { font-size:0.79rem; color:var(--gray-600); margin-top:0.3rem; line-height:1.35; }
+
+    /* ── Case Studies row ── */
+    .case-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; }
+    .case-tile {
+      background:var(--white); border-radius:12px;
+      border:1px solid var(--gray-200); border-top:3px solid var(--aqua);
+      padding:1.75rem 1.5rem; cursor:pointer;
+      transition:all 0.22s; text-decoration:none;
+      display:flex; flex-direction:column; gap:0.45rem;
+    }
+    .case-tile:hover { box-shadow:0 8px 28px rgba(11,31,74,0.13); transform:translateY(-3px); }
+    .case-tile .ct-tag { font-size:0.71rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--aqua); }
+    .case-tile h3 { font-size:1rem; color:var(--navy); margin:0; line-height:1.35; }
+    .case-tile .ct-arrow { margin-top:auto; padding-top:0.75rem; font-size:0.84rem; font-weight:600; color:var(--aqua); }
+    [style*="0C3B4F"] .case-tile { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-top:3px solid #F2C300; }
+    [style*="0C3B4F"] .case-tile h3 { color:var(--white); }
+    [style*="0C3B4F"] .case-tile .ct-tag { color:var(--aqua); }
+    [style*="0C3B4F"] .case-tile .ct-arrow { color:#F2C300; }
+    [style*="0C3B4F"] .sec-h2 { color:var(--white); }
+
+    /* ── FAQ expanding cards ── */
+    .faq-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; }
+    .faq-card { background:var(--white); border-radius:12px; border:1px solid var(--gray-200); overflow:hidden; box-shadow:0 2px 8px rgba(11,31,74,0.06); transition:box-shadow 0.2s; }
+    .faq-card:hover { box-shadow:0 4px 18px rgba(11,31,74,0.10); }
+    .faq-trigger {
+      width:100%; display:flex; align-items:center; justify-content:space-between; gap:1rem;
+      padding:1.2rem 1.4rem; background:none; border:none; cursor:pointer;
+      font-family:var(--font-body); font-size:0.96rem; font-weight:600; color:var(--navy);
+      text-align:left; transition:background 0.18s; line-height:1;
+    }
+    .faq-trigger:hover { background:var(--aqua-pale); }
+    .faq-plus {
+      flex-shrink:0; width:26px; height:26px; border-radius:50%;
+      background:var(--aqua); color:var(--navy);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; font-weight:700; line-height:1;
+      transition:transform 0.25s, background 0.2s;
+    }
+    .faq-card.open .faq-plus { transform:rotate(45deg); background:var(--navy); color:var(--white); }
+    .faq-body {
+      max-height:0; overflow:hidden;
+      transition:max-height 0.35s ease, padding 0.2s;
+      padding:0 1.4rem; background:var(--gray-50);
+      border-top:1px solid transparent;
+    }
+    .faq-card.open .faq-body { max-height:500px; padding:1.2rem 1.4rem; border-top-color:var(--gray-200); }
+    .faq-body p { margin:0 0 0.4rem; color:var(--gray-600); font-size:0.92rem; }
+    .faq-body ul { padding-left:1.1rem; margin:0.35rem 0 0; }
+    .faq-body ul li { color:var(--gray-600); font-size:0.92rem; margin-bottom:0.3rem; }
+
+    /* ── Contact CTA ── */
+    .cta-box { background:rgba(255,255,255,0.07); border:1px solid rgba(0,181,200,0.22); border-radius:16px; padding:2.5rem; max-width:640px; margin:0 auto; }
+    .cta-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .cf-group { margin-bottom:1rem; }
+    .cf-group label { display:block; font-size:0.83rem; font-weight:600; color:rgba(255,255,255,0.72); margin-bottom:0.3rem; }
+    .cf-group input,.cf-group textarea { width:100%; padding:0.7rem 1rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; font-family:var(--font-body); font-size:0.94rem; color:var(--white); transition:border-color 0.2s; }
+    .cf-group input::placeholder,.cf-group textarea::placeholder { color:rgba(255,255,255,0.32); }
+    .cf-group input:focus,.cf-group textarea:focus { outline:none; border-color:var(--aqua); box-shadow:0 0 0 3px rgba(0,181,200,0.18); }
+    .cf-group textarea { min-height:105px; resize:vertical; }
+    .cta-meta { color:rgba(255,255,255,0.4); font-size:0.83rem; margin-top:1rem; text-align:center; }
+    .cta-meta a { color:var(--aqua); }
+
+    /* ── Footer ── */
+    #site-footer { background:var(--navy); padding:3.5rem 2rem 2rem; }
+    .ft-inner { max-width:1140px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:2.5rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .ft-brand { font-family:var(--font-display); font-size:1.3rem; font-weight:700; color:var(--white); margin-bottom:0.6rem; }
+    .ft-brand span { color:var(--gold); }
+    .ft-tagline { color:rgba(255,255,255,0.48); font-size:0.87rem; max-width:230px; line-height:1.55; }
+    .ft-col h5 { color:var(--white); font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.85rem; }
+    .ft-col ul { list-style:none; padding:0; margin:0; }
+    .ft-col ul li { margin-bottom:0.42rem; }
+    .ft-col ul li a { color:rgba(255,255,255,0.52); font-size:0.87rem; transition:color 0.18s; }
+    .ft-col ul li a:hover { color:var(--aqua); }
+    .ft-bottom { max-width:1140px; margin:1.5rem auto 0; text-align:center; font-size:0.81rem; color:rgba(255,255,255,0.33); }
+
+    /* ── Responsive ── */
+    @media(max-width:800px){
+      .top-nav-links { display:none; }
+      /* Keep hamburger always available alongside nav links */
+      .mv-grid { grid-template-columns:1fr; }
+      .pa-card { grid-template-columns:1fr; }
+      .pa-tabs { flex-direction:row; overflow-x:auto; }
+      .pa-tab { border-left:none; border-bottom:3px solid transparent; white-space:nowrap; }
+      .pa-tab.active { border-bottom-color:var(--aqua); border-left:none; }
+      .case-row { grid-template-columns:repeat(2,1fr); }
+      .faq-grid { grid-template-columns:1fr; }
+      .ft-inner { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:600px){
+      .case-row { grid-template-columns:1fr; }
+      .cta-row { grid-template-columns:1fr; }
+      .stats-grid { grid-template-columns:repeat(2,1fr); }
+      .ft-inner { grid-template-columns:1fr; gap:1.75rem; }
+      .sec { padding:3.5rem 1.25rem; }
+    }
+  .brand-a { color:#F2C300; }
+.fxe-e   { color:#F2C300; font-weight:700; }
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav id="site-nav">
+  <div id="hamburger" aria-label="Toggle menu" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+  <a class="nav-brand" href="index.html">
+    <span class="nav-wordmark">Flow<span class="brand-a">telligence</span></span>
+    <span class="nav-tagline">Where workflow meets intelligence.</span>
+  </a>
+  <ul class="tl-nav" id="tl-nav">
+    <li><a href="pages/about.html">About</a></li>
+    <li id="tl-p">
+      <button onclick="tlOpen('tl-p','dd-p')">Products <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-p">
+        <a class="dd-head" href="pages/products.html">All Products</a>
+        <a href="pages/medicare-supplement.html">Medicare Supplement</a>
+        <a href="pages/preneed.html">Preneed</a>
+        <a href="pages/final-expense.html">Final Expense</a>
+        <a href="pages/annuity.html">Annuity</a>
+        <a href="pages/ancillary-health.html">Ancillary Health</a>
+      </div>
+    </li>
+    <li id="tl-t">
+      <button onclick="tlOpen('tl-t','dd-t')">Platform <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-t">
+        <a class="dd-head" href="pages/tools.html">Platform Suite</a>
+        <a href="pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a>
+        <a class="dd-sub" href="pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a>
+        <a href="pages/tools.html?tab=enroller">Flowtelligence Enroller</a>
+        <a class="dd-sub" href="pages/see-it-in-action.html">&#8627; See Enroller in Action</a>
+        <a href="pages/tools.html?tab=pulse">Flowtelligence Pulse</a>
+        <a class="dd-sub" href="pages/activity-map.html">&#8627; Activity Map</a>
+        <a class="dd-sub" href="pages/pulse-dashboard.html">&#8627; Executive Dashboard</a>
+        <a href="pages/tools.html?tab=engage">Flowtelligence Engage</a>
+        <a class="dd-sub" href="pages/my-easy-match.html">&#8627; MatchIQ</a>
+        <a class="dd-sub" href="pages/messaging.html">&#8627; Flowtelligence Link</a>
+        <a class="dd-sub" href="pages/incentives.html">&#8627; Flowtelligence Spark</a>
+        <a class="dd-sub" href="pages/app-scanning.html">&#8627; ScanIQ</a>
+        <a class="dd-sub" href="pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a>
+        <a href="pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a>
+      </div>
+    </li>
+    <li id="tl-c">
+      <button onclick="tlOpen('tl-c','dd-c')">Case Studies <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-c">
+        <a class="dd-head" href="pages/case-study-growth.html">All Case Studies</a>
+        <a href="pages/case-study-stm.html">Time to Market</a>
+        <a href="pages/case-study-growth.html">Business Growth</a>
+        <a href="pages/case-study-qob.html">Quality of Business</a>
+        <a href="pages/case-study-satisfaction.html">Agent Satisfaction</a>
+      </div>
+    </li>
+    <li><a href="pages/join-the-team.html">Join the Team</a></li>
+  </ul>
+  <a class="nav-cta-btn" href="pages/contact.html">Contact Us</a>
+</nav>
+
+<!-- Sidebar -->
+<div id="sidebar">
+  <ul class="sb-menu">
+    <li><a class="sb-link" href="pages/about.html">About Us</a></li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Our Products <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="pages/products.html">All Products</a></li>
+        <li><a href="pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="pages/preneed.html">Preneed</a></li>
+        <li><a href="pages/final-expense.html">Final Expense</a></li>
+        <li><a href="pages/annuity.html">Annuity</a></li>
+        <li><a href="pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Platform Suite <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="pages/tools.html">Full Platform Suite</a></li>
+        <li><a href="pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a class="sb-indent" href="pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a></li>
+        <li><a href="pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a class="sb-indent" href="pages/see-it-in-action.html">&#8627; See Enroller in Action</a></li>
+        <li><a href="pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a class="sb-indent" href="pages/activity-map.html">&#8627; Activity Map</a></li>
+        <li><a class="sb-indent" href="pages/pulse-dashboard.html">&#8627; Executive Dashboard</a></li>
+        <li><a href="pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a class="sb-indent" href="pages/my-easy-match.html">&#8627; MatchIQ</a></li>
+        <li><a class="sb-indent" href="pages/messaging.html">&#8627; Flowtelligence Link</a></li>
+        <li><a class="sb-indent" href="pages/incentives.html">&#8627; Flowtelligence Spark</a></li>
+        <li><a class="sb-indent" href="pages/app-scanning.html">&#8627; ScanIQ</a></li>
+        <li><a class="sb-indent" href="pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a></li>
+        <li><a href="pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Case Studies <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="pages/case-study-stm.html">Time to Market</a></li>
+        <li><a href="pages/case-study-growth.html">Business Growth</a></li>
+        <li><a href="pages/case-study-qob.html">Quality of Business</a></li>
+        <li><a href="pages/case-study-satisfaction.html">Agent Satisfaction</a></li>
+      </ul>
+    </li>
+    <li><a class="sb-link" href="pages/join-the-team.html">Join the Team</a></li>
+    <li><a class="sb-link" href="pages/contact.html" style="color:#F2C300;font-weight:700;">Contact Us</a></li>
+  </ul>
+</div>
+<div id="sidebar-overlay"></div>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+  <div class="hero-slides">
+    <div class="hero-slide active"><img src="assets/images/MyEnrollerSS1.jpg" alt="Flowtelligence enrollment workflow" /></div>
+    <div class="hero-slide"><img src="assets/images/MyEnrollerSS2.jpg" alt="Flowtelligence dashboard" /></div>
+    <div class="hero-slide"><img src="assets/images/MyEnrollerSS3.jpg" alt="Flowtelligence underwriting" /></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Built by Carriers, for Carriers</div>
+    <h1>The incumbents had decades. You have Flowtelligence.</h1>
+    <p>Real-time underwriting decisions. Speed to market measured in days, not quarters. Completely configurable to your products, your rules, your distribution model — in one carrier-designed platform where workflow meets intelligence.</p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="pages/contact.html">Request a Demo</a>
+      <a class="btn btn-outline" href="pages/about.html">Our Story</a>
+    </div>
+  </div>
+  <div class="hero-dots">
+    <div class="hero-dot active" data-s="0"></div>
+    <div class="hero-dot" data-s="1"></div>
+    <div class="hero-dot" data-s="2"></div>
+  </div>
+</section>
+
+<!-- ══════════════ MISSION / VISION / ADVANTAGE ══════════════ -->
+<section class="sec" style="background:var(--navy-mid,#0C3B4F);">
+  <div class="wrap">
+    <span class="eyebrow" style="color:var(--aqua);">Who We Are</span>
+    <h2 class="sec-h2" style="color:var(--white);">Purpose-Built for Modern Insurance</h2>
+    <div class="bar"></div>
+    <p style="display:none;text-align:center;font-size:1.05rem;color:var(--white);font-weight:500;margin:0 auto 0.75rem;max-width:760px;font-family:var(--font-body);"><strong style="color:#F2C300;">Flowtelligence</strong> is a carrier platform company. We give small and mid-size carriers the technology the big carriers built over decades.</p>
+    <div class="mv-grid">
+      <div class="mv-card">
+        
+        <h3>Our Mission</h3>
+        <p>Flowtelligence's mission is to empower small and mid-size carriers with technology that, until now, has only existed within the largest insurers in the world. Completely configurable, rapidly deployed, and built to help clients grow faster with better outcomes.</p>
+      </div>
+      <div class="mv-card">
+        
+        <h3>Our Vision</h3>
+        <p>Our vision is to become the trusted platform partner for modern insurance buying and underwriting — recognized for speed, flexibility, and results — while reshaping how carriers go to market in a digital-first world.</p>
+      </div>
+      <div class="mv-card">
+        
+        <h3>Our Proven Advantage</h3>
+        <p>Flowtelligence was built by career carrier operators who understand the real constraints of underwriting, distribution, and operations. Our first client more than doubled sales year over year by removing friction at the point of sale through intelligent application workflows.</p>
+      </div>
+    </div>
+
+    <!-- ── Proven Results stats — directly under advantage text ── -->
+    <div class="proven-stats">
+      <div class="proven-stats-label">Demonstrated Results</div>
+      <div class="proven-stats-grid">
+        <div class="ps-item">
+          <div class="ps-num">235%</div>
+          <div class="ps-desc">Year-over-year sales growth, 2024 to 2025</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-num">75%</div>
+          <div class="ps-desc">STP / instant decisioning for UW and OE applications</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-num">27%</div>
+          <div class="ps-desc">Reduction in acquisition costs over 12 months</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-num">58%</div>
+          <div class="ps-desc">Increase in writing agents, 2024 to 2025</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-num">37%</div>
+          <div class="ps-desc">Increase in applications written per agent</div>
+        </div>
+        <div class="ps-item">
+          <div class="ps-num">1+</div>
+          <div class="ps-desc">Product modifications per day on average in 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ WHAT WE BRING TO MARKET (interactive card) ══════════════ -->
+<section class="sec" style="background:var(--navy,#0B1C2C);">
+  <div class="wrap">
+    <span class="eyebrow" style="color:var(--aqua);">Platform Advantage</span>
+    <h2 class="sec-h2" style="color:var(--white);">What We Bring to Market</h2>
+    <div class="bar"></div>
+
+    <div class="pa-card">
+      <!-- Left: clickable tabs -->
+      <div class="pa-tabs">
+        <button class="pa-tab active" data-panel="pa0">Business Strategy</button>
+        <button class="pa-tab" data-panel="pa1">Technology</button>
+        <button class="pa-tab" data-panel="pa2">Product</button>
+        <button class="pa-tab" data-panel="pa3">Sales &amp; Underwriting</button>
+        <button class="pa-tab" data-panel="pa4">Agent Experience</button>
+      </div>
+
+      <!-- Right: content panels -->
+      <div class="pa-content">
+
+        <!-- BUSINESS STRATEGY -->
+        <div class="pa-panel active" id="pa0">
+          <div class="pe">Business Strategy</div>
+          <h3>Business Strategy</h3>
+          <div class="pa-accordion">
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Drive profitable growth</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Unlock new revenue by expanding distribution, launching products faster, and optimizing agent workflows.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Improve agent experience</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Simplify how agents quote, sell, and service insurance products with intuitive tools and real-time decisions.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Accelerate speed to market</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Move from concept to launch faster with configurable capabilities that reduce development, testing, and approval cycles.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Provide executive-level insights</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Deliver timely, decision-ready insights that connect performance, risk, and growth across the enterprise.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TECHNOLOGY -->
+        <div class="pa-panel" id="pa1">
+          <div class="pe">Technology</div>
+          <h3>Technology</h3>
+          <div class="pa-accordion">
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Align and manage the business</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Empower teams to act faster with configurable tools that reduce friction and dependency on IT.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Enable rapid setup and integration</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Plug into internal systems and external partners quickly using modular, API-first integrations.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Apply AI-enabled capabilities and analytics</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Automate decisions, elevate insights, and streamline workflows with responsibly-applied AI.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Reduce total cost of ownership</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Provide mid-sized and regional carriers with affordable access to modern technology without requiring scale.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT -->
+        <div class="pa-panel" id="pa2">
+          <div class="pe">Product</div>
+          <h3>Product</h3>
+          <div class="pa-accordion">
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Accelerate product agility and speed</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Rapidly iterate on product features, rules, and enhancements without long development cycles.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Broaden and deepen distribution relationships</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Expand reach and activate new channels with tools designed for diverse distribution models.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Provide insurance industry expertise</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Embed proven carrier knowledge and best practices directly into configurable platform capabilities.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Align pricing to outcomes</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Charge carriers based on outcomes delivered, not seats, licenses, or unused capacity.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SALES & UNDERWRITING -->
+        <div class="pa-panel" id="pa3">
+          <div class="pe">Sales &amp; Underwriting</div>
+          <h3>Sales &amp; Underwriting</h3>
+          <div class="pa-accordion">
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Enable point-of-sale decisions</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Provide instant decisions and issue policies in minutes, not days or weeks.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Maximize straight-through processing</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Increase touchless application flow by automating routine decisions and exceptions.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Optimize underwriting and risk management</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Calibrate risk selection to improve outcomes while maintaining disciplined risk management.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Deliver real-time visibility</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Give business leaders live reporting to monitor performance and make informed decisions faster.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AGENT EXPERIENCE -->
+        <div class="pa-panel" id="pa4">
+          <div class="pe">Agent Experience</div>
+          <h3>Agent Experience</h3>
+          <div class="pa-accordion">
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Modernize the purchasing experience</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Deliver an industry-leading, point-of-sale experience that agents want to use.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Boost agent productivity</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Cut application time in half so agents can serve more customers with the same effort.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Drive agent engagement</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Drive activity and adoption with real-time messaging, gamification, and targeted engagement.</div>
+            </div>
+            <div class="pa-item">
+              <button class="pa-item-trigger" onclick="togglePaItem(this)">
+                <span>Enable real-time agent visibility</span><span class="pa-item-plus">+</span>
+              </button>
+              <div class="pa-item-body">Provide instant insight into agent activity to better support and accelerate performance.</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pa-content -->
+    </div><!-- /pa-card -->
+  </div>
+</section>
+
+<!-- ══════════════ CASE STUDIES — single row of tiles ══════════════ -->
+<section class="sec" style="background:#0C3B4F;">
+  <div class="wrap">
+    <span class="eyebrow" style="color:var(--aqua);">Proven Results</span>
+    <h2 class="sec-h2" style="color:var(--white);">Case Studies</h2>
+    <div class="bar"></div>
+    <div class="case-row">
+      <a class="case-tile" href="pages/case-study-stm.html">
+        <div class="ct-tag">Time to Market</div>
+        <h3>Accelerating Time to Market</h3>
+        <div class="ct-arrow">Read Case Study →</div>
+      </a>
+      <a class="case-tile" href="pages/case-study-growth.html">
+        <div class="ct-tag">Business Growth</div>
+        <h3>How Wellabe Accelerated Growth</h3>
+        <div class="ct-arrow">Read Case Study →</div>
+      </a>
+      <a class="case-tile" href="pages/case-study-qob.html">
+        <div class="ct-tag">Quality of Business</div>
+        <h3>Improving Quality of Business</h3>
+        <div class="ct-arrow">Read Case Study →</div>
+      </a>
+      <a class="case-tile" href="pages/case-study-satisfaction.html">
+        <div class="ct-tag">Agent Satisfaction</div>
+        <h3>Improving Agent Satisfaction</h3>
+        <div class="ct-arrow">Read Case Study →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FAQ — expanding cards ══════════════ -->
+<section class="sec" style="background:#0C3B4F;">
+  <div class="wrap" style="max-width:880px;">
+    <span class="eyebrow" style="color:var(--aqua);">Questions &amp; Answers</span>
+    <h2 class="sec-h2" style="color:var(--white);">Frequently Asked Questions</h2>
+    <div class="bar"></div>
+    <div class="faq-grid">
+
+      <div class="faq-card" id="fq1">
+        <button class="faq-trigger" onclick="toggleFaq('fq1')">
+          What is the platform? <span class="faq-plus">+</span>
+        </button>
+        <div class="faq-body">
+          <p>Flowtelligence is a carrier platform company. Our suite — Orchestrator, Enroller, Pulse, Engage, and Launchpad — gives small and mid-size carriers the technology the big carriers built over decades. Real-time underwriting decisions. Straight-through processing. Analytics that show exactly how you're competing. Configured to how you operate, deployed in weeks.</p>
+        </div>
+      </div>
+
+      <div class="faq-card" id="fq2">
+        <button class="faq-trigger" onclick="toggleFaq('fq2')">
+          Who is it built for? <span class="faq-plus">+</span>
+        </button>
+        <div class="faq-body">
+          <p>Flowtelligence is purpose-built for small and mid-size insurance carriers — the disruptors, the up-and-comers, the carriers who compete on capability instead of scale. If your technology is holding you back from the speed, quality, and agent experience your competitors have, that's exactly who we built this for.</p>
+        </div>
+      </div>
+
+      <div class="faq-card" id="fq3">
+        <button class="faq-trigger" onclick="toggleFaq('fq3')">
+          Will I control my underwriting decisions? <span class="faq-plus">+</span>
+        </button>
+        <div class="faq-body">
+          <p>Yes — completely. Flowtelligence Orchestrator is the configurability engine. Your underwriting philosophy, your rules, your product structure. You decide what decisions are made, when they're made, and how they're applied. Speed happens within your guardrails, not around them.</p>
+        </div>
+      </div>
+
+      <div class="faq-card" id="fq4">
+        <button class="faq-trigger" onclick="toggleFaq('fq4')">
+          What does the Enroller do? <span class="faq-plus">+</span>
+        </button>
+        <div class="faq-body">
+          <p>Flowtelligence Enroller is the guided, intelligent interface agents use from first question to issued policy. It's the evolution of the traditional e-app platform — configurable, carrier-branded, and built to make agents faster and more effective in the field. The close is in the room. Enroller makes sure nothing gets in the way of it.</p>
+        </div>
+      </div>
+
+      <div class="faq-card" id="fq5">
+        <button class="faq-trigger" onclick="toggleFaq('fq5')">
+          What is Pulse? <span class="faq-plus">+</span>
+        </button>
+        <div class="faq-body">
+          <p>Flowtelligence Pulse is executive-level intelligence. Activity maps, agent engagement metrics, placement rate trends, pipeline health, and straight-through processing ratios — exactly how your carrier is competing, in real time. Built for the people who need to make decisions, not just watch dashboards.</p>
+        </div>
+      </div>
+
+      <div class="faq-card" id="fq6">
+        <button class="faq-trigger" onclick="toggleFaq('fq6')">
+          How long does implementation take? <span class="faq-plus">+</span>
+        </button>
+        <div class="faq-body">
+          <p>Flowtelligence Launchpad is our carrier implementation system — configuration, training, and go-live infrastructure that takes carriers from signed contract to live production in weeks, not months. We've launched carriers before. We have the playbook. Configured for you means exactly that.</p>
+        </div>
+      </div>
+
+      <div class="faq-card" id="fq7">
+        <button class="faq-trigger" onclick="toggleFaq('fq7')">
+          What does Engage include? <span class="faq-plus">+</span>
+        </button>
+        <div class="faq-body">
+          <p>Flowtelligence Engage covers every touchpoint between carrier, agent, and applicant: agent messaging and communication tools, agent incentives (Spark), DTC capabilities, lead transfer and queue management (LeadFlow), intelligent product matching (MatchIQ), and application scanning (ScanIQ). One engagement suite, unified across the relationship.</p>
+        </div>
+      </div>
+
+      <div class="faq-card" id="fq8">
+        <button class="faq-trigger" onclick="toggleFaq('fq8')">
+          What makes this platform different from other insurtech platforms? <span class="faq-plus">+</span>
+        </button>
+        <div class="faq-body">
+          <p>We built this from inside a carrier. Our founders ran underwriting, distribution, and actuarial operations. We felt the exact pain this platform solves. The result is a system that reflects carrier reality — not a technology company's theory of what insurance should look like. We've been the carrier. We know what you need.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ CONTACT CTA ══════════════ -->
+<section class="sec sec-navy" style="text-align:center;">
+  <div class="wrap">
+    <span class="eyebrow" style="color:var(--aqua);">Get in Touch</span>
+    <h2 class="sec-h2" style="color:var(--white);">Ready to Put Intelligence in Motion?</h2>
+    <div class="bar"></div>
+    <p style="color:rgba(255,255,255,0.72);max-width:540px;margin:0 auto 2rem;">Whether you're evaluating platforms or ready to move, we'd love to connect.</p>
+
+    <div class="cta-box">
+      <form id="cta-form">
+        <div class="cta-row">
+          <div class="cf-group"><label>Name</label><input type="text" placeholder="Your full name" /></div>
+          <div class="cf-group"><label>Company</label><input type="text" placeholder="Your organization" /></div>
+        </div>
+        <div class="cf-group"><label>Email</label><input type="email" placeholder="you@yourcompany.com" /></div>
+        <div class="cf-group"><label>Message</label><textarea placeholder="Tell us what you're looking for…"></textarea></div>
+        <!-- PLACEHOLDER: Add Formspree action to <form> tag once you have your form ID:
+             action="https://formspree.io/f/YOUR_ID" method="POST" -->
+        <button type="submit" class="btn btn-primary" style="width:100%;padding:0.9rem;font-size:1rem;">Send Message</button>
+      </form>
+      <p class="cta-meta">Or call us: <a href="tel:+1XXXXXXXXXX"><!-- PLACEHOLDER -->(XXX) XXX-XXXX</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer id="site-footer">
+  <div class="ft-inner">
+    <div>
+      <div class="ft-brand">Flow<span class="brand-a">telligence</span></div>
+      <p class="ft-tagline">Where workflow meets intelligence — for carriers, agents, and consumers.</p>
+    </div>
+    <div class="ft-col">
+      <h5>Products</h5>
+      <ul>
+        <li><a href="pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="pages/preneed.html">Preneed</a></li>
+        <li><a href="pages/final-expense.html">Final Expense</a></li>
+        <li><a href="pages/annuity.html">Annuity</a></li>
+        <li><a href="pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h5>Tools</h5>
+      <ul>
+        <li><a href="pages/activity-map.html">Flowtelligence Pulse</a></li>
+        <li><a href="pages/my-easy-match.html">MatchIQ</a></li>
+        <li><a href="pages/messaging.html">Messaging</a></li>
+        <li><a href="pages/incentives.html">Flowtelligence Spark</a></li>
+        <li><a href="pages/app-scanning.html">ScanIQ</a></li>
+        <li><a href="pages/lead-gen.html">Flowtelligence LeadFlow</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h5>Company</h5>
+      <ul>
+        <li><a href="pages/about.html">About Us</a></li>
+        <li><a href="pages/case-study-growth.html">Case Studies</a></li>
+        <li><a href="pages/contact.html">Contact Us</a></li>
+        <li><a href="pages/case-study-growth.html">Case Studies</a></li>
+    <li><a href="pages/see-it-in-action.html">See It in Action</a></li>
+    <li><a href="pages/join-the-team.html">Join the Team</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bottom">&copy; <span id="fy"></span> Flowtelligence. All rights reserved.</div>
+</footer>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
+<script>
+/* ── Nav JS (matches components.js) ── */
+window.tlOpen = function(liId, ddId) {
+  var all = document.querySelectorAll('.tl-nav li');
+  var allDd = document.querySelectorAll('.tl-dd');
+  var li = document.getElementById(liId);
+  var dd = document.getElementById(ddId);
+  var wasOpen = dd.classList.contains('open');
+  all.forEach(function(l){ l.classList.remove('tlo'); });
+  allDd.forEach(function(d){ d.classList.remove('open'); });
+  if (!wasOpen) { li.classList.add('tlo'); dd.classList.add('open'); }
+};
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#tl-nav')) {
+    document.querySelectorAll('.tl-dd').forEach(function(d){ d.classList.remove('open'); });
+    document.querySelectorAll('.tl-nav li').forEach(function(l){ l.classList.remove('tlo'); });
+  }
+});
+window.sbToggle = function(btn) {
+  var li = btn.parentElement;
+  var isOpen = li.classList.contains('sbopen');
+  document.querySelectorAll('.sb-menu li.sbopen').forEach(function(l){ l.classList.remove('sbopen'); });
+  if (!isOpen) li.classList.add('sbopen');
+};
+var _ham = document.getElementById('hamburger');
+var _sb  = document.getElementById('sidebar');
+var _ov  = document.getElementById('sidebar-overlay');
+function _toggleSB() { _ham.classList.toggle('open'); _sb.classList.toggle('open'); _ov.classList.toggle('open'); }
+if(_ham) _ham.addEventListener('click', _toggleSB);
+if(_ov)  _ov.addEventListener('click', _toggleSB);
+document.getElementById('fy').textContent = new Date().getFullYear();
+</script>
+
+<script>
+  /* Hero slideshow */
+  (function(){
+    var slides = document.querySelectorAll('.hero-slide');
+    var dots   = document.querySelectorAll('.hero-dot');
+    var cur = 0, t;
+    function go(n) {
+      slides[cur].classList.remove('active'); dots[cur].classList.remove('active');
+      cur = (n + slides.length) % slides.length;
+      slides[cur].classList.add('active'); dots[cur].classList.add('active');
+    }
+    t = setInterval(function(){ go(cur+1); }, 5000);
+    dots.forEach(function(d){
+      d.addEventListener('click', function(){
+        clearInterval(t); go(parseInt(this.dataset.s));
+        t = setInterval(function(){ go(cur+1); }, 5000);
+      });
+    });
+  })();
+
+  /* Platform Advantage tabs */
+  document.querySelectorAll('.pa-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.pa-tab').forEach(function(t){ t.classList.remove('active'); });
+      document.querySelectorAll('.pa-panel').forEach(function(p){ p.classList.remove('active'); });
+      this.classList.add('active');
+      document.getElementById(this.dataset.panel).classList.add('active');
+    });
+  });
+
+  /* FAQ expand */
+  function toggleFaq(id) {
+    var card = document.getElementById(id);
+    var isOpen = card.classList.contains('open');
+    document.querySelectorAll('.faq-card').forEach(function(c){ c.classList.remove('open'); });
+    if (!isOpen) card.classList.add('open');
+  }
+
+  /* Platform accordion items */
+  function togglePaItem(btn) {
+    var item = btn.closest('.pa-item');
+    var panel = item.closest('.pa-panel');
+    var isOpen = item.classList.contains('open');
+    panel.querySelectorAll('.pa-item').forEach(function(i){ i.classList.remove('open'); });
+    if (!isOpen) item.classList.add('open');
+  }
+
+  /* Contact form */
+  document.getElementById('cta-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    alert("Thank you! We'll be in touch shortly.");
+  });
+</script>
+
+<script src="assets/js/chatbot.js"></script>
+<script src="assets/js/features.js"></script>
+</body>
+</html>

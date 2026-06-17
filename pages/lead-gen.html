@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flowtelligence LeadFlow – Flowtelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<!-- nav inlined -->
+<style>
+  :root {
+    --navy:#0B1C2C!important; --navy-mid:#0C3B4F!important;
+    --aqua:#12B5CC!important; --aqua-light:#2DC8DE!important;
+    --aqua-pale:#E6F9FC!important; --gold:#F2C300; --gold-lt:#FFD84D;
+  }
+  #site-nav {
+    position:fixed;top:0;left:0;right:0;height:68px;
+    background:#0B1C2C;z-index:1000;
+    display:flex;align-items:center;padding:0 1.75rem;gap:.75rem;
+    box-shadow:0 2px 16px rgba(0,0,0,.3);border-bottom:2px solid #F2C300;
+  }
+  .nav-brand{font-family:"EB Garamond",Georgia,serif;font-size:1.45rem;font-weight:700;color:#fff;text-decoration:none;display:inline-flex;flex-direction:column;line-height:1.2;vertical-align:middle;}
+  .nav-wordmark{display:block;white-space:nowrap;line-height:1;}
+  .nav-brand .brand-a { color:#F2C300; }
+  .nav-tagline{font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.02em;font-family:"DM Sans",system-ui,sans-serif;margin-top:2px;white-space:nowrap;display:block;}
+  .nav-spacer{flex:1;}
+  /* Top link row */
+  .tl-nav{display:flex;align-items:center;gap:.1rem;list-style:none;margin:0;padding:0;}
+  .tl-nav>li{position:relative;}
+  .tl-nav>li>a,.tl-nav>li>button{display:flex;align-items:center;gap:.25rem;padding:.48rem .8rem;color:rgba(255,255,255,.82);font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;font-weight:500;background:none;border:none;cursor:pointer;border-radius:6px;white-space:nowrap;transition:background .18s,color .18s;}
+  .tl-nav>li>a:hover,.tl-nav>li>button:hover{background:rgba(255,255,255,.1);color:#fff;}
+  .tlchev{font-size:.55rem;opacity:.6;transition:transform .2s;}
+  .tl-nav li.tlo>.tlchev{transform:rotate(180deg);}
+  /* Dropdown */
+  .tl-dd{display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:220px;background:#fff;border-radius:10px;border:1px solid #D9E2EE;box-shadow:0 8px 32px rgba(11,28,44,.18);padding:.35rem 0;z-index:2000;}
+  .tl-dd.open{display:block;animation:tldrop .18s ease;}
+  @keyframes tldrop{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+  .tl-dd a{display:block;padding:.55rem 1.1rem;font-size:.85rem;color:#0B1C2C;font-weight:500;font-family:"DM Sans",system-ui,sans-serif;transition:background .15s,color .15s;text-decoration:none;}
+  .tl-dd a:hover{background:#E6F9FC;color:#0B7A8C;}
+  .tl-dd a.dd-head{font-weight:700;border-bottom:1px solid #D9E2EE;margin-bottom:.2rem;padding-bottom:.65rem;}
+  .tl-dd .dd-sub{padding-left:1.75rem;font-size:.8rem;color:#4A6070;}
+  .tl-dd .dd-sub:hover{color:#0B7A8C;}
+  /* CTA */
+  .nav-cta-btn{padding:.42rem 1.1rem;background:#F2C300;color:#0B1C2C!important;font-weight:700;border-radius:6px;margin-left:.25rem;white-space:nowrap;font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;text-decoration:none;transition:background .18s;flex-shrink:0;}
+  .nav-cta-btn:hover{background:#FFD84D;}
+  /* Hamburger */
+  #hamburger{width:40px;height:40px;display:flex;flex-direction:column;justify-content:center;gap:6px;cursor:pointer;flex-shrink:0;}
+  #hamburger span{display:block;height:2px;background:#fff;border-radius:2px;transition:all .25s;}
+  #hamburger.open span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  #hamburger.open span:nth-child(2){opacity:0;}
+  #hamburger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+  /* Sidebar */
+  #sidebar{position:fixed;top:68px;left:-310px;width:290px;bottom:0;background:#0C3B4F;z-index:999;overflow-y:auto;transition:left .28s ease;padding:1rem 0;}
+  #sidebar.open{left:0;}
+  #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;top:68px;}
+  #sidebar-overlay.open{display:block;}
+  .sb-menu{list-style:none;padding:0;margin:0;}
+  .sb-menu li{position:relative;}
+  .sb-link,.sb-toggle{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;color:rgba(255,255,255,.85);font-weight:500;font-size:.93rem;border-left:3px solid transparent;transition:all .18s;cursor:pointer;font-family:"DM Sans",system-ui,sans-serif;text-decoration:none;width:100%;background:none;border-top:none;border-right:none;border-bottom:none;text-align:left;}
+  .sb-link:hover,.sb-toggle:hover{background:rgba(242,195,0,.1);color:#F2C300;border-left-color:#F2C300;}
+  .sb-link.active{color:#F2C300;border-left-color:#F2C300;background:rgba(242,195,0,.08);}
+  .sb-arr{font-size:.65rem;transition:transform .2s;opacity:.6;}
+  li.sbopen .sb-arr{transform:rotate(90deg);}
+  /* Submenu */
+  .sb-sub{list-style:none;max-height:0;overflow:hidden;transition:max-height .3s ease;background:rgba(0,0,0,.18);}
+  li.sbopen .sb-sub{max-height:600px;}
+  .sb-sub li a{display:block;padding:.55rem 1.4rem .55rem 2.2rem;color:rgba(255,255,255,.7);font-size:.88rem;font-family:"DM Sans",system-ui,sans-serif;transition:color .15s;text-decoration:none;}
+  .sb-sub li a:hover{color:#F2C300;}
+  .sb-sub li a.sb-indent{padding-left:3rem;font-size:.8rem;opacity:.75;}
+  .sb-sub li a.sb-indent:hover{opacity:1;color:#F2C300;}
+  @media(max-width:820px){.tl-nav{display:none;}.nav-cta-btn{display:none;}}
+.brand-a { color:#F2C300; }
+.fxe-e   { color:#F2C300; font-weight:700; }
+</style>
+<nav id="site-nav">
+  <div id="hamburger" aria-label="Toggle menu" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+  <a class="nav-brand" href="../index.html">
+    <span class="nav-wordmark">Flow<span class="brand-a">telligence</span></span>
+    <span class="nav-tagline">Where workflow meets intelligence.</span>
+  </a>
+  <span class="nav-spacer"></span>
+  <ul class="tl-nav" id="tl-nav">
+    <li><a href="../pages/about.html">About</a></li>
+    <li id="tl-p">
+      <button onclick="tlOpen('tl-p','dd-p')">Products <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-p">
+        <a class="dd-head" href="../pages/products.html">All Products</a>
+        <a href="../pages/medicare-supplement.html">Medicare Supplement</a>
+        <a href="../pages/preneed.html">Preneed</a>
+        <a href="../pages/final-expense.html">Final Expense</a>
+        <a href="../pages/annuity.html">Annuity</a>
+        <a href="../pages/ancillary-health.html">Ancillary Health</a>
+      </div>
+    </li>
+    <li id="tl-t">
+      <button onclick="tlOpen('tl-t','dd-t')">Platform <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-t">
+        <a class="dd-head" href="../pages/tools.html">Platform Suite</a>
+        <a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a>
+        <a class="dd-sub" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a>
+        <a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a>
+        <a class="dd-sub" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a>
+        <a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a>
+        <a class="dd-sub" href="../pages/activity-map.html">&#8627; Activity Map</a>
+        <a class="dd-sub" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a>
+        <a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a>
+        <a class="dd-sub" href="../pages/my-easy-match.html">&#8627; MatchIQ</a>
+        <a class="dd-sub" href="../pages/messaging.html">&#8627; Flowtelligence Link</a>
+        <a class="dd-sub" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a>
+        <a class="dd-sub" href="../pages/app-scanning.html">&#8627; ScanIQ</a>
+        <a class="dd-sub" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a>
+        <a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a>
+      </div>
+    </li>
+    <li id="tl-c">
+      <button onclick="tlOpen('tl-c','dd-c')">Case Studies <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-c">
+        <a class="dd-head" href="../pages/case-study-growth.html">All Case Studies</a>
+        <a href="../pages/case-study-stm.html">Time to Market</a>
+        <a href="../pages/case-study-growth.html">Business Growth</a>
+        <a href="../pages/case-study-qob.html">Quality of Business</a>
+        <a href="../pages/case-study-satisfaction.html">Agent Satisfaction</a>
+      </div>
+    </li>
+    <li><a href="../pages/join-the-team.html">Join the Team</a></li>
+  </ul>
+  <a class="nav-cta-btn" href="../pages/contact.html">Contact Us</a>
+</nav>
+<div id="sidebar">
+  <ul class="sb-menu">
+    <li><a class="sb-link" href="../pages/about.html">About Us</a></li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Our Products <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/products.html">All Products</a></li>
+        <li><a href="../pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="../pages/preneed.html">Preneed</a></li>
+        <li><a href="../pages/final-expense.html">Final Expense</a></li>
+        <li><a href="../pages/annuity.html">Annuity</a></li>
+        <li><a href="../pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Platform Suite <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/tools.html">Full Platform Suite</a></li>
+        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a class="sb-indent" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a class="sb-indent" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a class="sb-indent" href="../pages/activity-map.html">&#8627; Activity Map</a></li>
+        <li><a class="sb-indent" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a class="sb-indent" href="../pages/my-easy-match.html">&#8627; MatchIQ</a></li>
+        <li><a class="sb-indent" href="../pages/messaging.html">&#8627; Flowtelligence Link</a></li>
+        <li><a class="sb-indent" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a></li>
+        <li><a class="sb-indent" href="../pages/app-scanning.html">&#8627; ScanIQ</a></li>
+        <li><a class="sb-indent" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Case Studies <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/case-study-stm.html">Time to Market</a></li>
+        <li><a href="../pages/case-study-growth.html">Business Growth</a></li>
+        <li><a href="../pages/case-study-qob.html">Quality of Business</a></li>
+        <li><a href="../pages/case-study-satisfaction.html">Agent Satisfaction</a></li>
+      </ul>
+    </li>
+    <li><a class="sb-link" href="../pages/join-the-team.html">Join the Team</a></li>
+    <li><a class="sb-link" href="../pages/contact.html" style="color:#F2C300;font-weight:700;">Contact Us</a></li>
+  </ul>
+</div>
+<div id="sidebar-overlay"></div>
+<div class="page-content">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="../index.html">Home</a> › Our Tools › Flowtelligence LeadFlow</div>
+    <h1>Flowtelligence LeadFlow</h1>
+    <p>Modern, digital lead capture and seamless routing into guided enrollment workflows.</p>
+  </div>
+  
+  <section class="section">
+    <div class="container">
+      <div class="split-section">
+        <div>
+          <span class="eyebrow">Flowtelligence LeadFlow</span>
+          <h2>Convert Interest into Clean Applications</h2>
+          <div class="divider-aqua left"></div>
+          <p>Flowtelligence LeadFlow support modern, digital lead capture and seamless routing into guided enrollment workflows. They reduce drop-off by moving customers from interest to application with clarity and structure.</p>
+          <ul class="feature-list">
+            <li>Better conversion from digital traffic</li>
+            <li>Cleaner applications entering the pipeline</li>
+            <li>Reduced friction between lead capture and enrollment</li>
+            <li>Meet customers where they are — and convert intent into action</li>
+          </ul>
+          <a class="btn btn-navy" href="contact.html" style="margin-top:1.5rem;">Learn More</a>
+        </div>
+        <div style="background:var(--gray-50);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--gray-200);">
+  <div style="background:var(--navy);padding:0.6rem 1rem;display:flex;align-items:center;justify-content:space-between;">
+    <span style="color:var(--aqua);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;font-family:monospace;">Flowtelligence LEADFLOW  ·  CARRIER DASHBOARD</span>
+    <span style="color:rgba(255,255,255,0.45);font-size:0.68rem;font-family:monospace;">Live  ●  May 8, 2026  2:37 PM</span>
+  </div>
+  <div style="padding:1rem;">
+    <!-- Top summary stats -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.55rem;margin-bottom:1rem;">
+      <div style="background:white;border:1px solid var(--gray-200);border-radius:8px;padding:0.65rem 0.7rem;">
+        <div style="font-size:0.62rem;color:var(--gray-600);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">In Queue</div>
+        <div style="display:flex;align-items:baseline;gap:5px;"><span style="font-size:1.4rem;font-weight:700;color:var(--navy);line-height:1;">47</span><span style="font-size:0.68rem;color:var(--aqua);font-weight:700;">▲ 12%</span></div>
+        <div style="font-size:0.6rem;color:var(--gray-600);margin-top:1px;">consumers waiting</div>
+      </div>
+      <div style="background:white;border:1px solid var(--gray-200);border-radius:8px;padding:0.65rem 0.7rem;">
+        <div style="font-size:0.62rem;color:var(--gray-600);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Active Agents</div>
+        <div style="display:flex;align-items:baseline;gap:5px;"><span style="font-size:1.4rem;font-weight:700;color:var(--navy);line-height:1;">128</span><span style="font-size:0.6rem;color:#48BB78;font-weight:700;">● Online</span></div>
+        <div style="font-size:0.6rem;color:var(--gray-600);margin-top:1px;">licensed in 38 states</div>
+      </div>
+      <div style="background:white;border:1px solid var(--gray-200);border-radius:8px;padding:0.65rem 0.7rem;">
+        <div style="font-size:0.62rem;color:var(--gray-600);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Avg Wait Time</div>
+        <div style="display:flex;align-items:baseline;gap:5px;"><span style="font-size:1.4rem;font-weight:700;color:var(--navy);line-height:1;">2:14</span><span style="font-size:0.68rem;color:#48BB78;font-weight:700;">▼ 18s</span></div>
+        <div style="font-size:0.6rem;color:var(--gray-600);margin-top:1px;">vs 2:32 yesterday</div>
+      </div>
+      <div style="background:white;border:1px solid var(--gray-200);border-radius:8px;padding:0.65rem 0.7rem;">
+        <div style="font-size:0.62rem;color:var(--gray-600);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;">Connection Rate</div>
+        <div style="display:flex;align-items:baseline;gap:5px;"><span style="font-size:1.4rem;font-weight:700;color:var(--navy);line-height:1;">94%</span><span style="font-size:0.68rem;color:var(--aqua);font-weight:700;">▲ 3%</span></div>
+        <div style="font-size:0.6rem;color:var(--gray-600);margin-top:1px;">leads connected today</div>
+      </div>
+    </div>
+    <!-- Two columns: queue + product breakdown -->
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:0.75rem;">
+      <!-- Queue -->
+      <div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:0.85rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.65rem;">
+          <span style="font-size:0.72rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em;">Consumer Queue</span>
+          <span style="font-size:0.65rem;color:var(--aqua);font-weight:700;font-family:monospace;">UPDATING LIVE</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.35rem;">
+          <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;background:#FFF8F0;border-radius:6px;border-left:3px solid var(--aqua);">
+            <div style="font-family:monospace;font-size:0.65rem;color:var(--gray-600);font-weight:700;width:36px;">3:42</div>
+            <div style="flex:1;"><span style="font-size:0.78rem;font-weight:700;color:var(--navy);">P. Wallace, 71</span><span style="font-size:0.7rem;color:var(--gray-600);"> · IA · Med Supp</span></div>
+            <span style="font-size:0.6rem;font-weight:700;background:#FED7AA;color:#7B341E;padding:1px 6px;border-radius:8px;">WAITING</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;background:#FFF8F0;border-radius:6px;border-left:3px solid var(--aqua);">
+            <div style="font-family:monospace;font-size:0.65rem;color:var(--gray-600);font-weight:700;width:36px;">2:18</div>
+            <div style="flex:1;"><span style="font-size:0.78rem;font-weight:700;color:var(--navy);">T. Reid, 64</span><span style="font-size:0.7rem;color:var(--gray-600);"> · IL · Med Supp</span></div>
+            <span style="font-size:0.6rem;font-weight:700;background:#FED7AA;color:#7B341E;padding:1px 6px;border-radius:8px;">WAITING</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;background:#F0FFF4;border-radius:6px;border-left:3px solid #48BB78;">
+            <div style="font-family:monospace;font-size:0.65rem;color:var(--gray-600);font-weight:700;width:36px;">0:08</div>
+            <div style="flex:1;"><span style="font-size:0.78rem;font-weight:700;color:var(--navy);">M. Chen, 58</span><span style="font-size:0.7rem;color:var(--gray-600);"> · OH · Final Expense</span></div>
+            <span style="font-size:0.6rem;font-weight:700;background:#C6F6D5;color:#22543D;padding:1px 6px;border-radius:8px;">CONNECTING</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;background:#F0FFF4;border-radius:6px;border-left:3px solid #48BB78;">
+            <div style="font-family:monospace;font-size:0.65rem;color:var(--gray-600);font-weight:700;width:36px;">0:00</div>
+            <div style="flex:1;"><span style="font-size:0.78rem;font-weight:700;color:var(--navy);">R. Garcia, 69</span><span style="font-size:0.7rem;color:var(--gray-600);"> · TX · Med Supp</span></div>
+            <span style="font-size:0.6rem;font-weight:700;background:#BEE3F8;color:#2A4365;padding:1px 6px;border-radius:8px;">LIVE w/ Agent</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;background:#FFF8F0;border-radius:6px;border-left:3px solid var(--aqua);">
+            <div style="font-family:monospace;font-size:0.65rem;color:var(--gray-600);font-weight:700;width:36px;">1:05</div>
+            <div style="flex:1;"><span style="font-size:0.78rem;font-weight:700;color:var(--navy);">D. Foster, 73</span><span style="font-size:0.7rem;color:var(--gray-600);"> · FL · Preneed</span></div>
+            <span style="font-size:0.6rem;font-weight:700;background:#FED7AA;color:#7B341E;padding:1px 6px;border-radius:8px;">WAITING</span>
+          </div>
+          <div style="font-size:0.65rem;color:var(--gray-600);text-align:center;padding:4px;font-style:italic;">+ 42 more consumers in queue</div>
+        </div>
+      </div>
+      <!-- Product breakdown -->
+      <div style="display:flex;flex-direction:column;gap:0.65rem;">
+        <div style="background:white;border:1px solid var(--gray-200);border-radius:10px;padding:0.85rem;">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--navy);margin-bottom:0.55rem;">Looking to Buy</div>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:0.72rem;color:var(--gray-600);">Med Supp</span><span style="font-size:0.72rem;font-weight:700;color:var(--navy);">22</span></div>
+              <div style="height:5px;background:#EDF2F7;border-radius:3px;"><div style="width:88%;height:100%;background:var(--aqua);border-radius:3px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:0.72rem;color:var(--gray-600);">Final Expense</span><span style="font-size:0.72rem;font-weight:700;color:var(--navy);">14</span></div>
+              <div style="height:5px;background:#EDF2F7;border-radius:3px;"><div style="width:56%;height:100%;background:var(--aqua-light);border-radius:3px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:0.72rem;color:var(--gray-600);">Preneed</span><span style="font-size:0.72rem;font-weight:700;color:var(--navy);">8</span></div>
+              <div style="height:5px;background:#EDF2F7;border-radius:3px;"><div style="width:32%;height:100%;background:var(--aqua);opacity:0.7;border-radius:3px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:0.72rem;color:var(--gray-600);">Annuity</span><span style="font-size:0.72rem;font-weight:700;color:var(--navy);">3</span></div>
+              <div style="height:5px;background:#EDF2F7;border-radius:3px;"><div style="width:12%;height:100%;background:var(--aqua-light);opacity:0.6;border-radius:3px;"></div></div>
+            </div>
+          </div>
+        </div>
+        <div style="background:linear-gradient(135deg,var(--navy),var(--navy-mid,#0C3B4F));border-radius:10px;padding:0.85rem;color:white;">
+          <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--aqua);margin-bottom:0.4rem;">Today's Issues</div>
+          <div style="display:flex;align-items:baseline;gap:8px;"><span style="font-size:1.6rem;font-weight:700;line-height:1;">61</span><span style="font-size:0.68rem;opacity:0.7;">policies issued</span></div>
+          <div style="font-size:0.65rem;opacity:0.6;margin-top:4px;">$847K total premium</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div style="background:var(--aqua-pale);border-radius:var(--radius-lg);padding:2rem 1.5rem;margin-top:3rem;">
+  <h4 style="color:var(--navy);text-align:center;font-size:0.78rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin:0 0 0.5rem;">Flowtelligence LeadFlow — Utilization in Production</h4>
+  
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;"><div style="text-align:center;padding:0.8rem 0.5rem;"><div style="font-family:'Playfair Display',Georgia,serif;font-size:2.1rem;font-weight:700;color:var(--navy);line-height:1;">2:14</div><div style="font-size:0.78rem;color:var(--gray-600);margin-top:0.4rem;line-height:1.35;">Average consumer-to-agent connection time</div></div><div style="text-align:center;padding:0.8rem 0.5rem;"><div style="font-family:'Playfair Display',Georgia,serif;font-size:2.1rem;font-weight:700;color:var(--navy);line-height:1;">94%</div><div style="font-size:0.78rem;color:var(--gray-600);margin-top:0.4rem;line-height:1.35;">Lead connection rate</div></div><div style="text-align:center;padding:0.8rem 0.5rem;"><div style="font-family:'Playfair Display',Georgia,serif;font-size:2.1rem;font-weight:700;color:var(--navy);line-height:1;">+34%</div><div style="font-size:0.78rem;color:var(--gray-600);margin-top:0.4rem;line-height:1.35;">Increase in lead-to-application conversion</div></div><div style="text-align:center;padding:0.8rem 0.5rem;"><div style="font-family:'Playfair Display',Georgia,serif;font-size:2.1rem;font-weight:700;color:var(--navy);line-height:1;">128</div><div style="font-size:0.78rem;color:var(--gray-600);margin-top:0.4rem;line-height:1.35;">Avg active agents online during peak hours</div></div></div>
+</div>
+    </div>
+  </section>
+</div>
+<!-- footer inlined -->
+<footer id="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Flow<span class="brand-a">telligence</span></div>
+      <p style="color:rgba(255,255,255,.58);font-size:.87rem;margin-top:.5rem;max-width:260px;line-height:1.55;">
+        Intelligence in motion.
+      </p>
+    </div>
+    <div>
+      <h4>Products</h4>
+      <ul>
+        <li><a href="../pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="../pages/preneed.html">Preneed</a></li>
+        <li><a href="../pages/final-expense.html">Final Expense</a></li>
+        <li><a href="../pages/annuity.html">Annuity</a></li>
+        <li><a href="../pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="../pages/about.html">About Us</a></li>
+        <li><a href="../pages/case-study-growth.html">Case Studies</a></li>
+        <li><a href="../pages/join-the-team.html">Join the Team</a></li>
+        <li><a href="../pages/contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; <span id="footer-year"></span> Flowtelligence. All rights reserved.</div>
+</footer>
+<script>
+
+window.tlOpen = function(liId, ddId) {
+  var all = document.querySelectorAll('.tl-nav li');
+  var allDd = document.querySelectorAll('.tl-dd');
+  var li = document.getElementById(liId);
+  var dd = document.getElementById(ddId);
+  var wasOpen = dd.classList.contains('open');
+  all.forEach(function(l){ l.classList.remove('tlo'); });
+  allDd.forEach(function(d){ d.classList.remove('open'); });
+  if (!wasOpen) { li.classList.add('tlo'); dd.classList.add('open'); }
+};
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#tl-nav')) {
+    document.querySelectorAll('.tl-dd').forEach(function(d){ d.classList.remove('open'); });
+    document.querySelectorAll('.tl-nav li').forEach(function(l){ l.classList.remove('tlo'); });
+  }
+});
+window.sbToggle = function(btn) {
+  var li = btn.parentElement;
+  var isOpen = li.classList.contains('sbopen');
+  document.querySelectorAll('.sb-menu li.sbopen').forEach(function(l){ l.classList.remove('sbopen'); });
+  if (!isOpen) li.classList.add('sbopen');
+};
+var _ham = document.getElementById('hamburger');
+var _sb  = document.getElementById('sidebar');
+var _ov  = document.getElementById('sidebar-overlay');
+function _toggleSB(){ _ham.classList.toggle('open'); _sb.classList.toggle('open'); _ov.classList.toggle('open'); }
+if(_ham) _ham.addEventListener('click', _toggleSB);
+if(_ov)  _ov.addEventListener('click', _toggleSB);
+var _path = window.location.pathname.split('/').pop();
+document.querySelectorAll('.sb-menu a').forEach(function(a){
+  var href = a.getAttribute('href') || '';
+  if(href.split('/').pop().split('?')[0] === _path) a.classList.add('active');
+});
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+</script>
+<script src="../assets/js/chatbot.js"></script>
+<script src="../assets/js/features.js"></script>
+</body>
+</html>

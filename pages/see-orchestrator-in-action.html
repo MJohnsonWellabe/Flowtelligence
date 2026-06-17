@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>See Orchestrator in Action – Flowtelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <style>
+    /* ── Orchestrator Studio ── */
+    .studio-wrap{background:#0B1C2C;border-radius:14px;overflow:hidden;border:1px solid rgba(18,181,204,.2);box-shadow:0 8px 40px rgba(0,0,0,.5);}
+    .studio-bar{background:#091828;padding:.6rem 1.2rem;display:flex;align-items:center;gap:.75rem;border-bottom:2px solid #F2C300;}
+    .studio-bar-title{font-family:"EB Garamond",Georgia,serif;font-weight:700;color:#fff;font-size:.95rem;flex:1;}
+    .studio-env{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .6rem;border-radius:999px;background:rgba(242,195,0,.18);color:#F2C300;border:1px solid rgba(242,195,0,.4);}
+    .studio-saved{font-size:.68rem;color:rgba(255,255,255,.35);font-family:monospace;margin-left:auto;}
+    .studio-body{display:grid;grid-template-columns:200px 1fr;min-height:500px;}
+    /* Library */
+    .lib-col{background:rgba(0,0,0,.3);border-right:1px solid rgba(255,255,255,.07);padding:.6rem 0;overflow-y:auto;}
+    .lib-sect{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#12B5CC;padding:.6rem 1rem .25rem;}
+    .lib-item{display:flex;align-items:center;gap:.55rem;padding:.52rem .9rem;margin:.2rem .55rem;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);cursor:grab;user-select:none;transition:background .15s,border-color .15s;}
+    .lib-item:hover{background:rgba(242,195,0,.1);border-color:rgba(242,195,0,.35);}
+    .lib-item:active{cursor:grabbing;}
+    .lib-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .lib-name{font-size:.75rem;color:rgba(255,255,255,.8);font-weight:500;}
+    /* Canvas */
+    .canvas-col{padding:1rem;display:flex;flex-direction:column;gap:.5rem;overflow-y:auto;}
+    .canvas-label{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.25rem;}
+    /* Screen cards */
+    .sc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;transition:border-color .2s;cursor:move;}
+    .sc:hover{border-color:rgba(242,195,0,.35);}
+    .sc.drag-over{border-color:#F2C300;border-style:dashed;background:rgba(242,195,0,.06);}
+    .sc.dragging{opacity:.4;}
+    .sc-hdr{display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem;cursor:pointer;}
+    .sc-handle{color:rgba(255,255,255,.22);font-size:.85rem;cursor:move;flex-shrink:0;}
+    .sc-num{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.3);min-width:16px;font-family:monospace;}
+    .sc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .sc-title{font-size:.85rem;font-weight:700;color:#fff;flex:1;}
+    .sc-tags{display:flex;gap:.3rem;}
+    .sc-tag{font-size:.6rem;padding:.1rem .42rem;border-radius:4px;font-weight:700;}
+    .sc-tag-q{background:rgba(242,195,0,.15);color:#F2C300;}
+    .sc-tag-api{background:rgba(18,181,204,.12);color:#12B5CC;}
+    .sc-chev{font-size:.7rem;color:rgba(255,255,255,.3);transition:transform .2s;flex-shrink:0;}
+    .sc.expanded .sc-chev{transform:rotate(90deg);}
+    .sc-body{display:none;border-top:1px solid rgba(255,255,255,.07);}
+    .sc.expanded .sc-body{display:block;}
+    /* Questions */
+    .q-list{padding:.5rem .7rem;}
+    .q-item{display:flex;align-items:center;gap:.55rem;padding:.42rem .55rem;margin-bottom:.28rem;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);cursor:move;user-select:none;transition:background .15s,border-color .15s;}
+    .q-item:hover{background:rgba(242,195,0,.07);border-color:rgba(242,195,0,.2);}
+    .q-item.dragging{opacity:.35;}
+    .q-item.drag-over{border-color:#F2C300;background:rgba(242,195,0,.1);}
+    .q-handle{font-size:.75rem;color:rgba(255,255,255,.2);cursor:move;flex-shrink:0;}
+    .q-chk{width:15px;height:15px;border-radius:3px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;color:#12B5CC;transition:all .15s;}
+    .q-chk.on{background:rgba(18,181,204,.18);border-color:#12B5CC;}
+    .q-chk:hover{border-color:#F2C300;}
+    .q-text{flex:1;font-size:.76rem;color:rgba(255,255,255,.78);}
+    .q-item.off .q-text{text-decoration:line-through;opacity:.38;}
+    .q-type{font-size:.6rem;color:rgba(255,255,255,.28);font-family:monospace;}
+    .q-add{display:flex;align-items:center;gap:.4rem;padding:.35rem .55rem;font-size:.72rem;color:rgba(255,255,255,.3);cursor:pointer;border:1px dashed rgba(255,255,255,.1);border-radius:6px;margin:.25rem 0 .5rem;transition:color .15s,border-color .15s;}
+    .q-add:hover{color:#12B5CC;border-color:#12B5CC;}
+    /* API panel */
+    .api-panel{background:rgba(18,181,204,.05);border-top:1px solid rgba(18,181,204,.1);padding:.6rem .9rem;}
+    .api-label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#12B5CC;margin-bottom:.45rem;}
+    .api-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.3rem;}
+    .api-lbl{font-size:.76rem;color:rgba(255,255,255,.7);flex:1;}
+    .sw{width:34px;height:19px;border-radius:9px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;}
+    .sw.on{background:#F2C300;}.sw.off{background:rgba(255,255,255,.15);}
+    .sw-k{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:left .18s;}
+    .sw.on .sw-k{left:17px;}
+    /* Drop zone */
+    .drop-zone{border:2px dashed rgba(255,255,255,.12);border-radius:10px;padding:.75rem;text-align:center;color:rgba(255,255,255,.28);font-size:.75rem;transition:border-color .2s,background .2s;cursor:default;}
+    .drop-zone.over{border-color:#F2C300;background:rgba(242,195,0,.06);color:rgba(255,255,255,.55);}
+    /* Footer */
+    .studio-footer{background:#091828;padding:.65rem 1.2rem;display:flex;align-items:center;gap:.75rem;border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap;}
+    .sb{padding:.4rem .95rem;border-radius:6px;font-size:.76rem;font-weight:700;cursor:pointer;border:none;font-family:"DM Sans",system-ui,sans-serif;transition:all .18s;white-space:nowrap;}
+    .sb-gold{background:#F2C300;color:#0B1C2C;}.sb-gold:hover{background:#FFD84D;}
+    .sb-out{background:transparent;color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.18);}.sb-out:hover{border-color:#12B5CC;color:#12B5CC;}
+    .st-status{margin-left:auto;font-size:.68rem;color:rgba(255,255,255,.32);font-family:monospace;}
+    /* Toast */
+    #orch-toast{position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%);background:#0C3B4F;border:1px solid #12B5CC;border-radius:8px;padding:.5rem 1.1rem;font-size:.8rem;color:#fff;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9998;white-space:nowrap;}
+    #orch-toast.show{opacity:1;}
+    .callout{background:rgba(242,195,0,.08);border-left:3px solid #F2C300;border-radius:0 8px 8px 0;padding:.9rem 1.1rem;}
+    .callout-label{font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2C300;margin-bottom:.3rem;}
+    .callout p{color:rgba(255,255,255,.78);font-size:.87rem;margin:0;line-height:1.65;}
+    @media(max-width:768px){.studio-body{grid-template-columns:1fr;}.lib-col{display:none;}}
+  .brand-a { color:#F2C300; }
+.fxe-e   { color:#F2C300; font-weight:700; }
+</style>
+</head>
+<body>
+<!-- nav inlined -->
+
+<style>
+  :root {
+    --navy:#0B1C2C!important; --navy-mid:#0C3B4F!important;
+    --aqua:#12B5CC!important; --aqua-light:#2DC8DE!important;
+    --aqua-pale:#E6F9FC!important; --gold:#F2C300; --gold-lt:#FFD84D;
+  }
+  #site-nav {
+    position:fixed;top:0;left:0;right:0;height:68px;
+    background:#0B1C2C;z-index:1000;
+    display:flex;align-items:center;padding:0 1.75rem;gap:.75rem;
+    box-shadow:0 2px 16px rgba(0,0,0,.3);border-bottom:2px solid #F2C300;
+  }
+  .nav-brand{font-family:"EB Garamond",Georgia,serif;font-size:1.45rem;font-weight:700;color:#fff;text-decoration:none;display:inline-flex;flex-direction:column;line-height:1.2;vertical-align:middle;}
+  .nav-wordmark{display:block;white-space:nowrap;line-height:1;}
+  .nav-brand .brand-a { color:#F2C300; }
+  .nav-tagline{font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.02em;font-family:"DM Sans",system-ui,sans-serif;margin-top:2px;white-space:nowrap;display:block;}
+  .nav-spacer{flex:1;}
+  /* Top link row */
+  .tl-nav{display:flex;align-items:center;gap:.1rem;list-style:none;margin:0;padding:0;}
+  .tl-nav>li{position:relative;}
+  .tl-nav>li>a,.tl-nav>li>button{display:flex;align-items:center;gap:.25rem;padding:.48rem .8rem;color:rgba(255,255,255,.82);font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;font-weight:500;background:none;border:none;cursor:pointer;border-radius:6px;white-space:nowrap;transition:background .18s,color .18s;}
+  .tl-nav>li>a:hover,.tl-nav>li>button:hover{background:rgba(255,255,255,.1);color:#fff;}
+  .tlchev{font-size:.55rem;opacity:.6;transition:transform .2s;}
+  .tl-nav li.tlo>.tlchev{transform:rotate(180deg);}
+  /* Dropdown */
+  .tl-dd{display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:220px;background:#fff;border-radius:10px;border:1px solid #D9E2EE;box-shadow:0 8px 32px rgba(11,28,44,.18);padding:.35rem 0;z-index:2000;}
+  .tl-dd.open{display:block;animation:tldrop .18s ease;}
+  @keyframes tldrop{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+  .tl-dd a{display:block;padding:.55rem 1.1rem;font-size:.85rem;color:#0B1C2C;font-weight:500;font-family:"DM Sans",system-ui,sans-serif;transition:background .15s,color .15s;text-decoration:none;}
+  .tl-dd a:hover{background:#E6F9FC;color:#0B7A8C;}
+  .tl-dd a.dd-head{font-weight:700;border-bottom:1px solid #D9E2EE;margin-bottom:.2rem;padding-bottom:.65rem;}
+  .tl-dd .dd-sub{padding-left:1.75rem;font-size:.8rem;color:#4A6070;}
+  .tl-dd .dd-sub:hover{color:#0B7A8C;}
+  /* CTA */
+  .nav-cta-btn{padding:.42rem 1.1rem;background:#F2C300;color:#0B1C2C!important;font-weight:700;border-radius:6px;margin-left:.25rem;white-space:nowrap;font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;text-decoration:none;transition:background .18s;flex-shrink:0;}
+  .nav-cta-btn:hover{background:#FFD84D;}
+  /* Hamburger */
+  #hamburger{width:40px;height:40px;display:flex;flex-direction:column;justify-content:center;gap:6px;cursor:pointer;flex-shrink:0;}
+  #hamburger span{display:block;height:2px;background:#fff;border-radius:2px;transition:all .25s;}
+  #hamburger.open span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  #hamburger.open span:nth-child(2){opacity:0;}
+  #hamburger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+  /* Sidebar */
+  #sidebar{position:fixed;top:68px;left:-310px;width:290px;bottom:0;background:#0C3B4F;z-index:999;overflow-y:auto;transition:left .28s ease;padding:1rem 0;}
+  #sidebar.open{left:0;}
+  #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;top:68px;}
+  #sidebar-overlay.open{display:block;}
+  .sb-menu{list-style:none;padding:0;margin:0;}
+  .sb-menu li{position:relative;}
+  .sb-link,.sb-toggle{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;color:rgba(255,255,255,.85);font-weight:500;font-size:.93rem;border-left:3px solid transparent;transition:all .18s;cursor:pointer;font-family:"DM Sans",system-ui,sans-serif;text-decoration:none;width:100%;background:none;border-top:none;border-right:none;border-bottom:none;text-align:left;}
+  .sb-link:hover,.sb-toggle:hover{background:rgba(242,195,0,.1);color:#F2C300;border-left-color:#F2C300;}
+  .sb-link.active{color:#F2C300;border-left-color:#F2C300;background:rgba(242,195,0,.08);}
+  .sb-arr{font-size:.65rem;transition:transform .2s;opacity:.6;}
+  li.sbopen .sb-arr{transform:rotate(90deg);}
+  /* Submenu */
+  .sb-sub{list-style:none;max-height:0;overflow:hidden;transition:max-height .3s ease;background:rgba(0,0,0,.18);}
+  li.sbopen .sb-sub{max-height:600px;}
+  .sb-sub li a{display:block;padding:.55rem 1.4rem .55rem 2.2rem;color:rgba(255,255,255,.7);font-size:.88rem;font-family:"DM Sans",system-ui,sans-serif;transition:color .15s;text-decoration:none;}
+  .sb-sub li a:hover{color:#F2C300;}
+  .sb-sub li a.sb-indent{padding-left:3rem;font-size:.8rem;opacity:.75;}
+  .sb-sub li a.sb-indent:hover{opacity:1;color:#F2C300;}
+  @media(max-width:820px){.tl-nav{display:none;}.nav-cta-btn{display:none;}}
+</style>
+<nav id="site-nav">
+  <div id="hamburger" aria-label="Toggle menu" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+  <a class="nav-brand" href="../index.html">
+    <span class="nav-wordmark">Flow<span class="brand-a">telligence</span></span>
+    <span class="nav-tagline">Where workflow meets intelligence.</span>
+  </a>
+  <span class="nav-spacer"></span>
+  <ul class="tl-nav" id="tl-nav">
+    <li><a href="../pages/about.html">About</a></li>
+    <li id="tl-p">
+      <button onclick="tlOpen('tl-p','dd-p')">Products <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-p">
+        <a class="dd-head" href="../pages/products.html">All Products</a>
+        <a href="../pages/medicare-supplement.html">Medicare Supplement</a>
+        <a href="../pages/preneed.html">Preneed</a>
+        <a href="../pages/final-expense.html">Final Expense</a>
+        <a href="../pages/annuity.html">Annuity</a>
+        <a href="../pages/ancillary-health.html">Ancillary Health</a>
+      </div>
+    </li>
+    <li id="tl-t">
+      <button onclick="tlOpen('tl-t','dd-t')">Platform <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-t">
+        <a class="dd-head" href="../pages/tools.html">Platform Suite</a>
+        <a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a>
+        <a class="dd-sub" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a>
+        <a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a>
+        <a class="dd-sub" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a>
+        <a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a>
+        <a class="dd-sub" href="../pages/activity-map.html">&#8627; Activity Map</a>
+        <a class="dd-sub" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a>
+        <a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a>
+        <a class="dd-sub" href="../pages/my-easy-match.html">&#8627; MatchIQ</a>
+        <a class="dd-sub" href="../pages/messaging.html">&#8627; Flowtelligence Link</a>
+        <a class="dd-sub" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a>
+        <a class="dd-sub" href="../pages/app-scanning.html">&#8627; ScanIQ</a>
+        <a class="dd-sub" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a>
+        <a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a>
+      </div>
+    </li>
+    <li id="tl-c">
+      <button onclick="tlOpen('tl-c','dd-c')">Case Studies <span class="tlchev">&#9662;</span></button>
+      <div class="tl-dd" id="dd-c">
+        <a class="dd-head" href="../pages/case-study-growth.html">All Case Studies</a>
+        <a href="../pages/case-study-stm.html">Time to Market</a>
+        <a href="../pages/case-study-growth.html">Business Growth</a>
+        <a href="../pages/case-study-qob.html">Quality of Business</a>
+        <a href="../pages/case-study-satisfaction.html">Agent Satisfaction</a>
+      </div>
+    </li>
+    <li><a href="../pages/join-the-team.html">Join the Team</a></li>
+  </ul>
+  <a class="nav-cta-btn" href="../pages/contact.html">Contact Us</a>
+</nav>
+<div id="sidebar">
+  <ul class="sb-menu">
+    <li><a class="sb-link" href="../pages/about.html">About Us</a></li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Our Products <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/products.html">All Products</a></li>
+        <li><a href="../pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="../pages/preneed.html">Preneed</a></li>
+        <li><a href="../pages/final-expense.html">Final Expense</a></li>
+        <li><a href="../pages/annuity.html">Annuity</a></li>
+        <li><a href="../pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Platform Suite <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/tools.html">Full Platform Suite</a></li>
+        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a class="sb-indent" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a class="sb-indent" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a class="sb-indent" href="../pages/activity-map.html">&#8627; Activity Map</a></li>
+        <li><a class="sb-indent" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a class="sb-indent" href="../pages/my-easy-match.html">&#8627; MatchIQ</a></li>
+        <li><a class="sb-indent" href="../pages/messaging.html">&#8627; Flowtelligence Link</a></li>
+        <li><a class="sb-indent" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a></li>
+        <li><a class="sb-indent" href="../pages/app-scanning.html">&#8627; ScanIQ</a></li>
+        <li><a class="sb-indent" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </li>
+    <li>
+      <button class="sb-toggle" onclick="sbToggle(this)">Case Studies <span class="sb-arr">&#8250;</span></button>
+      <ul class="sb-sub">
+        <li><a href="../pages/case-study-stm.html">Time to Market</a></li>
+        <li><a href="../pages/case-study-growth.html">Business Growth</a></li>
+        <li><a href="../pages/case-study-qob.html">Quality of Business</a></li>
+        <li><a href="../pages/case-study-satisfaction.html">Agent Satisfaction</a></li>
+      </ul>
+    </li>
+    <li><a class="sb-link" href="../pages/join-the-team.html">Join the Team</a></li>
+    <li><a class="sb-link" href="../pages/contact.html" style="color:#F2C300;font-weight:700;">Contact Us</a></li>
+  </ul>
+</div>
+<div id="sidebar-overlay"></div>
+<div class="page-content">
+  <div class="page-header">
+    <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; <a href="tools.html?tab=orchestrator">Flowtelligence Orchestrator</a> &rsaquo; See It in Action</div>
+    <h1>See Orchestrator in Action</h1>
+    <p class="page-subtitle">The Configurability Engine</p>
+    <p>Your screens. Your questions. Your rules. Your API calls. No IT ticket. No release cycle. Changes go live when you say so.</p>
+  </div>
+
+  <section class="section" style="background:#0C3B4F;">
+    <div class="container">
+      <div class="section-title">
+        <span class="eyebrow" style="color:var(--aqua);">How it works</span>
+        <h2 style="color:#fff;">You configure. Enroller executes.</h2>
+        <div class="divider-aqua" style="background:#F2C300;"></div>
+        <p style="color:rgba(255,255,255,.75);max-width:680px;margin:0 auto 2rem;">Orchestrator is the control layer behind Flowtelligence Enroller. Every screen your agents see, every question asked, every API call made — it all starts here, configured by your operations team, not an engineering sprint.</p>
+      </div>
+      <div class="grid-2" style="gap:1.25rem;">
+        <div class="callout"><div class="callout-label">What you control</div><p>Screen order and flow. Which questions appear and in what order. API calls — which to make, when, and when to bypass. Underwriting logic: approve, decline, refer, reflexive triggers. Rate tables and eligibility rules.</p></div>
+        <div class="callout"><div class="callout-label">What you don't need</div><p>A developer. An IT ticket. A release cycle. A testing sprint. Configure in sandbox, preview it in Enroller, promote to production in minutes. Your business team owns the product.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--navy);">
+    <div class="container">
+      <div class="section-title">
+        <span class="eyebrow" style="color:var(--aqua);">Interactive Demo</span>
+        <h2 style="color:#fff;">Configure a Medicare Supplement flow</h2>
+        <div class="divider-aqua" style="background:#F2C300;"></div>
+        <p style="color:rgba(255,255,255,.58);max-width:600px;margin:0 auto 2rem;font-size:.88rem;">
+          Drag screen cards to reorder them. Click a card to expand it and see its questions.
+          Drag questions to reorder within a screen. Click the checkbox to activate or suppress a question.
+          Drag from the library on the left to add new screens.
+        </p>
+      </div>
+
+      <div class="studio-wrap">
+        <div class="studio-bar">
+          <div class="studio-bar-title">Flow Editor — Medicare Supplement Plan G</div>
+          <div class="studio-env">Sandbox</div>
+          <div class="studio-saved" id="st-saved">Unsaved changes</div>
+        </div>
+        <div class="studio-body">
+          <!-- Library -->
+          <div class="lib-col">
+            <div class="lib-sect">Add Screen</div>
+            <div class="lib-item" draggable="true" data-type="Suitability Check" data-color="#F2C300">
+              <div class="lib-dot" style="background:#F2C300;"></div><div class="lib-name">Suitability Check</div>
+            </div>
+            <div class="lib-item" draggable="true" data-type="Coverage Selection" data-color="#12B5CC">
+              <div class="lib-dot" style="background:#12B5CC;"></div><div class="lib-name">Coverage Selection</div>
+            </div>
+            <div class="lib-item" draggable="true" data-type="Beneficiary Info" data-color="#12B5CC">
+              <div class="lib-dot" style="background:#12B5CC;"></div><div class="lib-name">Beneficiary Info</div>
+            </div>
+            <div class="lib-item" draggable="true" data-type="Payment Setup" data-color="#F2C300">
+              <div class="lib-dot" style="background:#F2C300;"></div><div class="lib-name">Payment Setup</div>
+            </div>
+            <div class="lib-sect" style="margin-top:.5rem;">Add API Call</div>
+            <div class="lib-item" draggable="true" data-type="MVR Lookup" data-color="#2DC8DE" data-api="1">
+              <div class="lib-dot" style="background:#2DC8DE;"></div><div class="lib-name">MVR Lookup</div>
+            </div>
+            <div class="lib-item" draggable="true" data-type="OFAC Screen" data-color="#2DC8DE" data-api="1">
+              <div class="lib-dot" style="background:#2DC8DE;"></div><div class="lib-name">OFAC Screen</div>
+            </div>
+          </div>
+          <!-- Canvas (filled by JS) -->
+          <div class="canvas-col" id="canvas">
+            <div class="canvas-label">Current Flow — drag cards to reorder &nbsp;|&nbsp; click to expand &amp; edit questions</div>
+          </div>
+        </div>
+        <div class="studio-footer">
+          <button class="sb sb-out" onclick="stPreview()">Preview in Enroller</button>
+          <button class="sb sb-out" onclick="stValidate()">Validate</button>
+          <button class="sb sb-gold" onclick="stPromote()">Promote to Production</button>
+          <div class="st-status" id="st-status">Loading...</div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:.75rem;color:rgba(255,255,255,.3);margin-top:.6rem;">Representative demo — contact us for a live walkthrough of the production Orchestrator studio.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:#0C3B4F;">
+    <div class="container">
+      <h2 style="color:#fff;text-align:center;margin-bottom:2rem;">Configure everything without writing code</h2>
+      <div class="grid-3">
+        <div class="card"><h3>Screen Order</h3><p>Drag and drop to reorder screens in the flow. Changes reflect in Enroller immediately after you promote from sandbox.</p></div>
+        <div class="card"><h3>Questions &amp; Branching</h3><p>Activate or suppress questions within any screen. Set reflexive logic — yes to X automatically surfaces follow-up questions Y and Z.</p></div>
+        <div class="card"><h3>API Calls</h3><p>Toggle external data calls on or off per product or eligibility type. Control when to call, what to do with results, and when to bypass entirely.</p></div>
+        <div class="card"><h3>Underwriting Logic</h3><p>Configure approve, decline, refer, and table-rating outcomes based on responses and API results. Every decision is logged and auditable.</p></div>
+        <div class="card"><h3>Product Rules</h3><p>Rate tables, eligibility windows, benefit tiers — configurable without a release cycle. Update and promote in minutes, not quarters.</p></div>
+        <div class="card"><h3>Sandbox &amp; Promotion</h3><p>All changes happen in sandbox first. Preview in Enroller, validate, then promote. Your team controls the go-live timeline.</p></div>
+      </div>
+      <div style="text-align:center;margin-top:2rem;">
+        <a href="contact.html" class="btn btn-primary">Request a Live Demo</a>
+        <a href="see-it-in-action.html" class="btn btn-navy" style="margin-left:1rem;">See Enroller in Action</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- footer inlined -->
+<div id="orch-toast"></div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+var SCREENS = [
+  { id:'s1', title:'Applicant Information', color:'#12B5CC', api:false, qs:[
+    {id:'q1a', text:'Full legal name',                            type:'text',     on:true},
+    {id:'q1b', text:'Date of birth',                             type:'date',     on:true},
+    {id:'q1c', text:'Gender',                                    type:'select',   on:true},
+    {id:'q1d', text:'Social Security Number',                    type:'ssn',      on:true},
+    {id:'q1e', text:'Residential address',                       type:'address',  on:true},
+    {id:'q1f', text:'Phone number',                              type:'phone',    on:true}
+  ]},
+  { id:'s2', title:'Eligibility & Enrollment Type', color:'#F2C300', api:false, qs:[
+    {id:'q2a', text:'Enrolled in Medicare Part B?',              type:'yes/no',   on:true},
+    {id:'q2b', text:'Within Open Enrollment window?',            type:'yes/no',   on:true},
+    {id:'q2c', text:'Eligible for Guaranteed Issue?',            type:'yes/no',   on:true}
+  ]},
+  { id:'s3', title:'Prescription History', color:'#2DC8DE', api:true,
+    apiToggles:[
+      {label:'Call external Rx database',       on:true},
+      {label:'Pre-fill questions from result',  on:true},
+      {label:'Bypass for GI applicants',        on:false}
+    ],
+    qs:[
+      {id:'q3a', text:'Used tobacco in past 12 months?',         type:'yes/no',   on:true},
+      {id:'q3b', text:'Currently taking prescription medications?', type:'yes/no', on:true},
+      {id:'q3c', text:'List current prescriptions (if yes)',     type:'textarea', on:true},
+      {id:'q3d', text:'Prescriber and dosage detail (optional)', type:'text',     on:false}
+    ]
+  },
+  { id:'s4', title:'Health Questions', color:'#F2C300', api:false, qs:[
+    {id:'q4a', text:'Diagnosed with cancer in past 2 years?',    type:'yes/no',   on:true},
+    {id:'q4b', text:'Heart attack or stroke in past 12 months?', type:'yes/no',   on:true},
+    {id:'q4c', text:'End-stage renal disease?',                  type:'yes/no',   on:true},
+    {id:'q4d', text:'COPD or emphysema diagnosis?',              type:'yes/no',   on:true},
+    {id:'q4e', text:'Currently on dialysis?',                    type:'yes/no',   on:false},
+    {id:'q4f', text:'Diagnosis details (if yes to any above)',   type:'textarea', on:false}
+  ]}
+];
+
+var dragScreenId = null;
+var dragQData    = null; // {screenId, qId}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg) {
+  var el = document.getElementById('orch-toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.classList.remove('show'); }, 2200);
+}
+
+// ── Status bar ────────────────────────────────────────────────────────────────
+function updateStatus() {
+  var active=0, apis=0;
+  SCREENS.forEach(function(s){
+    if(s.api) apis++;
+    (s.qs||[]).forEach(function(q){ if(q.on) active++; });
+  });
+  var el = document.getElementById('st-status');
+  if(el) el.textContent = SCREENS.length+' screens \u00B7 '+apis+' API calls \u00B7 '+active+' active questions';
+  var sv = document.getElementById('st-saved');
+  if(sv) sv.textContent = 'Unsaved changes';
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render(expandId) {
+  var canvas = document.getElementById('canvas');
+  var label  = canvas.querySelector('.canvas-label');
+  canvas.innerHTML = '';
+  canvas.appendChild(label);
+
+  SCREENS.forEach(function(screen, si) {
+    // ── Card ──────────────────────────────────────────────────────────────────
+    var card = document.createElement('div');
+    card.className = 'sc' + (expandId === screen.id ? ' expanded' : '');
+    card.dataset.sid = screen.id;
+
+    // Header
+    var hdr = document.createElement('div');
+    hdr.className = 'sc-hdr';
+    var activeQ = (screen.qs||[]).filter(function(q){ return q.on; }).length;
+    hdr.innerHTML =
+      '<span class="sc-handle" title="Drag to reorder">&#8597;</span>' +
+      '<span class="sc-num">'+(si+1)+'</span>' +
+      '<span class="sc-dot" style="background:'+screen.color+';"></span>' +
+      '<span class="sc-title">'+screen.title+'</span>' +
+      '<span class="sc-tags">' +
+        '<span class="sc-tag sc-tag-q">'+activeQ+' active</span>' +
+        (screen.api ? '<span class="sc-tag sc-tag-api">API</span>' : '') +
+      '</span>' +
+      '<span class="sc-chev">&#8250;</span>';
+    hdr.addEventListener('click', function(e) {
+      if(e.target.classList.contains('sc-handle')) return;
+      var wasOpen = card.classList.contains('expanded');
+      render(wasOpen ? null : screen.id);
+    });
+    card.appendChild(hdr);
+
+    // ── Screen drag ──────────────────────────────────────────────────────────
+    card.draggable = true;
+    card.addEventListener('dragstart', function(e) {
+      dragScreenId = screen.id;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', 'screen:'+screen.id);
+      setTimeout(function(){ card.classList.add('dragging'); }, 0);
+    });
+    card.addEventListener('dragend', function() {
+      card.classList.remove('dragging'); dragScreenId = null;
+      document.querySelectorAll('.sc.drag-over').forEach(function(c){ c.classList.remove('drag-over'); });
+    });
+    card.addEventListener('dragover', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      if(dragScreenId && dragScreenId !== screen.id) card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', function(e) {
+      if(!card.contains(e.relatedTarget)) card.classList.remove('drag-over');
+    });
+    card.addEventListener('drop', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      card.classList.remove('drag-over');
+      var data = e.dataTransfer.getData('text/plain');
+      if(data.startsWith('lib:')) {
+        // Insert library item before this card
+        var parts = data.split('|');
+        SCREENS.splice(si, 0, {id:'s'+Date.now(), title:parts[1], color:parts[2]||'#12B5CC', api:!!parts[3], qs:[]});
+        render(null); updateStatus(); toast(parts[1]+' added before '+screen.title);
+        return;
+      }
+      if(!dragScreenId || dragScreenId === screen.id) return;
+      var fromI = SCREENS.findIndex(function(s){ return s.id === dragScreenId; });
+      var moved = SCREENS.splice(fromI,1)[0];
+      // Find new index after splice
+      var toI = SCREENS.findIndex(function(s){ return s.id === screen.id; });
+      SCREENS.splice(toI, 0, moved);
+      dragScreenId = null;
+      render(null); updateStatus();
+      toast('Moved "'+moved.title+'" to position '+(toI+1));
+    });
+
+    // ── Expandable body ──────────────────────────────────────────────────────
+    var body = document.createElement('div');
+    body.className = 'sc-body';
+
+    // Questions
+    var qList = document.createElement('div');
+    qList.className = 'q-list';
+
+    (screen.qs||[]).forEach(function(q, qi) {
+      var item = document.createElement('div');
+      item.className = 'q-item' + (q.on ? '' : ' off');
+      item.draggable = true;
+      item.dataset.qid = q.id;
+
+      var chk = document.createElement('div');
+      chk.className = 'q-chk' + (q.on ? ' on' : '');
+      chk.innerHTML = q.on ? '&#10003;' : '';
+      chk.title = q.on ? 'Active — click to suppress' : 'Suppressed — click to activate';
+      chk.addEventListener('click', function(e) {
+        e.stopPropagation();
+        q.on = !q.on;
+        render(screen.id); updateStatus();
+        toast(q.on ? 'Question activated' : 'Question suppressed');
+      });
+
+      item.innerHTML = '<span class="q-handle" title="Drag to reorder questions">&#8597;</span>';
+      item.appendChild(chk);
+      var textSpan = document.createElement('span'); textSpan.className = 'q-text'; textSpan.textContent = q.text;
+      var typeSpan = document.createElement('span'); typeSpan.className = 'q-type'; typeSpan.textContent = q.type;
+      item.appendChild(textSpan); item.appendChild(typeSpan);
+
+      // Question drag
+      item.addEventListener('dragstart', function(e) {
+        dragQData = {screenId: screen.id, qId: q.id};
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', 'q:'+screen.id+':'+q.id);
+        e.stopPropagation();
+        setTimeout(function(){ item.classList.add('dragging'); }, 0);
+      });
+      item.addEventListener('dragend', function() {
+        item.classList.remove('dragging'); dragQData = null;
+        document.querySelectorAll('.q-item.drag-over').forEach(function(el){ el.classList.remove('drag-over'); });
+      });
+      item.addEventListener('dragover', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        if(dragQData && dragQData.screenId === screen.id && dragQData.qId !== q.id) item.classList.add('drag-over');
+      });
+      item.addEventListener('dragleave', function(e) {
+        if(!item.contains(e.relatedTarget)) item.classList.remove('drag-over');
+      });
+      item.addEventListener('drop', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        item.classList.remove('drag-over');
+        if(!dragQData || dragQData.screenId !== screen.id || dragQData.qId === q.id) return;
+        var qs = screen.qs;
+        var fromI = qs.findIndex(function(x){ return x.id === dragQData.qId; });
+        var toI   = qi;
+        var moved = qs.splice(fromI,1)[0]; qs.splice(toI,0,moved);
+        dragQData = null;
+        render(screen.id); updateStatus(); toast('Question reordered');
+      });
+
+      qList.appendChild(item);
+    });
+
+    // Add question
+    var addQ = document.createElement('div');
+    addQ.className = 'q-add';
+    addQ.innerHTML = '+ Add question to this screen';
+    addQ.addEventListener('click', function() {
+      var txt = prompt('Question text:');
+      if(txt && txt.trim()) {
+        screen.qs.push({id:'q'+Date.now(), text:txt.trim(), type:'yes/no', on:true});
+        render(screen.id); updateStatus(); toast('Question added');
+      }
+    });
+    qList.appendChild(addQ);
+    body.appendChild(qList);
+
+    // API toggles
+    if(screen.apiToggles) {
+      var ap = document.createElement('div'); ap.className = 'api-panel';
+      ap.innerHTML = '<div class="api-label">API Configuration</div>';
+      screen.apiToggles.forEach(function(tog) {
+        var row = document.createElement('div'); row.className = 'api-row';
+        var lbl = document.createElement('span'); lbl.className = 'api-lbl'; lbl.textContent = tog.label;
+        var sw  = document.createElement('div'); sw.className = 'sw '+(tog.on?'on':'off');
+        sw.innerHTML = '<div class="sw-k"></div>';
+        sw.addEventListener('click', function() {
+          tog.on = !tog.on; sw.className = 'sw '+(tog.on?'on':'off');
+          toast(tog.label+': '+(tog.on?'ON':'OFF'));
+        });
+        row.appendChild(lbl); row.appendChild(sw); ap.appendChild(row);
+      });
+      body.appendChild(ap);
+    }
+
+    card.appendChild(body);
+    canvas.appendChild(card);
+  });
+
+  // Drop zone at end
+  var dz = document.createElement('div'); dz.className = 'drop-zone';
+  dz.textContent = '+ Drag a screen from the library to add it here';
+  dz.addEventListener('dragover', function(e){ e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', function(){ dz.classList.remove('over'); });
+  dz.addEventListener('drop', function(e) {
+    e.preventDefault(); dz.classList.remove('over');
+    var data = e.dataTransfer.getData('text/plain');
+    if(data.startsWith('lib:')) {
+      var parts = data.split('|');
+      SCREENS.push({id:'s'+Date.now(), title:parts[1], color:parts[2]||'#12B5CC', api:!!parts[3], qs:[]});
+      render(null); updateStatus(); toast(parts[1]+' added');
+    }
+  });
+  canvas.appendChild(dz);
+}
+
+// ── Library drag ──────────────────────────────────────────────────────────────
+document.querySelectorAll('.lib-item').forEach(function(el) {
+  el.addEventListener('dragstart', function(e) {
+    e.dataTransfer.effectAllowed = 'copy';
+    e.dataTransfer.setData('text/plain', 'lib:|'+el.dataset.type+'|'+(el.dataset.color||'#12B5CC')+'|'+(el.dataset.api||''));
+  });
+});
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+window.stPreview  = function(){ toast('Preview loading in Enroller sandbox...'); };
+window.stValidate = function(){ toast('Flow valid — '+SCREENS.length+' screens, no rule conflicts.'); };
+window.stPromote  = function(){
+  if(confirm('Promote this configuration to Production?\n\nChanges will be live immediately for all agents.')) {
+    document.getElementById('st-saved').textContent = 'Promoted '+new Date().toLocaleTimeString();
+    toast('Promoted to production successfully.');
+  }
+};
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+render(null);
+</script>
+<footer id="site-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Flow<span class="brand-a">telligence</span></div>
+      <p style="color:rgba(255,255,255,.58);font-size:.87rem;margin-top:.5rem;max-width:260px;line-height:1.55;">
+        Intelligence in motion.
+      </p>
+    </div>
+    <div>
+      <h4>Products</h4>
+      <ul>
+        <li><a href="../pages/medicare-supplement.html">Medicare Supplement</a></li>
+        <li><a href="../pages/preneed.html">Preneed</a></li>
+        <li><a href="../pages/final-expense.html">Final Expense</a></li>
+        <li><a href="../pages/annuity.html">Annuity</a></li>
+        <li><a href="../pages/ancillary-health.html">Ancillary Health</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="../pages/about.html">About Us</a></li>
+        <li><a href="../pages/case-study-growth.html">Case Studies</a></li>
+        <li><a href="../pages/join-the-team.html">Join the Team</a></li>
+        <li><a href="../pages/contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; <span id="footer-year"></span> Flowtelligence. All rights reserved.</div>
+</footer>
+<script>
+
+window.tlOpen = function(liId, ddId) {
+  var all = document.querySelectorAll('.tl-nav li');
+  var allDd = document.querySelectorAll('.tl-dd');
+  var li = document.getElementById(liId);
+  var dd = document.getElementById(ddId);
+  var wasOpen = dd.classList.contains('open');
+  all.forEach(function(l){ l.classList.remove('tlo'); });
+  allDd.forEach(function(d){ d.classList.remove('open'); });
+  if (!wasOpen) { li.classList.add('tlo'); dd.classList.add('open'); }
+};
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#tl-nav')) {
+    document.querySelectorAll('.tl-dd').forEach(function(d){ d.classList.remove('open'); });
+    document.querySelectorAll('.tl-nav li').forEach(function(l){ l.classList.remove('tlo'); });
+  }
+});
+window.sbToggle = function(btn) {
+  var li = btn.parentElement;
+  var isOpen = li.classList.contains('sbopen');
+  document.querySelectorAll('.sb-menu li.sbopen').forEach(function(l){ l.classList.remove('sbopen'); });
+  if (!isOpen) li.classList.add('sbopen');
+};
+var _ham = document.getElementById('hamburger');
+var _sb  = document.getElementById('sidebar');
+var _ov  = document.getElementById('sidebar-overlay');
+function _toggleSB(){ _ham.classList.toggle('open'); _sb.classList.toggle('open'); _ov.classList.toggle('open'); }
+if(_ham) _ham.addEventListener('click', _toggleSB);
+if(_ov)  _ov.addEventListener('click', _toggleSB);
+var _path = window.location.pathname.split('/').pop();
+document.querySelectorAll('.sb-menu a').forEach(function(a){
+  var href = a.getAttribute('href') || '';
+  if(href.split('/').pop().split('?')[0] === _path) a.classList.add('active');
+});
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+</script>
+<script src="../assets/js/chatbot.js"></script>
+<script src="../assets/js/features.js"></script>
+</body>
+</html>
