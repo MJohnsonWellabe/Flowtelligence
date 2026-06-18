@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MatchIQ — Wellabe Coverage Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset & Palette ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:   #0B1C2C;
+  --navy2:  #0C3B4F;
+  --teal:   #0B7A8C;
+  --aqua:   #12B5CC;
+  --gold:   #C4881A;
+  --wb:     #E8A020;   /* Wellabe yellow */
+  --wb-lt:  #FFF3DC;   /* Wellabe yellow pale */
+  --white:  #FFFFFF;
+  --cream:  #F5F2ED;
+  --gray:   #E2EBF0;
+  --muted:  #6A8899;
+  --ink:    #1A2E3D;
+  --serif:  'EB Garamond', Georgia, serif;
+  --sans:   'DM Sans', system-ui, sans-serif;
+}
+html,body{height:100%;background:var(--cream);font-family:var(--sans);color:var(--ink);}
+
+/* ── Header ── */
+.hdr{
+  background:var(--navy);border-bottom:2px solid var(--wb);
+  padding:.75rem 1.75rem;display:flex;align-items:center;gap:.85rem;
+  position:sticky;top:0;z-index:100;
+}
+.hdr-brand{font-family:var(--serif);font-size:1.35rem;font-weight:700;color:var(--white);line-height:1;}
+.hdr-brand span{color:var(--wb);}
+.hdr-sub{font-size:.6rem;color:rgba(255,255,255,.45);letter-spacing:.05em;margin-top:2px;}
+.hdr-badge{margin-left:auto;background:var(--wb);color:var(--navy);
+  font-size:.65rem;font-weight:700;padding:.28rem .8rem;border-radius:999px;letter-spacing:.06em;}
+
+/* ── Layout ── */
+.shell{
+  max-width:900px;margin:0 auto;padding:2rem 1.25rem;
+  display:grid;grid-template-columns:1fr 320px;gap:1.75rem;align-items:start;
+}
+@media(max-width:768px){.shell{grid-template-columns:1fr;}}
+
+/* ── Chat panel ── */
+.chat-panel{
+  background:var(--white);border-radius:16px;
+  box-shadow:0 4px 24px rgba(11,28,44,.1);
+  display:flex;flex-direction:column;min-height:520px;overflow:hidden;
+}
+.chat-top{
+  background:var(--navy2);padding:1rem 1.25rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.chat-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--wb);display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy);flex-shrink:0;
+}
+.chat-top-info h3{font-size:.92rem;font-weight:700;color:var(--white);margin:0;}
+.chat-top-info p{font-size:.72rem;color:rgba(255,255,255,.5);margin:0;}
+.chat-status{margin-left:auto;width:8px;height:8px;border-radius:50%;background:#48BB78;}
+
+.chat-msgs{flex:1;padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;overflow-y:auto;max-height:420px;}
+
+/* bubbles */
+.msg{display:flex;gap:.6rem;align-items:flex-end;}
+.msg.agent{flex-direction:row;}
+.msg.user{flex-direction:row-reverse;}
+.msg-av{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:700;
+}
+.msg.agent .msg-av{background:var(--wb);color:var(--navy);}
+.msg.user  .msg-av{background:var(--navy);color:var(--white);}
+.bubble{
+  max-width:82%;padding:.65rem .9rem;border-radius:12px;
+  font-size:.88rem;line-height:1.55;
+}
+.msg.agent .bubble{
+  background:var(--cream);color:var(--ink);
+  border-radius:2px 12px 12px 12px;
+}
+.msg.user .bubble{
+  background:var(--navy);color:var(--white);
+  border-radius:12px 2px 12px 12px;
+}
+.bubble strong{color:var(--wb);}
+.typing{display:flex;gap:4px;align-items:center;padding:.5rem .75rem;}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);
+  animation:bounce .9s infinite ease-in-out;}
+.typing span:nth-child(2){animation-delay:.15s;}
+.typing span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+/* choice buttons */
+.choices{display:flex;flex-wrap:wrap;gap:.5rem;padding:.5rem 0 .25rem;}
+.choice-btn{
+  padding:.48rem 1rem;border-radius:8px;border:1.5px solid var(--gray);
+  background:var(--white);color:var(--ink);font-family:var(--sans);
+  font-size:.83rem;font-weight:500;cursor:pointer;transition:all .18s;
+}
+.choice-btn:hover{border-color:var(--wb);color:var(--wb);background:var(--wb-lt);}
+.choice-btn.sel{border-color:var(--wb);background:var(--wb);color:var(--navy);font-weight:700;}
+
+/* free text input */
+.chat-input-row{
+  padding:.85rem 1.1rem;border-top:1px solid var(--gray);
+  display:flex;gap:.6rem;align-items:center;
+}
+.chat-input{
+  flex:1;border:1.5px solid var(--gray);border-radius:8px;
+  padding:.52rem .85rem;font-family:var(--sans);font-size:.88rem;color:var(--ink);
+  outline:none;transition:border-color .18s;
+}
+.chat-input:focus{border-color:var(--wb);}
+.chat-send{
+  background:var(--wb);border:none;border-radius:8px;
+  padding:.52rem 1.1rem;color:var(--navy);font-family:var(--sans);
+  font-size:.83rem;font-weight:700;cursor:pointer;transition:background .18s;white-space:nowrap;
+}
+.chat-send:hover{background:#F0B840;}
+.chat-send:disabled{background:var(--gray);color:var(--muted);cursor:default;}
+
+/* ── Right panel ── */
+.right-panel{display:flex;flex-direction:column;gap:1.25rem;}
+
+/* profile card */
+.profile-card{
+  background:var(--white);border-radius:14px;
+  box-shadow:0 3px 16px rgba(11,28,44,.08);
+  overflow:hidden;
+}
+.profile-hdr{
+  background:var(--navy);padding:.85rem 1.1rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.profile-initials{
+  width:44px;height:44px;border-radius:50%;background:var(--wb);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--navy);
+}
+.profile-name{font-family:var(--serif);font-size:1.05rem;font-weight:700;color:var(--white);}
+.profile-sub{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:1px;}
+.profile-body{padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.55rem;}
+.profile-row{display:flex;justify-content:space-between;align-items:center;}
+.profile-label{font-size:.75rem;color:var(--muted);font-weight:500;}
+.profile-val{font-size:.82rem;color:var(--ink);font-weight:600;}
+.badge{
+  font-size:.65rem;font-weight:700;padding:.18rem .55rem;border-radius:999px;
+  letter-spacing:.04em;
+}
+.badge-wb{background:var(--wb-lt);color:#7A5008;}
+.badge-teal{background:#E0F5F8;color:var(--teal);}
+.badge-gray{background:var(--gray);color:var(--muted);}
+
+/* results card */
+.results-card{
+  background:var(--white);border-radius:14px;
+  box-shadow:0 3px 16px rgba(11,28,44,.08);
+  overflow:hidden;transition:all .3s;
+}
+.results-hdr{
+  background:var(--navy2);padding:.85rem 1.1rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.results-hdr h3{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--white);}
+.results-hdr .score-pill{
+  background:var(--wb);color:var(--navy);
+  font-size:.72rem;font-weight:700;padding:.22rem .7rem;border-radius:999px;
+}
+.results-body{padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.85rem;}
+
+.rec-card{
+  border:1.5px solid var(--gray);border-radius:10px;padding:.85rem;
+  transition:border-color .2s,box-shadow .2s;
+}
+.rec-card:hover{border-color:var(--wb);box-shadow:0 3px 12px rgba(232,160,32,.15);}
+.rec-card.top{border-color:var(--wb);border-width:2px;}
+.rec-top-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;}
+.rec-num{
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;flex-shrink:0;
+}
+.rec-num.n1{background:var(--wb);color:var(--navy);}
+.rec-num.n2{background:var(--navy2);color:var(--white);}
+.rec-num.n3{background:var(--gray);color:var(--muted);}
+.rec-name{font-weight:700;font-size:.88rem;color:var(--ink);flex:1;}
+.best-badge{
+  font-size:.6rem;font-weight:700;background:var(--wb);color:var(--navy);
+  padding:.12rem .45rem;border-radius:4px;letter-spacing:.04em;
+}
+.rec-desc{font-size:.78rem;color:var(--muted);margin-bottom:.6rem;line-height:1.5;}
+
+/* tier / add-on blocks (rider-level matching) */
+.rec-config{
+  font-size:.76rem;color:var(--ink);background:var(--wb-lt);
+  border-radius:6px;padding:.4rem .6rem;margin-bottom:.6rem;line-height:1.45;
+}
+.rec-config strong{color:#7A5008;}
+.rec-block-h{
+  font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);margin:.55rem 0 .3rem;
+}
+
+.match-bar-wrap{margin-bottom:.55rem;}
+.match-bar-label{display:flex;justify-content:space-between;margin-bottom:.25rem;}
+.match-bar-label span{font-size:.7rem;color:var(--muted);}
+.match-bar-label strong{font-size:.78rem;color:var(--wb);font-weight:700;}
+.match-bar-track{height:7px;background:var(--gray);border-radius:4px;overflow:hidden;}
+.match-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--wb));
+  transition:width 1s ease;width:0;}
+.rec-reasons{list-style:none;display:flex;flex-direction:column;gap:.3rem;}
+.rec-reasons li{font-size:.75rem;color:var(--ink);display:flex;align-items:flex-start;gap:.4rem;}
+.rec-reasons li::before{content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--wb);flex-shrink:0;margin-top:.35rem;}
+.rec-addons li::before{background:var(--teal);}
+.rec-addons li strong{color:var(--ink);}
+.rec-cta{
+  margin-top:.7rem;width:100%;padding:.5rem;border-radius:7px;
+  background:var(--wb);border:none;color:var(--navy);
+  font-family:var(--sans);font-size:.8rem;font-weight:700;cursor:pointer;
+  transition:background .18s;
+}
+.rec-cta:hover{background:#F0B840;}
+
+/* modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(11,28,44,.6);
+  z-index:999;display:flex;align-items:center;justify-content:center;
+  padding:1rem;opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--white);border-radius:16px;padding:2rem;
+  max-width:400px;width:100%;
+  box-shadow:0 12px 48px rgba(11,28,44,.25);
+  transform:translateY(12px);transition:transform .25s;
+}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal h3{font-family:var(--serif);font-size:1.25rem;color:var(--navy);margin-bottom:.5rem;}
+.modal p{font-size:.88rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;}
+.modal-btns{display:flex;gap:.75rem;}
+.modal-ok{
+  flex:1;padding:.6rem;border-radius:8px;background:var(--wb);
+  border:none;color:var(--navy);font-family:var(--sans);font-size:.88rem;
+  font-weight:700;cursor:pointer;
+}
+.modal-cancel{
+  flex:1;padding:.6rem;border-radius:8px;
+  border:1.5px solid var(--gray);background:var(--white);
+  color:var(--muted);font-family:var(--sans);font-size:.88rem;cursor:pointer;
+}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="hdr">
+  <div>
+    <div class="hdr-brand">Match<span>IQ</span></div>
+    <div class="hdr-sub">Powered by Pylaex &nbsp;·&nbsp; Wellabe Coverage Finder</div>
+  </div>
+  <div class="hdr-badge">AGENT TOOL</div>
+</header>
+
+<div class="shell">
+
+  <!-- LEFT: Chat -->
+  <div class="chat-panel">
+    <div class="chat-top">
+      <div class="chat-avatar">M</div>
+      <div class="chat-top-info">
+        <h3>MatchIQ Assistant</h3>
+        <p>Wellabe coverage recommendation</p>
+      </div>
+      <div class="chat-status"></div>
+    </div>
+
+    <div class="chat-msgs" id="msgs"></div>
+
+    <div class="chat-input-row" id="inputRow">
+      <input class="chat-input" id="freeInput" placeholder="Type your answer..." autocomplete="off"/>
+      <button class="chat-send" id="sendBtn" onclick="sendFree()">Send</button>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+
+    <!-- Profile -->
+    <div class="profile-card">
+      <div class="profile-hdr">
+        <div class="profile-initials" id="pInitials">?</div>
+        <div>
+          <div class="profile-name" id="pName">New Applicant</div>
+          <div class="profile-sub" id="pSub">Gathering information...</div>
+        </div>
+      </div>
+      <div class="profile-body" id="profileBody">
+        <div class="profile-row">
+          <span class="profile-label">Age</span>
+          <span class="profile-val" id="pAge">—</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">State</span>
+          <span class="profile-val" id="pState">—</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">Tobacco</span>
+          <span class="profile-val" id="pTobacco">—</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">Enrollment</span>
+          <span id="pEnroll" class="badge badge-gray">Unknown</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">Priority</span>
+          <span class="profile-val" id="pPriority">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results (hidden until ready) -->
+    <div class="results-card hidden" id="resultsCard">
+      <div class="results-hdr">
+        <h3>Coverage Recommendations</h3>
+        <div class="score-pill" id="overallScore">Matching...</div>
+      </div>
+      <div class="results-body" id="resultsBody"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">Start Application?</h3>
+    <p id="modalBody"></p>
+    <div class="modal-btns">
+      <button class="modal-ok" onclick="closeModal()">Open Enroller</button>
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────
+const profile = {
+  name:'', age:null, state:'', tobacco:null,
+  concern:'', subNeed:'', budget:'', enrollment:'', healthStatus:'', priority:''
+};
+
+let step = 0;
+let awaitingFree = false;
+let freeKey = '';
+
+// ── Readable text helpers ──────────────────────────────────────────────────
+// Plain-language label for each primary concern, reused across the conversation.
+const CONCERN_TEXT = {
+  medical:'medical expenses', hospital:'hospital stays', dental:'dental care',
+  vision:'vision care', cancer:'a cancer diagnosis', accident:'accidents and injuries',
+  costs:'keeping costs manageable'
+};
+// A warm, specific opener that reacts to whichever concern was chosen in step 0.
+const CONCERN_INTRO = {
+  medical:"Medical bills are the number-one thing people want a handle on — that's a smart place to start.",
+  hospital:"A hospital stay is one of those things that can turn your finances upside down fast, so it's good you're thinking ahead.",
+  dental:"Dental has a way of sneaking up on people — it adds up quickly and most health plans barely touch it.",
+  vision:"Good eye care makes a bigger difference day to day than most people expect — glad you're prioritizing it.",
+  cancer:"Cancer is something a lot of families worry about but not everyone plans for — it's one of the most important conversations you can have.",
+  accident:"Accidents never happen at a convenient time, and the bills pile up quickly — smart of you to get ahead of it.",
+  costs:"Keeping coverage affordable and predictable is really what it's all about — let's make every dollar work hard for you."
+};
+// How we frame each concern in the final recommendation.
+const CONCERN_FRAMING = {
+  medical:"how quickly everyday medical costs stack up",
+  hospital:"what a hospital stay can really run",
+  dental:"how fast dental work adds up",
+  vision:"wanting your eye care reliably covered",
+  cancer:"wanting to be ready if a diagnosis ever comes",
+  accident:"the unexpected costs an accident brings",
+  costs:"wanting coverage that stays predictable and affordable"
+};
+// One-line acknowledgment for each sub-need (drives the warm reply on the next turn).
+const SUBNEED_ACK = {
+  // hospital
+  er:"The ER is exactly where the surprise bills start.",
+  surgery:"Procedures are right where a fixed cash benefit earns its keep.",
+  ambulance:"That ride alone can run into four figures — worth covering.",
+  recovery:"The recovery side is the part people most often forget to plan for.",
+  // cancer
+  diagnosis:"Being ready the moment of diagnosis changes everything.",
+  heart:"Smart to cover heart attack and stroke alongside it — those are the big three.",
+  income:"Protecting your paycheck during treatment is a huge piece of this.",
+  screening:"Catching things early is the best protection there is.",
+  // accident
+  active:"An active life is a good life — let's protect it.",
+  family:"With kids around, the occasional accident just comes with the territory.",
+  missedwork:"Lost paychecks are often a bigger hit than the medical bills.",
+  erbills:"Those ER bills add up faster than anyone expects.",
+  // medical
+  visits:"All those visits and copays really add up over a year.",
+  rx:"Prescriptions are a real monthly line item — good to plan around.",
+  deductibles:"Deductibles and copays are exactly what we can soften.",
+  broad:"A broad safety net it is.",
+  // dental
+  prevention:"Staying ahead of problems is the cheapest dentistry there is.",
+  majorwork:"Big procedures are where the real costs hide.",
+  dentures:"Let's make sure that's well covered.",
+  bundle:"Smart to handle teeth, eyes, and ears together.",
+  // vision
+  glasses:"Exams and new lenses every year add up.",
+  contacts:"Contacts are a steady cost we can offset.",
+  // costs
+  predictable:"A steady, predictable premium it is.",
+  bigevent:"Protecting your savings from one big event is exactly the right instinct.",
+  finalexpenses:"Making sure your family isn't left with the bill is a real gift to them.",
+  retirement:"Let's make sure your income comfortably outlasts you."
+};
+
+function firstName(){ return (profile.name||'').trim().split(/\s+/)[0] || ''; }
+function concernText(c){ return CONCERN_TEXT[c] || 'your coverage'; }
+function ageBandAck(age){
+  if(age<40) return "Starting this early is genuinely smart.";
+  if(age<62) return "Good age to lock this in at a strong rate.";
+  if(age<65) return "You're right around an important planning window.";
+  return "Perfect — thank you.";
+}
+
+// Sub-need options per concern. The chosen value is stored in profile.subNeed and
+// is the primary signal for which riders / components we recommend.
+const SUBNEED_OPTIONS = {
+  hospital:[
+    {label:'The ER and urgent-care trips', val:'er'},
+    {label:'A surgery or procedure', val:'surgery'},
+    {label:'The ambulance ride', val:'ambulance'},
+    {label:'Recovery and rehab afterward', val:'recovery'},
+  ],
+  cancer:[
+    {label:'The diagnosis itself', val:'diagnosis'},
+    {label:'Heart attack & stroke too', val:'heart'},
+    {label:'Income while I&#39;m out of work', val:'income'},
+    {label:'Catching it early (screenings)', val:'screening'},
+  ],
+  accident:[
+    {label:'An active lifestyle / sports', val:'active'},
+    {label:'The kids or grandkids', val:'family'},
+    {label:'Missed work from an injury', val:'missedwork'},
+    {label:'Just the ER bills', val:'erbills'},
+  ],
+  medical:[
+    {label:'Doctor & specialist visits', val:'visits'},
+    {label:'Prescriptions', val:'rx'},
+    {label:'The deductibles & copays', val:'deductibles'},
+    {label:'Everything, broadly', val:'broad'},
+  ],
+  dental:[
+    {label:'Cleanings & prevention', val:'prevention'},
+    {label:'A big procedure (crown/implant)', val:'majorwork'},
+    {label:'Dentures', val:'dentures'},
+    {label:'My eyes & hearing too', val:'bundle'},
+  ],
+  vision:[
+    {label:'Exams & glasses', val:'glasses'},
+    {label:'Contacts', val:'contacts'},
+    {label:'My teeth & hearing too', val:'bundle'},
+  ],
+  costs:[
+    {label:'A predictable monthly cost', val:'predictable'},
+    {label:'Protecting savings from a big event', val:'bigevent'},
+    {label:'Final expenses / not burdening family', val:'finalexpenses'},
+    {label:'Retirement income', val:'retirement'},
+  ]
+};
+function subNeedChoices(){ return SUBNEED_OPTIONS[profile.concern] || SUBNEED_OPTIONS.medical; }
+
+// ── Wellabe Products ──────────────────────────────────────────────────────
+// Each product may define `tiers` (plan-level configuration chosen by pickTier)
+// and `riders` (optional components chosen by pickRiders). `fits(p)` predicates
+// read the profile — chiefly subNeed, age, health, tobacco, budget.
+const PRODUCTS = {
+  medsupp:{
+    name:'Medicare Supplement',
+    short:'Medicare Supplement',
+    desc:'Covers Medicare Part A & B gaps — deductibles, copays, and coinsurance — so your out-of-pocket costs become predictable.',
+    eligibility:'Age 65+ enrolled in Medicare Part B',
+    tiers:[
+      {id:'HDG',label:'High-Deductible Plan G',desc:'Lowest premium; you cover a yearly deductible first.',fits:p=>p.budget==='low'},
+      {id:'N',label:'Plan N',desc:'Lower premium with small office and ER copays.',fits:p=>p.budget==='mid'},
+      {id:'G',label:'Plan G',desc:'The most comprehensive — covers nearly every gap.',fits:p=>true},
+    ],
+    riders:[
+      {id:'dvh',label:'Add Dental–Vision–Hearing',desc:'Original Medicare leaves these out entirely.',fits:p=>true},
+      {id:'hi',label:'Add Hospital Indemnity',desc:'Pays cash toward the Part A deductible each stay.',fits:p=>p.concern==='hospital'||p.healthStatus==='chronic'||p.healthStatus==='fair'},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.age >= 65) s += 45;
+      else if(p.age >= 62) s += 15;
+      if(p.enrollment === 'OE') s += 25;
+      if(p.enrollment === 'GI') s += 18;
+      if(p.concern === 'medical') s += 20;
+      if(p.concern === 'costs') s += 18;
+      if(p.subNeed === 'deductibles') s += 12;
+      if(p.subNeed === 'predictable') s += 10;
+      if(p.subNeed === 'broad') s += 8;
+      if(p.tobacco) s -= 5;
+      return Math.min(s, 98);
+    },
+    reasons:function(p){
+      const r=[];
+      if(p.age>=65) r.push('Age 65+ qualifies you for Medicare Supplement enrollment');
+      if(p.enrollment==='OE') r.push('Open Enrollment — guaranteed acceptance, no health questions');
+      if(p.concern==='medical') r.push('Speaks directly to your concern about medical expenses');
+      if(p.concern==='costs'||p.subNeed==='predictable') r.push('Turns most hospital and doctor bills into one predictable premium');
+      if(r.length===0) r.push('A strong fit as you approach Medicare eligibility');
+      return r.slice(0,3);
+    }
+  },
+  hospital:{
+    name:'Hospital Indemnity',
+    short:'Hospital Indemnity',
+    desc:'Pays a fixed cash benefit directly to you for each day of a covered hospital stay — use the money however you need.',
+    eligibility:'Ages 18–84, simplified underwriting',
+    tiers:[
+      {id:'b100',label:'$100/day benefit',desc:'Lighter premium, solid core protection.',fits:p=>p.budget==='low'},
+      {id:'b200',label:'$200/day benefit',desc:'A balanced level of daily cash.',fits:p=>p.budget==='mid'},
+      {id:'b300',label:'$300/day benefit',desc:'The strongest daily cash benefit.',fits:p=>true},
+    ],
+    riders:[
+      {id:'er',label:'Emergency Room & Urgent Care rider',desc:'Cash for ER and urgent-care visits, admitted or not.',fits:p=>p.subNeed==='er'||p.concern==='accident'},
+      {id:'surg',label:'Outpatient Surgery rider',desc:'Pays a benefit for same-day procedures.',fits:p=>p.subNeed==='surgery'},
+      {id:'amb',label:'Ambulance rider',desc:'Covers ground or air ambulance transport.',fits:p=>p.subNeed==='ambulance'||p.age>=70},
+      {id:'snf',label:'Skilled Nursing & Observation rider',desc:'Extends benefits to rehab and observation stays.',fits:p=>p.subNeed==='recovery'||p.healthStatus==='chronic'||p.age>=75},
+      {id:'lump',label:'Lump-Sum Cancer & Critical Illness rider',desc:'Adds a cash payout if a major illness is diagnosed.',fits:p=>p.concern==='cancer'||p.tobacco},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.age>=50 && p.age<=84) s += 30;
+      if(p.concern==='hospital') s += 40;
+      if(p.concern==='medical') s += 22;
+      if(p.concern==='costs') s += 16;
+      if(['er','surgery','ambulance','recovery'].includes(p.subNeed)) s += 12;
+      if(p.healthStatus==='fair') s += 12;
+      if(p.tobacco) s -= 5;
+      return Math.min(s, 96);
+    },
+    reasons:function(p){
+      const r=[];
+      r.push('Cash paid directly to you — spend it on anything, from bills to groceries');
+      if(p.concern==='hospital') r.push('Directly answers your concern about hospital stays');
+      if(p.healthStatus==='fair') r.push('Simplified underwriting — no medical exam required');
+      if(p.age>=65) r.push('Pairs perfectly with Medicare to cover deductibles and copays');
+      return r.slice(0,3);
+    }
+  },
+  dental:{
+    name:'Dental Insurance',
+    short:'Wellabe Dental',
+    desc:'Preventive, basic, and major dental coverage — cleanings, X-rays, fillings, crowns, and dentures, with no waiting period on preventive care.',
+    eligibility:'Ages 18–79, guaranteed issue available',
+    tiers:[
+      {id:'major',label:'Comprehensive (includes major work)',desc:'Adds crowns, root canals, and dentures.',fits:p=>p.subNeed==='majorwork'||p.subNeed==='dentures'||p.age>=50||p.healthStatus==='chronic'},
+      {id:'prev',label:'Preventive + Basic',desc:'Cleanings, X-rays, and fillings.',fits:p=>true},
+    ],
+    riders:[
+      {id:'vis',label:'Vision add-on',desc:'Bundles annual exams and an eyewear allowance.',fits:p=>p.subNeed==='bundle'||p.concern==='vision'},
+      {id:'hear',label:'Hearing add-on',desc:'Covers hearing exams and hearing aids.',fits:p=>p.age>=65},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.concern==='dental') s += 55;
+      if(p.concern==='costs') s += 12;
+      if(['prevention','majorwork','dentures','bundle'].includes(p.subNeed)) s += 8;
+      if(p.age>=50) s += 10;
+      return Math.min(s, 92);
+    },
+    reasons:function(p){
+      const r=[];
+      if(p.concern==='dental') r.push('Directly answers your dental care concern');
+      r.push('No waiting period on preventive cleanings and X-rays');
+      if(p.subNeed==='majorwork'||p.subNeed==='dentures'||p.age>=50) r.push('Major coverage for crowns, root canals, and dentures');
+      else r.push('Affordable, predictable preventive coverage');
+      return r.slice(0,3);
+    }
+  },
+  vision:{
+    name:'Vision Insurance',
+    short:'Wellabe Vision',
+    desc:'Covers annual eye exams, frames, lenses, and contacts, with allowances at major optical retailers.',
+    eligibility:'Ages 18–79, guaranteed issue',
+    tiers:[
+      {id:'plus',label:'Plus (higher allowance)',desc:'Larger frame and contact allowances.',fits:p=>p.budget==='high'||p.budget==='any'},
+      {id:'basic',label:'Basic',desc:'Exam plus a standard eyewear allowance.',fits:p=>true},
+    ],
+    riders:[
+      {id:'den',label:'Dental add-on',desc:'Bundles cleanings and basic dental work.',fits:p=>p.subNeed==='bundle'||p.concern==='dental'},
+      {id:'hear',label:'Hearing add-on',desc:'Covers hearing exams and hearing aids.',fits:p=>p.age>=65},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.concern==='vision') s += 55;
+      if(p.concern==='costs') s += 10;
+      if(['glasses','contacts','bundle'].includes(p.subNeed)) s += 8;
+      if(p.age>=50) s += 8;
+      return Math.min(s, 90);
+    },
+    reasons:function(p){
+      const r=[];
+      if(p.concern==='vision') r.push('Directly answers your vision care concern');
+      r.push('Annual exam plus an allowance for frames or contacts');
+      r.push('Guaranteed issue — no health questions');
+      return r.slice(0,3);
+    }
+  },
+  cancer:{
+    name:'Cancer & Critical Illness',
+    short:'Cancer / Critical Illness',
+    desc:'Pays a lump-sum cash benefit upon first diagnosis of a covered condition — use it for treatment, travel, lost income, or anything else.',
+    eligibility:'Ages 18–69, simplified underwriting',
+    tiers:[
+      {id:'l10',label:'$10,000 lump sum',desc:'Affordable core protection.',fits:p=>p.budget==='low'},
+      {id:'l25',label:'$25,000 lump sum',desc:'A meaningful cash cushion.',fits:p=>p.budget==='mid'},
+      {id:'l50',label:'$50,000 lump sum',desc:'Maximum cash at diagnosis.',fits:p=>true},
+    ],
+    riders:[
+      {id:'hs',label:'Heart Attack & Stroke rider',desc:'Extends the lump sum to cardiac and stroke events.',fits:p=>p.subNeed==='heart'||p.age>=50||p.tobacco},
+      {id:'rec',label:'Recurrence Benefit rider',desc:'Pays again if cancer returns after remission.',fits:p=>p.age>=40},
+      {id:'well',label:'Wellness & Screening rider',desc:'Cash back for staying on top of screenings.',fits:p=>p.subNeed==='screening'||p.healthStatus==='good'},
+      {id:'inc',label:'Income & ICU rider',desc:'Adds benefits for income loss and intensive care.',fits:p=>p.subNeed==='income'},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.concern==='cancer') s += 60;
+      if(['diagnosis','heart','income','screening'].includes(p.subNeed)) s += 10;
+      if(p.tobacco) s += 10; // higher need
+      if(p.age>=40 && p.age<=69) s += 15;
+      return Math.min(s, 96);
+    },
+    reasons:function(p){
+      const r=[];
+      if(p.concern==='cancer') r.push('Directly answers your concern about a cancer diagnosis');
+      r.push('Lump sum paid at diagnosis — no receipts, no restrictions');
+      if(p.tobacco) r.push('Tobacco use raises the risk, so this protection matters even more');
+      if(p.subNeed==='income') r.push('Helps replace lost income during treatment and recovery');
+      return r.slice(0,3);
+    }
+  },
+  accident:{
+    name:'Accident Insurance',
+    short:'Accident Insurance',
+    desc:'Pays cash benefits for injuries from covered accidents — ER visits, fractures, dislocations, ambulance, and more — on top of any other coverage.',
+    eligibility:'Ages 18–69, simplified underwriting',
+    tiers:[
+      {id:'a1',label:'Core benefit level',desc:'Solid everyday accident protection.',fits:p=>p.budget==='low'},
+      {id:'a2',label:'Enhanced benefit level',desc:'Higher payouts across the board.',fits:p=>true},
+    ],
+    riders:[
+      {id:'disab',label:'Accident Disability Income rider',desc:'Replaces income if an injury keeps you off work.',fits:p=>p.subNeed==='missedwork'&&p.age<65},
+      {id:'sick',label:'Sickness & Hospital rider',desc:'Extends benefits to illness-related stays.',fits:p=>p.subNeed==='family'||p.concern==='hospital'},
+      {id:'well',label:'Wellness Benefit rider',desc:'Cash back for routine checkups.',fits:p=>p.healthStatus==='good'},
+      {id:'er',label:'Higher ER & Fracture rider',desc:'Boosts payouts for ER visits and broken bones.',fits:p=>p.subNeed==='active'||p.subNeed==='erbills'},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.concern==='accident') s += 55;
+      if(p.concern==='costs') s += 15;
+      if(['active','family','missedwork','erbills'].includes(p.subNeed)) s += 8;
+      if(p.age>=18 && p.age<=65) s += 12;
+      return Math.min(s, 90);
+    },
+    reasons:function(p){
+      const r=[];
+      if(p.concern==='accident') r.push('Directly answers your concern about accident costs');
+      r.push('Pays for ER visits, fractures, ambulance, and follow-up care');
+      r.push('Pays in addition to any existing health plan');
+      return r.slice(0,3);
+    }
+  },
+  stc:{
+    name:'Short-Term / Recovery Care',
+    short:'Short-Term Recovery Care',
+    desc:'Pays cash benefits for short-term care after a hospital stay, illness, or injury — home health, nursing facility, or recovery support that Medicare often won&#39;t cover.',
+    eligibility:'Ages 50–84, simplified underwriting',
+    tiers:[
+      {id:'12',label:'12-month benefit period',desc:'The longest runway of support.',fits:p=>p.budget==='high'||p.budget==='any'},
+      {id:'6',label:'6-month benefit period',desc:'A balanced level of coverage.',fits:p=>p.budget==='mid'},
+      {id:'3',label:'3-month benefit period',desc:'Affordable, focused recovery coverage.',fits:p=>true},
+    ],
+    riders:[
+      {id:'home',label:'Home Health Care rider',desc:'Brings care to you at home.',fits:p=>p.age>=65||p.subNeed==='recovery'},
+      {id:'fac',label:'Facility Care rider',desc:'Covers a nursing or rehab facility stay.',fits:p=>p.age>=70},
+      {id:'rest',label:'Restoration of Benefits rider',desc:'Resets your benefit after you recover.',fits:p=>true},
+      {id:'resp',label:'Caregiver & Respite rider',desc:'Supports a family member providing care.',fits:p=>p.healthStatus==='chronic'},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.age>=60) s += 25;
+      if(p.age>=70) s += 10;
+      if(p.healthStatus==='fair') s += 15;
+      if(p.healthStatus==='chronic') s += 22;
+      if(p.concern==='costs') s += 12;
+      if(p.concern==='hospital') s += 15;
+      if(p.concern==='medical') s += 10;
+      if(p.subNeed==='recovery') s += 18;
+      if(p.subNeed==='bigevent') s += 12;
+      return Math.min(s, 90);
+    },
+    reasons:function(p){
+      const r=[];
+      r.push('Covers short-term care that Medicare and most health plans leave out');
+      if(p.healthStatus==='chronic') r.push('Especially valuable when managing ongoing conditions');
+      if(p.age>=65) r.push('Keeps a short recovery from draining your savings');
+      else r.push('Protects your savings from a sudden recovery period');
+      return r.slice(0,3);
+    }
+  },
+  finalexpense:{
+    name:'Final Expense Whole Life',
+    short:'Final Expense Whole Life',
+    desc:'Whole life coverage built to handle funeral, burial, and final medical costs, so your family isn&#39;t left with the bill. Benefits never expire and premiums never rise.',
+    eligibility:'Ages 45–85, simplified or guaranteed issue',
+    tiers:[
+      {id:'firstday',label:'First-Day Benefit',desc:'Full coverage from day one.',fits:p=>p.healthStatus==='good'},
+      {id:'graded',label:'Graded Benefit',desc:'Benefit grows over the first couple of years.',fits:p=>p.healthStatus==='fair'},
+      {id:'gi',label:'Guaranteed Issue',desc:'Acceptance guaranteed, no health questions.',fits:p=>true},
+    ],
+    riders:[
+      {id:'adb',label:'Accidental Death Benefit rider',desc:'Pays an extra benefit for a covered accident.',fits:p=>p.age<70},
+      {id:'gc',label:'Grandchild rider',desc:'Adds a small amount of coverage for a grandchild.',fits:p=>p.age>=50},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.concern==='costs') s += 22;
+      if(p.subNeed==='finalexpenses') s += 45;
+      if(p.age>=50) s += 15;
+      if(p.age>=65) s += 10;
+      if(p.healthStatus==='chronic') s += 10;
+      return Math.min(s, 94);
+    },
+    reasons:function(p){
+      const r=[];
+      r.push('Keeps funeral and final costs off your family&#39;s shoulders');
+      r.push('Premiums never rise and the benefit never expires');
+      if(p.healthStatus==='chronic') r.push('Guaranteed-issue options accept you regardless of health');
+      else r.push('Simple application with quick approval');
+      return r.slice(0,3);
+    }
+  },
+  annuity:{
+    name:'Wellabe Annuity',
+    short:'Fixed Annuity',
+    desc:'A fixed annuity that grows your savings on a tax-deferred basis and can turn into guaranteed income you can&#39;t outlive.',
+    eligibility:'Typically ages 50+',
+    riders:[
+      {id:'income',label:'Guaranteed Income rider',desc:'Locks in a paycheck for life.',fits:p=>p.age>=60},
+      {id:'liquid',label:'Penalty-Free Withdrawal rider',desc:'Access a portion each year without penalty.',fits:p=>true},
+    ],
+    scoreBase:function(p){
+      let s = 0;
+      if(p.subNeed==='retirement') s += 50;
+      if(p.concern==='costs') s += 15;
+      if(p.age>=55) s += 15;
+      if(p.budget==='high') s += 10;
+      return Math.min(s, 88);
+    },
+    reasons:function(p){
+      const r=[];
+      r.push('Grows your savings tax-deferred with no market risk');
+      r.push('Can convert into guaranteed income you can&#39;t outlive');
+      if(p.age>=60) r.push('Well-timed as you move toward or into retirement');
+      return r.slice(0,3);
+    }
+  }
+};
+
+// ── Conversation Flow ─────────────────────────────────────────────────────
+const FLOW = [
+  // 0 — Welcome / concern
+  {
+    agent:"Hi — I&#39;m MatchIQ, and I&#39;m here to help you find the Wellabe coverage that actually fits your life, not just a one-size-fits-all plan. To start: <strong>what&#39;s weighing on you most right now?</strong>",
+    choices:[
+      {label:'Medical expenses & doctor visits', val:'medical'},
+      {label:'A hospital stay', val:'hospital'},
+      {label:'Dental care', val:'dental'},
+      {label:'Vision / eye care', val:'vision'},
+      {label:'Cancer diagnosis', val:'cancer'},
+      {label:'Accident or injury', val:'accident'},
+      {label:'General cost of coverage', val:'costs'},
+    ],
+    key:'concern',
+    next:1
+  },
+  // 1 — Name (acknowledges the concern)
+  {
+    agentFn:function(){
+      return (CONCERN_INTRO[profile.concern]||"That&#39;s a great thing to plan for.") +
+        " First though — <strong>what should I call you?</strong>";
+    },
+    free:true, freeKey:'name', placeholder:"Your first name",
+    next:2
+  },
+  // 2 — Sub-need (NEW: drives rider/component matching)
+  {
+    agentFn:function(){
+      const fn = firstName();
+      return "Thanks" + (fn ? ", " + fn : "") + ". When you think about " +
+        concernText(profile.concern) + ", <strong>which part matters most to you?</strong>";
+    },
+    choicesFn:subNeedChoices,
+    key:'subNeed', next:3
+  },
+  // 3 — Age (acknowledges the sub-need)
+  {
+    agentFn:function(){
+      return (SUBNEED_ACK[profile.subNeed]||"That really helps me zero in.") +
+        " <strong>How old are you?</strong>";
+    },
+    free:true, freeKey:'age', placeholder:"Your age (e.g. 67)",
+    next:4
+  },
+  // 4 — State (acknowledges age)
+  {
+    agentFn:function(){
+      return ageBandAck(profile.age) +
+        " <strong>What state do you call home?</strong> Rates and plans are set state by state, so this helps me be precise.";
+    },
+    free:true, freeKey:'state', placeholder:"State (e.g. Iowa)",
+    next:5
+  },
+  // 5 — Tobacco (acknowledges state)
+  {
+    agentFn:function(){
+      return "Got it — " + (profile.state||'thanks') +
+        ". <strong>Do you smoke or use any tobacco or nicotine products?</strong> It only affects a couple of your options — I just want the full picture.";
+    },
+    choices:[
+      {label:'No', val:false},
+      {label:'Yes', val:true},
+    ],
+    key:'tobacco', next:6
+  },
+  // 6 — Health (acknowledges tobacco)
+  {
+    agentFn:function(){
+      const ack = profile.tobacco
+        ? "Thanks for being straight with me."
+        : "Good — that keeps every option wide open for you.";
+      return ack + " <strong>How&#39;s your overall health these days?</strong> This just helps me point you to plans that&#39;ll fit cleanly, with no surprises later on.";
+    },
+    choices:[
+      {label:'Excellent / Very Good', val:'good'},
+      {label:'Good / Fair', val:'fair'},
+      {label:'Managing ongoing conditions', val:'chronic'},
+    ],
+    key:'healthStatus', next:7
+  },
+  // 7 — Enrollment / Medicare (acknowledges health, age-aware, direct-to-client)
+  {
+    agentFn:function(){
+      const ack = {
+        good:"Great — that&#39;s good to hear.",
+        fair:"Okay, that&#39;s helpful to know.",
+        chronic:"Thanks — that&#39;s exactly the kind of thing worth planning around."
+      }[profile.healthStatus] || "Thanks.";
+      if(profile.age>=65){
+        return ack + " Since you&#39;re " + profile.age + ", Medicare&#39;s already in the picture for you. <strong>Do you know where you are in your enrollment window?</strong> It makes a real difference in what&#39;s available to you.";
+      } else if(profile.age>=62){
+        return ack + " You&#39;re getting close to Medicare age — just a few years out. <strong>Any special situations on the horizon, like losing employer coverage?</strong>";
+      } else {
+        return ack + " At " + profile.age + ", Medicare isn&#39;t in play yet. <strong>Do you already have coverage we should build around, or are you starting fresh?</strong>";
+      }
+    },
+    choices:[
+      {label:'Open Enrollment (just turned 65 or enrolled in Part B)', val:'OE'},
+      {label:'Guaranteed Issue (losing group coverage, etc.)', val:'GI'},
+      {label:'Underwritten (standard health questions)', val:'UW'},
+      {label:'Not sure yet', val:'unknown'},
+    ],
+    key:'enrollment', next:8
+  },
+  // 8 — Budget (acknowledges enrollment, value-framed)
+  {
+    agentFn:function(){
+      const ack = {
+        OE:"Open enrollment is the best seat in the house — guaranteed acceptance.",
+        GI:"A guaranteed-issue window is genuinely valuable — let&#39;s make the most of it.",
+        UW:"Standard underwriting, no problem at all.",
+        unknown:"No worries — we can sort the timing out together."
+      }[profile.enrollment] || "Good to know.";
+      return ack + " Last thing — <strong>what kind of monthly investment are we working with?</strong> There are strong options at every level, so there&#39;s truly no wrong answer here.";
+    },
+    choices:[
+      {label:'Under $50/month', val:'low'},
+      {label:'$50–$150/month', val:'mid'},
+      {label:'$150–$300/month', val:'high'},
+      {label:'Not a primary concern', val:'any'},
+    ],
+    key:'budget', next:9
+  },
+  // 9 — Results (warm wrap-up)
+  {
+    agentFn: function(){
+      const fn = firstName();
+      return "That&#39;s everything I need" + (fn ? ", " + fn : "") +
+        ". Based on what you&#39;ve told me, I&#39;ve got a clear picture of what&#39;s going to fit you best. <strong>Give me just a moment…</strong>";
+    },
+    isResult:true,
+    next:-1
+  }
+];
+
+/* ────────────────────────────────────────────────────────────────────────
+   50+ ROBUST PATHS — how distinct recommendations are reached
+   Each end-state = product + tier + rider-set + tailored narrative. A few
+   representative paths (concern → sub-need → lead product · key config):
+     hospital·er·67       → Hospital Indemnity $300/day + ER & Ambulance riders
+     hospital·surgery·58  → Hospital Indemnity + Outpatient Surgery rider
+     hospital·recovery·72 → Hospital Indemnity + Skilled Nursing rider (+STC surfaces)
+     hospital·ambulance·80→ Hospital Indemnity + Ambulance rider
+     cancer·diagnosis·55  → Cancer/CI $50k + Recurrence rider
+     cancer·heart·60·tob  → Cancer/CI + Heart Attack & Stroke rider
+     cancer·income·47     → Cancer/CI + Income & ICU rider
+     cancer·screening·42  → Cancer/CI + Wellness & Screening rider
+     accident·active·34   → Accident Enhanced + Higher ER & Fracture rider
+     accident·missedwork·45→ Accident + Disability Income rider
+     accident·family·39   → Accident + Sickness & Hospital rider
+     medical·deductibles·67·OE → Medicare Supplement Plan G
+     medical·deductibles·67·low→ Medicare Supplement High-Deductible G
+     medical·rx·61        → Hospital Indemnity / Med Supp pairing
+     dental·majorwork·52  → Dental Comprehensive + Hearing add-on (65+)
+     dental·dentures·70   → Dental Comprehensive + Vision/Hearing add-ons
+     dental·bundle·66     → Dental + Vision & Hearing add-ons
+     vision·glasses·48    → Vision Basic
+     vision·bundle·67     → Vision + Dental & Hearing add-ons
+     costs·predictable·68 → Medicare Supplement Plan N
+     costs·bigevent·63    → Short-Term Recovery Care / Cancer pairing
+     costs·finalexpenses·74·chronic → Final Expense Guaranteed Issue + Grandchild rider
+     costs·finalexpenses·58·good    → Final Expense First-Day + Accidental Death rider
+     costs·retirement·60  → Fixed Annuity + Guaranteed Income rider
+   …each further modulated by age band (5), health (3), tobacco (2), and
+   budget (4), which swap tiers and riders — comfortably 50+ distinct outcomes.
+   ──────────────────────────────────────────────────────────────────────── */
+
+// ── Engine ────────────────────────────────────────────────────────────────
+function computeMatches(){
+  const scored = Object.entries(PRODUCTS).map(([k,p])=>({
+    key:k, product:p, score:p.scoreBase(profile)
+  }));
+  // Budget adjustment
+  if(profile.budget==='low'){
+    scored.find(x=>x.key==='medsupp') && (scored.find(x=>x.key==='medsupp').score -= 10);
+  }
+  scored.sort((a,b)=>b.score-a.score);
+  return scored.filter(x=>x.score>15).slice(0,3);
+}
+
+function overallMatchScore(matches){
+  if(!matches.length) return 0;
+  return Math.round(matches[0].score * 0.6 + (matches[1]?.score||0)*0.25 + (matches[2]?.score||0)*0.15);
+}
+
+// Choose the plan-level configuration (first tier whose predicate matches).
+function pickTier(product){
+  if(!product.tiers) return null;
+  return product.tiers.find(t=>t.fits(profile)) || product.tiers[product.tiers.length-1];
+}
+// Choose the riders / components that fit this person (capped at 3).
+function pickRiders(product){
+  if(!product.riders) return [];
+  return product.riders.filter(r=>r.fits(profile)).slice(0,3);
+}
+
+// ── DOM helpers ───────────────────────────────────────────────────────────
+const msgsEl = document.getElementById('msgs');
+const inputRow = document.getElementById('inputRow');
+const freeInput = document.getElementById('freeInput');
+const sendBtn = document.getElementById('sendBtn');
+
+function scrollBot(){ msgsEl.scrollTop = msgsEl.scrollHeight; }
+
+function addMsg(role, html){
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  const av = document.createElement('div');
+  av.className = 'msg-av';
+  av.textContent = role==='agent' ? 'M' : 'A';
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  b.innerHTML = html;
+  d.appendChild(av); d.appendChild(b);
+  msgsEl.appendChild(d);
+  scrollBot();
+  return d;
+}
+
+function addTyping(){
+  const d = document.createElement('div');
+  d.className = 'msg agent'; d.id = 'typing';
+  d.innerHTML = '<div class="msg-av">M</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  msgsEl.appendChild(d); scrollBot();
+}
+function removeTyping(){ const t=document.getElementById('typing'); if(t) t.remove(); }
+
+function addChoices(choices, key, nextStep){
+  const d = document.createElement('div');
+  d.className = 'choices';
+  choices.forEach(c=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = c.label;
+    btn.onclick = function(){
+      // Disable all
+      d.querySelectorAll('.choice-btn').forEach(b=>{ b.disabled=true; b.classList.remove('sel'); });
+      btn.classList.add('sel');
+      // Record
+      profile[key] = c.val;
+      updateProfile();
+      // User bubble
+      setTimeout(()=>{
+        d.remove();
+        addMsg('user', c.label);
+        setInputVisible(false);
+        setTimeout(()=>{ addTyping(); setTimeout(()=>{ removeTyping(); advanceStep(nextStep); },700); },300);
+      },180);
+    };
+    d.appendChild(btn);
+  });
+  msgsEl.appendChild(d);
+  scrollBot();
+}
+
+function setInputVisible(show){
+  inputRow.style.display = show ? 'flex' : 'none';
+}
+
+function sendFree(){
+  const val = freeInput.value.trim();
+  if(!val) return;
+  profile[freeKey] = freeKey==='age' ? parseInt(val) : val;
+  updateProfile();
+  freeInput.value = '';
+  addMsg('user', val);
+  setInputVisible(false);
+  addTyping();
+  setTimeout(()=>{ removeTyping(); advanceStep(FLOW[step].next); }, 700);
+}
+
+freeInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendFree(); });
+
+// ── Profile update ────────────────────────────────────────────────────────
+function initials(name){
+  if(!name) return '?';
+  return name.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+}
+
+function updateProfile(){
+  if(profile.name){
+    document.getElementById('pInitials').textContent = initials(profile.name);
+    document.getElementById('pName').textContent = profile.name;
+  }
+  if(profile.age) document.getElementById('pAge').textContent = profile.age;
+  if(profile.state) document.getElementById('pState').textContent = profile.state;
+  if(profile.tobacco !== null) document.getElementById('pTobacco').textContent = profile.tobacco ? 'Yes' : 'No';
+
+  if(profile.name && profile.age){
+    document.getElementById('pSub').textContent = profile.age + (profile.state ? ' · ' + profile.state : '');
+  }
+
+  const enrollEl = document.getElementById('pEnroll');
+  if(profile.enrollment){
+    const labels = {OE:'Open Enrollment',GI:'Guaranteed Issue',UW:'Underwritten',unknown:'Not Sure'};
+    enrollEl.textContent = labels[profile.enrollment]||profile.enrollment;
+    enrollEl.className = 'badge ' + (profile.enrollment==='OE'?'badge-teal':profile.enrollment==='GI'?'badge-wb':'badge-gray');
+  }
+
+  if(profile.concern){
+    const labels = {medical:'Medical costs',hospital:'Hospital stays',dental:'Dental care',
+      vision:'Vision care',cancer:'Cancer protection',accident:'Accident/injury',costs:'General costs'};
+    document.getElementById('pPriority').textContent = labels[profile.concern]||profile.concern;
+  }
+}
+
+// ── Step runner ───────────────────────────────────────────────────────────
+function advanceStep(n){
+  step = n;
+  if(n < 0) return;
+  const s = FLOW[n];
+
+  const msg = s.agentFn ? s.agentFn() : s.agent;
+  addMsg('agent', msg);
+
+  if(s.isResult){
+    setTimeout(showResults, 900);
+    return;
+  }
+
+  if(s.free){
+    awaitingFree = true;
+    freeKey = s.freeKey;
+    freeInput.placeholder = s.placeholder || '';
+    setInputVisible(true);
+    freeInput.focus();
+  } else {
+    setInputVisible(false);
+    const choices = s.choicesFn ? s.choicesFn() : s.choices;
+    setTimeout(()=> addChoices(choices, s.key, s.next), 100);
+  }
+}
+
+// ── Results ───────────────────────────────────────────────────────────────
+function showResults(){
+  const matches = computeMatches();
+  const overall = overallMatchScore(matches);
+
+  document.getElementById('resultsCard').classList.remove('hidden');
+  document.getElementById('overallScore').textContent = overall + '% Match';
+
+  const body = document.getElementById('resultsBody');
+  body.innerHTML = '';
+
+  matches.forEach((m,i)=>{
+    const p = m.product;
+    const reasons = p.reasons(profile);
+    const tier = pickTier(p);
+    const riders = pickRiders(p);
+    const numClass = ['n1','n2','n3'][i];
+    const isTop = i===0;
+
+    const card = document.createElement('div');
+    card.className = 'rec-card' + (isTop?' top':'');
+
+    card.innerHTML = `
+      <div class="rec-top-row">
+        <div class="rec-num ${numClass}">${i+1}</div>
+        <div class="rec-name">${p.short}</div>
+        ${isTop ? '<span class="best-badge">BEST MATCH</span>' : ''}
+      </div>
+      <div class="rec-desc">${p.desc}</div>
+      ${tier ? `<div class="rec-config">Suggested setup: <strong>${tier.label}</strong> — ${tier.desc}</div>` : ''}
+      <div class="match-bar-wrap">
+        <div class="match-bar-label">
+          <span>Coverage fit</span>
+          <strong>${m.score}%</strong>
+        </div>
+        <div class="match-bar-track">
+          <div class="match-bar-fill" data-score="${m.score}"></div>
+        </div>
+      </div>
+      <div class="rec-block-h">Why this fits you</div>
+      <ul class="rec-reasons">
+        ${reasons.map(r=>`<li>${r}</li>`).join('')}
+      </ul>
+      ${riders.length ? `
+      <div class="rec-block-h">Recommended add-ons</div>
+      <ul class="rec-reasons rec-addons">
+        ${riders.map(r=>`<li><strong>${r.label}</strong> — ${r.desc}</li>`).join('')}
+      </ul>` : ''}
+      ${isTop ? `<button class="rec-cta" onclick="openModal('${p.name}')">Start ${p.short} Application</button>` : ''}
+    `;
+    body.appendChild(card);
+  });
+
+  // Animate bars
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      document.querySelectorAll('.match-bar-fill').forEach(el=>{
+        el.style.width = el.dataset.score + '%';
+      });
+    });
+  });
+
+  // Final agent message — warm, named, concern-anchored, names the lead rider.
+  setTimeout(()=>{
+    const top = matches[0];
+    const tier = pickTier(top.product);
+    const riders = pickRiders(top.product);
+    const fn = firstName();
+    const framing = CONCERN_FRAMING[profile.concern] || 'everything you told me';
+    let msg = "For you" + (fn ? ", " + fn : "") + ", <strong>" + top.product.short + "</strong> is the one I&#39;d lead with";
+    if(tier) msg += " — I&#39;d set it up as the <strong>" + tier.label + "</strong>";
+    msg += ". Given " + framing + ", this is where you&#39;ll get the most protection for your situation";
+    if(riders[0]) msg += ", and I&#39;d add the <strong>" + riders[0].label + "</strong> to round it out";
+    msg += ". Here&#39;s the full picture:";
+    addMsg('agent', msg);
+  }, 600);
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────
+function openModal(productName){
+  const name = firstName() || 'you';
+  document.getElementById('modalTitle').textContent = 'Start Application?';
+  document.getElementById('modalBody').textContent =
+    `You're about to start a ${productName} application for ${name}. This will open Pylaex Enroller to continue. Ready to proceed?`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', function(e){
+  if(e.target===this) closeModal();
+});
+
+// ── Start ─────────────────────────────────────────────────────────────────
+setInputVisible(false);
+setTimeout(()=>{ advanceStep(0); }, 400);
+</script>
+</body>
+</html>
