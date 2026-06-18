@@ -29,6 +29,8 @@ const NAV_HTML = `
         <li><a href="pages/tools.html#enroller">Flowtelligence Enroller</a></li>
         <li><a href="pages/activity-map.html">Flowtelligence Pulse</a></li>
         <li><a href="pages/tools.html#engage">Flowtelligence Engage</a></li>
+        <li><a href="pages/my-easy-match.html">MatchIQ</a></li>
+        <li><a href="pages/see-matchiq-in-action.html">See MatchIQ in Action</a></li>
         <li><a href="pages/tools.html#launchpad">Flowtelligence Launchpad</a></li>
       </ul>
     </li>
@@ -36,6 +38,7 @@ const NAV_HTML = `
     <li><a href="pages/case-study-growth.html">Case Studies</a></li>
         <li><a href="pages/see-it-in-action.html">See Enroller in Action</a></li>
         <li><a href="pages/see-orchestrator-in-action.html">See Orchestrator in Action</a></li>
+        <li><a href="pages/see-matchiq-in-action.html">See MatchIQ in Action</a></li>
     <li><a href="pages/join-the-team.html">Join the Team</a></li>
   </ul>
 </div>
@@ -79,6 +82,7 @@ const FOOTER_HTML = `
         <li><a href="pages/case-study-growth.html">Case Studies</a></li>
         <li><a href="pages/see-it-in-action.html">See Enroller in Action</a></li>
         <li><a href="pages/see-orchestrator-in-action.html">See Orchestrator in Action</a></li>
+        <li><a href="pages/see-matchiq-in-action.html">See MatchIQ in Action</a></li>
     <li><a href="pages/join-the-team.html">Join the Team</a></li>
       </ul>
     </div>
