@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform Suite – Flowtelligence</title>
+  <title>Platform Suite – Lowtech</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/css/style.css" />
@@ -11,26 +11,26 @@
     .suite-tabs { display:flex; gap:0; border-bottom:2px solid var(--gray-200); margin-bottom:3rem; overflow-x:auto; }
     .suite-tab { padding:.85rem 1.5rem; font-family:var(--font-body); font-size:.9rem; font-weight:600; color:var(--gray-600); border:none; background:none; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; white-space:nowrap; transition:color .2s,border-color .2s; }
     .suite-tab:hover { color:var(--navy); }
-    .suite-tab.active { color:#F2C300; border-bottom-color:#F2C300; }
+    .suite-tab.active { color:#FFC220; border-bottom-color:#FFC220; }
     .suite-panel { display:none; }
     .suite-panel.active { display:block; }
     .product-banner { background:linear-gradient(135deg,var(--navy) 0%,#0B7A8C 100%); border-radius:16px 16px 0 0; padding:2.5rem 3rem; color:var(--white); }
-    .product-banner .prod-label { font-size:.72rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#F2C300; margin-bottom:.4rem; }
+    .product-banner .prod-label { font-size:.72rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:#FFC220; margin-bottom:.4rem; }
     .product-banner h2 { color:var(--white); margin-bottom:.5rem; }
     .product-banner p { color:rgba(255,255,255,0.78); max-width:680px; margin:0; }
     .product-body { background:var(--white); border:1px solid var(--gray-200); border-top:none; border-radius:0 0 16px 16px; padding:2.5rem 3rem; }
     .engage-tools { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-top:1.75rem; }
-    .engage-tool { background:var(--gray-50); border:1px solid var(--gray-200); border-radius:10px; padding:1.25rem; border-left:3px solid #F2C300; }
+    .engage-tool { background:var(--gray-50); border:1px solid var(--gray-200); border-radius:10px; padding:1.25rem; border-left:3px solid #FFC220; }
     .engage-tool h4 { color:var(--navy); font-size:.95rem; margin-bottom:.3rem; }
     .engage-tool p { color:var(--gray-600); font-size:.85rem; margin:0; }
     .launch-steps { display:flex; flex-direction:column; gap:1.25rem; margin-top:1.5rem; }
     .launch-step { display:flex; align-items:flex-start; gap:1.25rem; background:var(--gray-50); border:1px solid var(--gray-200); border-radius:10px; padding:1.25rem; }
-    .step-num { width:36px; height:36px; border-radius:50%; background:#F2C300; color:var(--white); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:1rem; flex-shrink:0; }
+    .step-num { width:36px; height:36px; border-radius:50%; background:#FFC220; color:var(--white); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:1rem; flex-shrink:0; }
     .step-content h4 { color:var(--navy); margin-bottom:.25rem; }
     .step-content p { color:var(--gray-600); font-size:.88rem; margin:0; }
     @media(max-width:768px){ .product-banner,.product-body{padding:1.75rem 1.5rem;} .engage-tools{grid-template-columns:1fr;} }
-  .brand-a { color:#F2C300; }
-.fxe-e   { color:#F2C300; font-weight:700; }
+  .brand-a { color:#FFC220; }
+.fxe-e   { color:#FFC220; font-weight:700; }
 </style>
 </head>
 <body>
@@ -39,17 +39,17 @@
   :root {
     --navy:#0B1C2C!important; --navy-mid:#0C3B4F!important;
     --aqua:#12B5CC!important; --aqua-light:#2DC8DE!important;
-    --aqua-pale:#E6F9FC!important; --gold:#F2C300; --gold-lt:#FFD84D;
+    --aqua-pale:#E6F9FC!important; --gold:#FFC220; --gold-lt:#FFD84D;
   }
   #site-nav {
     position:fixed;top:0;left:0;right:0;height:68px;
     background:#0B1C2C;z-index:1000;
     display:flex;align-items:center;padding:0 1.75rem;gap:.75rem;
-    box-shadow:0 2px 16px rgba(0,0,0,.3);border-bottom:2px solid #F2C300;
+    box-shadow:0 2px 16px rgba(0,0,0,.3);border-bottom:2px solid #FFC220;
   }
   .nav-brand{font-family:"EB Garamond",Georgia,serif;font-size:1.45rem;font-weight:700;color:#fff;text-decoration:none;display:inline-flex;flex-direction:column;line-height:1.2;vertical-align:middle;}
   .nav-wordmark{display:block;white-space:nowrap;line-height:1;}
-  .nav-brand .brand-a { color:#F2C300; }
+  .nav-brand .brand-a { color:#FFC220; }
   .nav-tagline{font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.02em;font-family:"DM Sans",system-ui,sans-serif;margin-top:2px;white-space:nowrap;display:block;}
   .nav-spacer{flex:1;}
   /* Top link row */
@@ -69,7 +69,7 @@
   .tl-dd .dd-sub{padding-left:1.75rem;font-size:.8rem;color:#4A6070;}
   .tl-dd .dd-sub:hover{color:#0B7A8C;}
   /* CTA */
-  .nav-cta-btn{padding:.42rem 1.1rem;background:#F2C300;color:#0B1C2C!important;font-weight:700;border-radius:6px;margin-left:.25rem;white-space:nowrap;font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;text-decoration:none;transition:background .18s;flex-shrink:0;}
+  .nav-cta-btn{padding:.42rem 1.1rem;background:#FFC220;color:#0B1C2C!important;font-weight:700;border-radius:6px;margin-left:.25rem;white-space:nowrap;font-family:"DM Sans",system-ui,sans-serif;font-size:.86rem;text-decoration:none;transition:background .18s;flex-shrink:0;}
   .nav-cta-btn:hover{background:#FFD84D;}
   /* Hamburger */
   #hamburger{width:40px;height:40px;display:flex;flex-direction:column;justify-content:center;gap:6px;cursor:pointer;flex-shrink:0;}
@@ -85,17 +85,17 @@
   .sb-menu{list-style:none;padding:0;margin:0;}
   .sb-menu li{position:relative;}
   .sb-link,.sb-toggle{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.4rem;color:rgba(255,255,255,.85);font-weight:500;font-size:.93rem;border-left:3px solid transparent;transition:all .18s;cursor:pointer;font-family:"DM Sans",system-ui,sans-serif;text-decoration:none;width:100%;background:none;border-top:none;border-right:none;border-bottom:none;text-align:left;}
-  .sb-link:hover,.sb-toggle:hover{background:rgba(242,195,0,.1);color:#F2C300;border-left-color:#F2C300;}
-  .sb-link.active{color:#F2C300;border-left-color:#F2C300;background:rgba(242,195,0,.08);}
+  .sb-link:hover,.sb-toggle:hover{background:rgba(255, 194, 32,.1);color:#FFC220;border-left-color:#FFC220;}
+  .sb-link.active{color:#FFC220;border-left-color:#FFC220;background:rgba(255, 194, 32,.08);}
   .sb-arr{font-size:.65rem;transition:transform .2s;opacity:.6;}
   li.sbopen .sb-arr{transform:rotate(90deg);}
   /* Submenu */
   .sb-sub{list-style:none;max-height:0;overflow:hidden;transition:max-height .3s ease;background:rgba(0,0,0,.18);}
   li.sbopen .sb-sub{max-height:600px;}
   .sb-sub li a{display:block;padding:.55rem 1.4rem .55rem 2.2rem;color:rgba(255,255,255,.7);font-size:.88rem;font-family:"DM Sans",system-ui,sans-serif;transition:color .15s;text-decoration:none;}
-  .sb-sub li a:hover{color:#F2C300;}
+  .sb-sub li a:hover{color:#FFC220;}
   .sb-sub li a.sb-indent{padding-left:3rem;font-size:.8rem;opacity:.75;}
-  .sb-sub li a.sb-indent:hover{opacity:1;color:#F2C300;}
+  .sb-sub li a.sb-indent:hover{opacity:1;color:#FFC220;}
   @media(max-width:820px){.tl-nav{display:none;}.nav-cta-btn{display:none;}}
 </style>
 <nav id="site-nav">
@@ -103,7 +103,7 @@
     <span></span><span></span><span></span>
   </div>
   <a class="nav-brand" href="../index.html">
-    <span class="nav-wordmark">Flow<span class="brand-a">telligence</span></span>
+    <span class="nav-wordmark">Low<span class="brand-a">tech</span></span>
     <span class="nav-tagline">Where workflow meets intelligence.</span>
   </a>
   <span class="nav-spacer"></span>
@@ -124,21 +124,21 @@
       <button onclick="tlOpen('tl-t','dd-t')">Platform <span class="tlchev">&#9662;</span></button>
       <div class="tl-dd" id="dd-t">
         <a class="dd-head" href="../pages/tools.html">Platform Suite</a>
-        <a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a>
+        <a href="../pages/tools.html?tab=orchestrator">Orchestrator</a>
         <a class="dd-sub" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a>
-        <a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a>
+        <a href="../pages/tools.html?tab=enroller">Enroller</a>
         <a class="dd-sub" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a>
-        <a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a>
+        <a href="../pages/tools.html?tab=pulse">Pulse</a>
         <a class="dd-sub" href="../pages/activity-map.html">&#8627; Activity Map</a>
         <a class="dd-sub" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a>
-        <a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a>
+        <a href="../pages/tools.html?tab=engage">Engage</a>
         <a class="dd-sub" href="../pages/my-easy-match.html">&#8627; MatchIQ</a>
         <a class="dd-sub" href="../pages/see-matchiq-in-action.html">&#8627; See MatchIQ in Action</a>
-        <a class="dd-sub" href="../pages/messaging.html">&#8627; Flowtelligence Link</a>
-        <a class="dd-sub" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a>
+        <a class="dd-sub" href="../pages/messaging.html">&#8627; Link</a>
+        <a class="dd-sub" href="../pages/incentives.html">&#8627; Spark</a>
         <a class="dd-sub" href="../pages/app-scanning.html">&#8627; ScanIQ</a>
-        <a class="dd-sub" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a>
-        <a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a>
+        <a class="dd-sub" href="../pages/lead-gen.html">&#8627; LeadFlow</a>
+        <a href="../pages/tools.html?tab=launchpad">Launchpad</a>
       </div>
     </li>
     <li id="tl-c">
@@ -173,21 +173,21 @@
       <button class="sb-toggle" onclick="sbToggle(this)">Platform Suite <span class="sb-arr">&#8250;</span></button>
       <ul class="sb-sub">
         <li><a href="../pages/tools.html">Full Platform Suite</a></li>
-        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
+        <li><a href="../pages/tools.html?tab=orchestrator">Orchestrator</a></li>
         <li><a class="sb-indent" href="../pages/see-orchestrator-in-action.html">&#8627; See Orchestrator in Action</a></li>
-        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Enroller</a></li>
         <li><a class="sb-indent" href="../pages/see-it-in-action.html">&#8627; See Enroller in Action</a></li>
-        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Pulse</a></li>
         <li><a class="sb-indent" href="../pages/activity-map.html">&#8627; Activity Map</a></li>
         <li><a class="sb-indent" href="../pages/pulse-dashboard.html">&#8627; Executive Dashboard</a></li>
-        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Engage</a></li>
         <li><a class="sb-indent" href="../pages/my-easy-match.html">&#8627; MatchIQ</a></li>
         <li><a class="sb-indent" href="../pages/see-matchiq-in-action.html">&#8627; See MatchIQ in Action</a></li>
-        <li><a class="sb-indent" href="../pages/messaging.html">&#8627; Flowtelligence Link</a></li>
-        <li><a class="sb-indent" href="../pages/incentives.html">&#8627; Flowtelligence Spark</a></li>
+        <li><a class="sb-indent" href="../pages/messaging.html">&#8627; Link</a></li>
+        <li><a class="sb-indent" href="../pages/incentives.html">&#8627; Spark</a></li>
         <li><a class="sb-indent" href="../pages/app-scanning.html">&#8627; ScanIQ</a></li>
-        <li><a class="sb-indent" href="../pages/lead-gen.html">&#8627; Flowtelligence LeadFlow</a></li>
-        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+        <li><a class="sb-indent" href="../pages/lead-gen.html">&#8627; LeadFlow</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Launchpad</a></li>
       </ul>
     </li>
     <li>
@@ -200,14 +200,14 @@
       </ul>
     </li>
     <li><a class="sb-link" href="../pages/join-the-team.html">Join the Team</a></li>
-    <li><a class="sb-link" href="../pages/contact.html" style="color:#F2C300;font-weight:700;">Contact Us</a></li>
+    <li><a class="sb-link" href="../pages/contact.html" style="color:#FFC220;font-weight:700;">Contact Us</a></li>
   </ul>
 </div>
 <div id="sidebar-overlay"></div>
 <div class="page-content">
   <div class="page-header">
     <div class="breadcrumb"><a href="../index.html">Home</a> &rsaquo; Platform Suite</div>
-    <h1>The Flowtelligence Platform Suite</h1>
+    <h1>The Lowtech Platform Suite</h1>
     <p class="page-subtitle">Configured for you. Deployed in weeks.</p>
     <p>Five products. One integrated platform. Built by people who've been the carrier — and know exactly what it takes to compete.</p>
   </div>
@@ -226,14 +226,14 @@
       <div class="suite-panel active" id="panel-orchestrator">
         <div class="product-banner">
           <div class="prod-label">Core Platform &middot; Configurability Engine</div>
-          <h2>Flowtelligence Orchestrator</h2>
+          <h2>Orchestrator</h2>
           <p>Carriers choose their screens, their flow, their rules, and their product structure. Orchestrator is the engine that makes everything configurable &mdash; without engineering dependency.</p>
         </div>
         <div class="product-body">
           <div class="grid-2" style="gap:2rem;margin-bottom:2rem;">
             <div>
               <h3>What it does</h3>
-              <p>Orchestrator sits at the center of the Flowtelligence platform. It defines your product structure, your underwriting rules, your decisioning logic, and your enrollment flow. Every other Flowtelligence product operates within the framework Orchestrator creates.</p>
+              <p>Orchestrator sits at the center of the Lowtech platform. It defines your product structure, your underwriting rules, your decisioning logic, and your enrollment flow. Every other Lowtech product operates within the framework Orchestrator creates.</p>
               <ul class="feature-list" style="margin-top:1rem;">
                 <li>Product configuration without code &mdash; launch new products in days, not quarters</li>
                 <li>Underwriting rules engine configurable by your operations team</li>
@@ -246,7 +246,7 @@
             <div>
               <h3>The advantage</h3>
               <p>Most carriers are one or two IT release cycles behind the market. A rate change that should take a week takes a quarter. A new state launch that should take a month takes a year. Orchestrator rewrites that timeline. Your business team owns configuration. Your engineering team doesn't have to be in the room.</p>
-              <div style="background:var(--gray-50);border-left:4px solid #F2C300;border-radius:0 10px 10px 0;padding:1.25rem;margin-top:1.5rem;">
+              <div style="background:var(--gray-50);border-left:4px solid #FFC220;border-radius:0 10px 10px 0;padding:1.25rem;margin-top:1.5rem;">
                 <p style="color:var(--navy);font-style:italic;margin:0;font-family:'EB Garamond',Georgia,serif;">"Accelerate product agility and speed. Rapidly iterate on product features, rules, and enhancements without long development cycles."</p>
               </div>
             </div>
@@ -263,7 +263,7 @@
       <div class="suite-panel" id="panel-enroller">
         <div class="product-banner">
           <div class="prod-label">Enrollment Platform &middot; The E-App Engine</div>
-          <h2>Flowtelligence Enroller</h2>
+          <h2>Enroller</h2>
           <p>The guided, intelligent interface agents use from first question to issued policy. The evolution of the traditional e-app platform &mdash; configurable, carrier-branded, and built to make agents faster and more effective in the field.</p>
         </div>
         <div class="product-body">
@@ -284,8 +284,8 @@
             <div>
               <h3>The advantage</h3>
               <p>The close is in the room. Every friction point costs you a placement. Enroller removes all of it. Agents know exactly where they stand before they finish the application.</p>
-              <div style="background:var(--gray-50);border-left:4px solid #F2C300;border-radius:0 10px 10px 0;padding:1.25rem;margin-top:1.5rem;">
-                <p style="color:var(--navy);font-style:italic;margin:0;font-family:'EB Garamond',Georgia,serif;">"This is the easiest system I use compared to other carriers. Auto-underwriting is amazing."<br><span style="font-size:.82rem;font-style:normal;color:var(--gray-600);">&mdash; Agent using Flowtelligence Enroller</span></p>
+              <div style="background:var(--gray-50);border-left:4px solid #FFC220;border-radius:0 10px 10px 0;padding:1.25rem;margin-top:1.5rem;">
+                <p style="color:var(--navy);font-style:italic;margin:0;font-family:'EB Garamond',Georgia,serif;">"This is the easiest system I use compared to other carriers. Auto-underwriting is amazing."<br><span style="font-size:.82rem;font-style:normal;color:var(--gray-600);">&mdash; Agent using Enroller</span></p>
               </div>
             </div>
           </div>
@@ -301,7 +301,7 @@
       <div class="suite-panel" id="panel-pulse">
         <div class="product-banner">
           <div class="prod-label">Analytics &amp; Dashboards &middot; Executive Intelligence</div>
-          <h2>Flowtelligence Pulse</h2>
+          <h2>Pulse</h2>
           <p>Activity maps, agent engagement metrics, placement rate trends, pipeline health, and STP ratios &mdash; exactly how your carrier is competing, in real time.</p>
         </div>
         <div class="product-body">
@@ -322,7 +322,7 @@
             <div>
               <h3>The advantage</h3>
               <p>Most carriers are operating on reports that are days or weeks old. By the time a problem shows up in the data, it's already cost you production. Pulse changes that &mdash; when something shifts, you see it in real time and can act before it becomes a trend.</p>
-              <div style="background:var(--gray-50);border-left:4px solid #F2C300;border-radius:0 10px 10px 0;padding:1.25rem;margin-top:1.5rem;">
+              <div style="background:var(--gray-50);border-left:4px solid #FFC220;border-radius:0 10px 10px 0;padding:1.25rem;margin-top:1.5rem;">
                 <p style="color:var(--navy);font-style:italic;margin:0;font-family:'EB Garamond',Georgia,serif;">"Deliver timely, decision-ready insights that connect performance, risk, and growth across the enterprise."</p>
               </div>
             </div>
@@ -339,17 +339,17 @@
       <div class="suite-panel" id="panel-engage">
         <div class="product-banner">
           <div class="prod-label">Consumer &amp; Agent Engagement Suite</div>
-          <h2 id="engage">Flowtelligence Engage</h2>
+          <h2 id="engage">Engage</h2>
           <p>Every touchpoint between carrier, agent, and applicant &mdash; unified in one engagement suite. Agent messaging and communication tools, agent incentives, DTC capabilities, lead routing, and more.</p>
         </div>
         <div class="product-body">
-          <p style="color:var(--gray-600);max-width:780px;margin-bottom:1.5rem;">Flowtelligence Engage is the suite of tools that connects the front of your distribution operation. While Orchestrator and Enroller handle the application and decisioning, Engage handles everything that surrounds and supports it &mdash; getting consumers into the funnel, keeping agents engaged, and making the whole system work together.</p>
+          <p style="color:var(--gray-600);max-width:780px;margin-bottom:1.5rem;">Engage is the suite of tools that connects the front of your distribution operation. While Orchestrator and Enroller handle the application and decisioning, Engage handles everything that surrounds and supports it &mdash; getting consumers into the funnel, keeping agents engaged, and making the whole system work together.</p>
           <div class="engage-tools">
-            <div class="engage-tool"><h4><a href="my-easy-match.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(242,195,0,0.4);">MatchIQ &#8594;</a></h4><p>Intelligent product matching that pairs each applicant with the most appropriate coverage based on their profile, preferences, and eligibility &mdash; instantly. Removes guesswork at the point of sale and improves placement quality.</p></div>
-            <div class="engage-tool"><h4><a href="messaging.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(242,195,0,0.4);">Flowtelligence Link &#8594;</a></h4><p>Timely, contextual messaging built directly into the enrollment workflow. Agents and applicants get the right communication at the right moment &mdash; no off-platform email threads, no follow-up delays, no dropped handoffs.</p></div>
-            <div class="engage-tool"><h4><a href="incentives.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(242,195,0,0.4);">Flowtelligence Spark &#8594;</a></h4><p>Real-time incentive visibility embedded into the enrollment experience. Agents see how their actions translate to rewards immediately. Aligns behavior with carrier objectives without lag or administration overhead.</p></div>
-            <div class="engage-tool"><h4><a href="app-scanning.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(242,195,0,0.4);">ScanIQ &#8594;</a></h4><p>Converts paper applications into structured digital submissions using OCR and intelligent field mapping. Carriers still receiving paper-based applications can modernize intake without disrupting their distribution relationships.</p></div>
-            <div class="engage-tool"><h4><a href="lead-gen.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(242,195,0,0.4);">Flowtelligence LeadFlow &#8594;</a></h4><p>Digital lead capture and routing into the Flowtelligence Enroller workflow. Connects consumer interest directly to agent queues with real-time visibility into queue depth, connection rates, wait times, and conversion by product and state.</p></div>
+            <div class="engage-tool"><h4><a href="my-easy-match.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255, 194, 32,0.4);">MatchIQ &#8594;</a></h4><p>Intelligent product matching that pairs each applicant with the most appropriate coverage based on their profile, preferences, and eligibility &mdash; instantly. Removes guesswork at the point of sale and improves placement quality.</p></div>
+            <div class="engage-tool"><h4><a href="messaging.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255, 194, 32,0.4);">Link &#8594;</a></h4><p>Timely, contextual messaging built directly into the enrollment workflow. Agents and applicants get the right communication at the right moment &mdash; no off-platform email threads, no follow-up delays, no dropped handoffs.</p></div>
+            <div class="engage-tool"><h4><a href="incentives.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255, 194, 32,0.4);">Spark &#8594;</a></h4><p>Real-time incentive visibility embedded into the enrollment experience. Agents see how their actions translate to rewards immediately. Aligns behavior with carrier objectives without lag or administration overhead.</p></div>
+            <div class="engage-tool"><h4><a href="app-scanning.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255, 194, 32,0.4);">ScanIQ &#8594;</a></h4><p>Converts paper applications into structured digital submissions using OCR and intelligent field mapping. Carriers still receiving paper-based applications can modernize intake without disrupting their distribution relationships.</p></div>
+            <div class="engage-tool"><h4><a href="lead-gen.html" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255, 194, 32,0.4);">LeadFlow &#8594;</a></h4><p>Digital lead capture and routing into the Enroller workflow. Connects consumer interest directly to agent queues with real-time visibility into queue depth, connection rates, wait times, and conversion by product and state.</p></div>
             <div class="engage-tool"><h4>Direct-to-Consumer</h4><p>DTC capabilities that let carriers reach consumers directly &mdash; digital quoting, enrollment, and policy issuance without an agent intermediary, using the same Orchestrator rules and Enroller workflow that powers your agent channel.</p></div>
           </div>
           <div style="text-align:center;margin-top:2rem;"><a href="contact.html" class="btn btn-primary">Request a Demo</a></div>
@@ -360,7 +360,7 @@
       <div class="suite-panel" id="panel-launchpad">
         <div class="product-banner">
           <div class="prod-label">Carrier Implementation &middot; Go-Live Infrastructure</div>
-          <h2 id="launchpad">Flowtelligence Launchpad</h2>
+          <h2 id="launchpad">Launchpad</h2>
           <p>Configuration, training, and go-live infrastructure from signed contract to live production in weeks. We've launched carriers before. Launchpad is how we make sure every client feels that.</p>
         </div>
         <div class="product-body">
@@ -370,7 +370,7 @@
               <p>Launchpad is the implementation system that gets carriers from decision to production &mdash; fast. It's not just a project management framework. It's the accumulated knowledge of every carrier launch we've run, packaged as a repeatable system with built-in checkpoints, training tools, and configuration infrastructure.</p>
               <div class="launch-steps">
                 <div class="launch-step"><div class="step-num">1</div><div class="step-content"><h4>Discovery &amp; Configuration</h4><p>Map your products, underwriting rules, and distribution model into Orchestrator. We've done this enough times to have a playbook that makes it fast.</p></div></div>
-                <div class="launch-step"><div class="step-num">2</div><div class="step-content"><h4>Integration &amp; Testing</h4><p>Connect Flowtelligence to your existing PAS and billing systems. Test every scenario in the sandbox before a single agent sees a screen.</p></div></div>
+                <div class="launch-step"><div class="step-num">2</div><div class="step-content"><h4>Integration &amp; Testing</h4><p>Connect Lowtech to your existing PAS and billing systems. Test every scenario in the sandbox before a single agent sees a screen.</p></div></div>
                 <div class="launch-step"><div class="step-num">3</div><div class="step-content"><h4>Agent Training &amp; Rollout</h4><p>Train your agents on the new workflow. Launchpad includes training materials, quick-reference guides, and admin tools for your operations team.</p></div></div>
                 <div class="launch-step"><div class="step-num">4</div><div class="step-content"><h4>Live &amp; Supported</h4><p>Go live with dedicated support. We stay close through the first production cycles to make sure everything performs as configured.</p></div></div>
               </div>
@@ -378,8 +378,8 @@
             <div>
               <h3>The advantage</h3>
               <p>Most platform implementations drag for months &mdash; or years. We've systematized the launch. Launchpad means you go live in weeks, not quarters.</p>
-              <div style="background:var(--gray-50);border-left:4px solid #F2C300;border-radius:0 10px 10px 0;padding:1.25rem;margin-top:1.5rem;"><p style="color:var(--navy);font-style:italic;margin:0;font-family:'EB Garamond',Georgia,serif;">"Configured for you. Deployed in weeks. We've been the carrier. We know what you need."</p></div>
-              <div style="margin-top:1.5rem;background:var(--navy);border-radius:12px;padding:1.5rem;text-align:center;"><div style="font-family:'EB Garamond',Georgia,serif;font-size:2.5rem;font-weight:700;color:#F2C300;line-height:1;">Weeks</div><div style="color:rgba(255,255,255,0.7);font-size:.88rem;margin-top:.3rem;">From signed contract to live production</div></div>
+              <div style="background:var(--gray-50);border-left:4px solid #FFC220;border-radius:0 10px 10px 0;padding:1.25rem;margin-top:1.5rem;"><p style="color:var(--navy);font-style:italic;margin:0;font-family:'EB Garamond',Georgia,serif;">"Configured for you. Deployed in weeks. We've been the carrier. We know what you need."</p></div>
+              <div style="margin-top:1.5rem;background:var(--navy);border-radius:12px;padding:1.5rem;text-align:center;"><div style="font-family:'EB Garamond',Georgia,serif;font-size:2.5rem;font-weight:700;color:#FFC220;line-height:1;">Weeks</div><div style="color:rgba(255,255,255,0.7);font-size:.88rem;margin-top:.3rem;">From signed contract to live production</div></div>
             </div>
           </div>
           <div style="text-align:center;margin-top:1rem;"><a href="contact.html" class="btn btn-primary">Start the Conversation</a></div>
@@ -396,11 +396,11 @@
       <div class="divider-aqua"></div>
       <p style="color:rgba(255,255,255,0.75);margin-bottom:2.5rem;">Each product delivers value independently. Together, they give you a closed-loop system from configuration to enrollment to analytics to engagement to launch.</p>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2rem;">
-        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(242,195,0,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#9881;&#65039;</div><div style="color:#F2C300;font-weight:700;font-size:.82rem;">Orchestrator</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">Config Engine</div></div>
-        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(242,195,0,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#128203;</div><div style="color:#F2C300;font-weight:700;font-size:.82rem;">Enroller</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">E-App Platform</div></div>
-        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(242,195,0,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#128202;</div><div style="color:#F2C300;font-weight:700;font-size:.82rem;">Pulse</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">Analytics</div></div>
-        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(242,195,0,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#128172;</div><div style="color:#F2C300;font-weight:700;font-size:.82rem;">Engage</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">Engagement Suite</div></div>
-        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(242,195,0,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#128640;</div><div style="color:#F2C300;font-weight:700;font-size:.82rem;">Launchpad</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">Implementation</div></div>
+        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(255, 194, 32,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#9881;&#65039;</div><div style="color:#FFC220;font-weight:700;font-size:.82rem;">Orchestrator</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">Config Engine</div></div>
+        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(255, 194, 32,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#128203;</div><div style="color:#FFC220;font-weight:700;font-size:.82rem;">Enroller</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">E-App Platform</div></div>
+        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(255, 194, 32,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#128202;</div><div style="color:#FFC220;font-weight:700;font-size:.82rem;">Pulse</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">Analytics</div></div>
+        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(255, 194, 32,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#128172;</div><div style="color:#FFC220;font-weight:700;font-size:.82rem;">Engage</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">Engagement Suite</div></div>
+        <div style="background:rgba(255,255,255,.07);border-radius:10px;padding:1.25rem;border:1px solid rgba(255, 194, 32,.3);"><div style="font-size:1.5rem;margin-bottom:.5rem;">&#128640;</div><div style="color:#FFC220;font-weight:700;font-size:.82rem;">Launchpad</div><div style="color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.3rem;">Implementation</div></div>
       </div>
       <a href="contact.html" class="btn btn-primary">Request a Demo</a>
     </div>
@@ -444,7 +444,7 @@ function showSuite(id,btn){
 <footer id="site-footer">
   <div class="footer-grid">
     <div>
-      <div class="footer-brand">Flow<span class="brand-a">telligence</span></div>
+      <div class="footer-brand">Low<span class="brand-a">tech</span></div>
       <p style="color:rgba(255,255,255,.58);font-size:.87rem;margin-top:.5rem;max-width:260px;line-height:1.55;">
         Intelligence in motion.
       </p>
@@ -462,11 +462,11 @@ function showSuite(id,btn){
     <div>
       <h4>Platform</h4>
       <ul>
-        <li><a href="../pages/tools.html?tab=orchestrator">Flowtelligence Orchestrator</a></li>
-        <li><a href="../pages/tools.html?tab=enroller">Flowtelligence Enroller</a></li>
-        <li><a href="../pages/tools.html?tab=pulse">Flowtelligence Pulse</a></li>
-        <li><a href="../pages/tools.html?tab=engage">Flowtelligence Engage</a></li>
-        <li><a href="../pages/tools.html?tab=launchpad">Flowtelligence Launchpad</a></li>
+        <li><a href="../pages/tools.html?tab=orchestrator">Orchestrator</a></li>
+        <li><a href="../pages/tools.html?tab=enroller">Enroller</a></li>
+        <li><a href="../pages/tools.html?tab=pulse">Pulse</a></li>
+        <li><a href="../pages/tools.html?tab=engage">Engage</a></li>
+        <li><a href="../pages/tools.html?tab=launchpad">Launchpad</a></li>
       </ul>
     </div>
     <div>
@@ -479,7 +479,7 @@ function showSuite(id,btn){
       </ul>
     </div>
   </div>
-  <div class="footer-bottom">&copy; <span id="footer-year"></span> Flowtelligence. All rights reserved.</div>
+  <div class="footer-bottom">&copy; <span id="footer-year"></span> Lowtech. All rights reserved.</div>
 </footer>
 <script>
 

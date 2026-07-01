@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MatchIQ — Wellabe Coverage Finder</title>
+<title>MatchIQ — Coverage Finder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
@@ -14,9 +14,9 @@
   --navy2:  #0C3B4F;
   --teal:   #0B7A8C;
   --aqua:   #12B5CC;
-  --gold:   #C4881A;
-  --wb:     #E8A020;   /* Wellabe yellow */
-  --wb-lt:  #FFF3DC;   /* Wellabe yellow pale */
+  --gold:   #FFC220;
+  --wb:     #FFC220;   /* brand yellow */
+  --wb-lt:  #FFF3DC;   /* brand yellow pale */
   --white:  #FFFFFF;
   --cream:  #F5F2ED;
   --gray:   #E2EBF0;
@@ -278,7 +278,7 @@ html,body{height:100%;background:var(--cream);font-family:var(--sans);color:var(
 <header class="hdr">
   <div>
     <div class="hdr-brand">Match<span>IQ</span></div>
-    <div class="hdr-sub">Powered by Pylaex &nbsp;·&nbsp; Wellabe Coverage Finder</div>
+    <div class="hdr-sub">Powered by Lowtech &nbsp;·&nbsp; Coverage Finder</div>
   </div>
   <div class="hdr-badge">AGENT TOOL</div>
 </header>
@@ -372,7 +372,7 @@ html,body{height:100%;background:var(--cream);font-family:var(--sans);color:var(
    (Med Supp candidate / Medigap holder / Medicare Advantage enrollee /
    under-65), asks the questions that genuinely differentiate plan choices
    (self-insure → High-Deductible G, excess charges → G vs N), then educates on
-   real coverage gaps and recommends Wellabe products to close them. Branching
+   real coverage gaps and recommends coverage products to close them. Branching
    is handled by a keyed node graph; recommendations are assembled from the
    track + the gaps the person flags. Facts are current to 2026.
    ════════════════════════════════════════════════════════════════════════ */
@@ -391,7 +391,7 @@ let freeKey = '';
 
 function firstName(){ return (profile.name||'').trim().split(/\s+/)[0] || ''; }
 
-// ── Wellabe Products ──────────────────────────────────────────────────────
+// ── Products ──────────────────────────────────────────────────────
 // `tiers` = plan-level configuration; `riders` = optional components. Each
 // fits(p) predicate reads the profile (gaps array, age, health, tobacco, budget).
 const PRODUCTS = {
@@ -453,7 +453,7 @@ const PRODUCTS = {
   },
   vision:{
     name:'Vision Insurance',
-    short:'Wellabe Vision',
+    short:'Vision',
     desc:'Covers annual eye exams, frames, lenses, and contacts, with allowances at major optical retailers.',
     eligibility:'Ages 18–79, guaranteed issue',
     riders:[
@@ -556,7 +556,7 @@ const PRODUCTS = {
     }
   },
   annuity:{
-    name:'Wellabe Annuity',
+    name:'Annuity',
     short:'Fixed Annuity',
     desc:'A fixed annuity that grows your savings tax-deferred with no market risk, and can become guaranteed income you can’t outlive.',
     eligibility:'Typically ages 50+',
@@ -1174,7 +1174,7 @@ function openModal(productName){
   const name = firstName() || 'you';
   document.getElementById('modalTitle').textContent = 'Start Application?';
   document.getElementById('modalBody').textContent =
-    `You're about to start a ${productName} application for ${name}. This will open Pylaex Enroller to continue. Ready to proceed?`;
+    `You're about to start a ${productName} application for ${name}. This will open Enroller to continue. Ready to proceed?`;
   document.getElementById('modal').classList.add('open');
 }
 function closeModal(){ document.getElementById('modal').classList.remove('open'); }

@@ -4,7 +4,7 @@ const NAV_HTML = `
   <div id="hamburger" aria-label="Toggle menu" role="button" tabindex="0">
     <span></span><span></span><span></span>
   </div>
-  <a class="nav-brand" href="index.html">Flow<span class="brand-a">telligence</span></a>
+  <a class="nav-brand" href="index.html">Low<span class="brand-a">tech</span></a>
   <a class="btn btn-primary nav-cta" href="pages/contact.html">Contact Us</a>
 </nav>
 <div id="sidebar">
@@ -25,13 +25,13 @@ const NAV_HTML = `
       <span>Our Tools <span class="arrow">›</span></span>
       <ul class="sidebar-submenu">
         <li><a href="pages/tools.html">All Tools</a></li>
-        <li><a href="pages/products.html">Flowtelligence Orchestrator</a></li>
-        <li><a href="pages/tools.html#enroller">Flowtelligence Enroller</a></li>
-        <li><a href="pages/activity-map.html">Flowtelligence Pulse</a></li>
-        <li><a href="pages/tools.html#engage">Flowtelligence Engage</a></li>
+        <li><a href="pages/products.html">Orchestrator</a></li>
+        <li><a href="pages/tools.html#enroller">Enroller</a></li>
+        <li><a href="pages/activity-map.html">Pulse</a></li>
+        <li><a href="pages/tools.html#engage">Engage</a></li>
         <li><a href="pages/my-easy-match.html">MatchIQ</a></li>
         <li><a href="pages/see-matchiq-in-action.html">See MatchIQ in Action</a></li>
-        <li><a href="pages/tools.html#launchpad">Flowtelligence Launchpad</a></li>
+        <li><a href="pages/tools.html#launchpad">Launchpad</a></li>
       </ul>
     </li>
     <li><a href="pages/contact.html">Contact Us</a></li>
@@ -49,7 +49,7 @@ const FOOTER_HTML = `
 <footer id="site-footer">
   <div class="footer-grid">
     <div>
-      <div class="footer-brand">Flow<span class="brand-a">telligence</span></div>
+      <div class="footer-brand">Low<span class="brand-a">tech</span></div>
       <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;margin-top:0.5rem;max-width:280px;">
         Intelligence in motion.
       </p>
@@ -67,11 +67,11 @@ const FOOTER_HTML = `
     <div>
       <h4>Tools</h4>
       <ul>
-        <li><a href="pages/products.html">Flowtelligence Orchestrator</a></li>
-        <li><a href="pages/tools.html#enroller">Flowtelligence Enroller</a></li>
-        <li><a href="pages/activity-map.html">Flowtelligence Pulse</a></li>
-        <li><a href="pages/tools.html#engage">Flowtelligence Engage</a></li>
-        <li><a href="pages/tools.html#launchpad">Flowtelligence Launchpad</a></li>
+        <li><a href="pages/products.html">Orchestrator</a></li>
+        <li><a href="pages/tools.html#enroller">Enroller</a></li>
+        <li><a href="pages/activity-map.html">Pulse</a></li>
+        <li><a href="pages/tools.html#engage">Engage</a></li>
+        <li><a href="pages/tools.html#launchpad">Launchpad</a></li>
       </ul>
     </div>
     <div>
@@ -88,7 +88,7 @@ const FOOTER_HTML = `
     </div>
   </div>
   <div class="footer-bottom">
-    &copy; <span id="footer-year"></span> Flowtelligence. All rights reserved.
+    &copy; <span id="footer-year"></span> Lowtech. All rights reserved.
   </div>
 </footer>
 `;
