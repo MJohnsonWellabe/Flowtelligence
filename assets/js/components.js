@@ -74,7 +74,7 @@ var NAV_HTML = [
 '  </div>',
 '  <a class="nav-brand" href="../index.html">',
 '    <span class="nav-wordmark">Low<span class="brand-a">tech</span></span>',
-'    <span class="nav-tagline">So simple it feels like cheating.</span>',
+'    <span class="nav-tagline">Low tech. High impact.</span>',
 '  </a>',
 '  <span class="nav-spacer"></span>',
 '  <ul class="tl-nav" id="tl-nav">',
@@ -216,7 +216,7 @@ var FOOTER_HTML = [
 '      </ul>',
 '    </div>',
 '  </div>',
-'  <div class="footer-bottom">&copy; <span id="footer-year"></span> Lowtech. All rights reserved.</div>',
+'  <div class="footer-bottom">&copy; <span id="footer-year"></span> Lowtech Carrier Solutions. All rights reserved.</div>',
 '</footer>'
 ].join('\n');
 

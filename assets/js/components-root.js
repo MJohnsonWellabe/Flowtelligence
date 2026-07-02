@@ -88,7 +88,7 @@ const FOOTER_HTML = `
     </div>
   </div>
   <div class="footer-bottom">
-    &copy; <span id="footer-year"></span> Lowtech. All rights reserved.
+    &copy; <span id="footer-year"></span> Lowtech Carrier Solutions. All rights reserved.
   </div>
 </footer>
 `;
