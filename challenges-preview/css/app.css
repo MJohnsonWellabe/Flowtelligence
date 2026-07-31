@@ -861,3 +861,6 @@ table { border-collapse: collapse; width: 100%; }
   .modal.reward-modal h2 { font-size: 22px; }
   .flank { display: none; }
 }
+
+/* See more / Show less beneath a collapsed scope. */
+.more-row { display: flex; justify-content: center; margin-top: 14px; }

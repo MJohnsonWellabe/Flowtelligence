@@ -12,7 +12,7 @@ import {
 } from './derive.js';
 import { cloudArt, esc, noticeModal, rewardModal, sunIcon } from './ui/components.js';
 import { incentivesHTML, messagesHTML, submissionsHTML } from './ui/staticTabs.js';
-import { challengesHTML, setSelection } from './ui/challenges.js';
+import { challengesHTML, setSelection, toggleScope } from './ui/challenges.js';
 import { closePanel, openPanel } from './ui/optimizerPanel.js';
 import {
   adminClick, adminDragStart, adminDrop, adminFileImport, adminHTML, adminInput,
@@ -24,7 +24,9 @@ const TABS = [
   ['submissions', 'My Submissions'],
   ['messages', 'Messages'],
   ['incentives', 'Incentives'],
-  ['challenges', 'Challenges'],
+  // The tab is "Rewards"; the individual items inside it are still challenges,
+  // which is what the data model and the copy call them.
+  ['challenges', 'Rewards'],
   ['admin', 'Admin']
 ];
 
@@ -183,6 +185,11 @@ function handleAction(action, el) {
 
     case 'select-daily': case 'select-weekly': case 'select-monthly': case 'select-career':
       setSelection(action.replace('select-', ''), el.dataset.id);
+      render();
+      return true;
+
+    case 'toggle-scope':
+      toggleScope(el.dataset.id);
       render();
       return true;
 

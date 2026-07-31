@@ -40,16 +40,25 @@
   --shadow-md: 0 4px 16px rgba(20, 22, 28, .10);
   --shadow-lg: 0 18px 48px rgba(20, 22, 28, .22);
 
-  /* Fire bar — light theme */
-  --ember-a: #8A3B10;
-  --ember-b: #C2560F;
-  --flame-a: #D99A12;
-  --flame-b: #EFC31C;
-  --hot-a: #EFC31C;
-  --hot-b: #FFE98A;
-  --burn-a: #FFF0B8;
-  --burn-b: #FFFFFF;
-  --track: #ECEBE8;
+  /*
+   * Fire bar — light theme.
+   *
+   * These run deliberately darker than the dark-theme set. On a white card the
+   * pale end of the ramp washed out: a 100% bar shading toward white-hot was
+   * nearly invisible against #FFF, and mid-fill gold was not much better. So in
+   * light mode the ramp tops out at saturated gold rather than white, and the
+   * white-hot moment is carried by the burn sweep animation instead of by the
+   * resting fill. Dark mode keeps the true white-hot, where it reads.
+   */
+  --ember-a: #7A3409;
+  --ember-b: #B14E0D;
+  --flame-a: #B87F0B;
+  --flame-b: #DFA810;
+  --hot-a: #C9950F;
+  --hot-b: #EFC31C;
+  --burn-a: #B8830C;
+  --burn-b: #E8B816;
+  --track: #E4E2DE;
 
   --radius: 10px;
   --radius-lg: 16px;

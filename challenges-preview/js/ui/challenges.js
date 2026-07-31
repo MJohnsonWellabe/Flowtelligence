@@ -21,8 +21,20 @@ const MILESTONES = [5, 10, 30, 100];
  *  state, not demo data, so it deliberately does not live in the store. */
 const selection = { daily: null, weekly: null, monthly: null, career: null };
 
+/** Scopes the reviewer has expanded past the collapsed preview. */
+const expanded = new Set();
+
+/** How many cards a collapsed scope shows before the See more control. Daily
+ *  is one lower because its featured card sits beside the streak block. */
+const PREVIEW = 2;
+
 export function setSelection(scope, id) {
   if (scope in selection) selection[scope] = id;
+}
+
+export function toggleScope(scope) {
+  if (expanded.has(scope)) expanded.delete(scope);
+  else expanded.add(scope);
 }
 
 export function challengesHTML(state) {
@@ -58,11 +70,25 @@ function scopeBlock(state, scope, heading) {
     tags: chipTags(c, state)
   }));
 
-  // Every challenge in the scope gets a card, with the chip-selected one first
-  // and outlined. Showing only the selected card would hide most of the fire
-  // bars, and seeing the whole range at once — dull ember through full burn —
-  // is the point of this surface.
+  // A scope shows a short preview and hides the rest behind See more. The chip
+  // row above stays complete, so everything is still one tap away.
   const rest = ordered.filter((c) => c.id !== chosenId);
+  const isOpen = expanded.has(scope);
+  const previewCount = scope === 'daily' ? PREVIEW - 1 : PREVIEW - 1;
+  const shown = isOpen ? rest : rest.slice(0, previewCount);
+  const hiddenCount = rest.length - shown.length;
+
+  const more = (hiddenCount > 0 || isOpen)
+    ? `<div class="more-row">
+         <button class="btn ghost sm" data-action="toggle-scope" data-id="${esc(scope)}">
+           ${isOpen ? 'Show less' : `See ${hiddenCount} more`}
+         </button>
+       </div>`
+    : '';
+
+  const restGrid = shown.length
+    ? `<div class="cardgrid two" style="margin-top:16px">${shown.map((c) => cardHTML(c, state)).join('')}</div>`
+    : '';
 
   return `<section class="scope-block">
     <div class="section-head">
@@ -71,9 +97,9 @@ function scopeBlock(state, scope, heading) {
     </div>
     ${chipRow(chips, chosenId, `select-${scope}`)}
     ${scope === 'daily'
-      ? `<div class="streak-block">${cardHTML(chosen, state, true)}${streakBlockHTML(state)}</div>
-         ${rest.length ? `<div class="cardgrid two" style="margin-top:16px">${rest.map((c) => cardHTML(c, state)).join('')}</div>` : ''}`
-      : `<div class="cardgrid two">${cardHTML(chosen, state, true)}${rest.map((c) => cardHTML(c, state)).join('')}</div>`}
+      ? `<div class="streak-block">${cardHTML(chosen, state, true)}${streakBlockHTML(state)}</div>${restGrid}`
+      : `<div class="cardgrid two">${cardHTML(chosen, state, true)}${shown.map((c) => cardHTML(c, state)).join('')}</div>`}
+    ${more}
   </section>`;
 }
 
@@ -228,15 +254,21 @@ function streakBlockHTML(state) {
 // Feats — the badge shelf
 // ---------------------------------------------------------------------------
 
+const FEAT_PREVIEW = 6;
+
 function featsBlock(state) {
   const earned = state.badges.filter((b) => b.earnedAt).length;
+  const isOpen = expanded.has('feats');
+  const shown = isOpen ? state.badges : state.badges.slice(0, FEAT_PREVIEW);
+  const hidden = state.badges.length - shown.length;
+
   return `<section class="scope-block">
     <div class="section-head">
       <h3>Feats</h3>
       <span class="hint">${esc(formatNumber(earned))} of ${esc(formatNumber(state.badges.length))} earned ·
         locked feats stay browsable</span>
     </div>
-    <div class="shelf">${state.badges.map((b) => `
+    <div class="shelf">${shown.map((b) => `
       <div class="feat ${b.earnedAt ? 'earned' : ''}">
         ${trophy(!!b.earnedAt, 34)}
         <div class="name">${esc(b.name)}</div>
@@ -244,5 +276,10 @@ function featsBlock(state) {
         <div class="rarity">${esc(b.earnedAt ? 'Earned' : b.rarity)}</div>
       </div>`).join('')}
     </div>
+    ${(hidden > 0 || isOpen) ? `<div class="more-row">
+      <button class="btn ghost sm" data-action="toggle-scope" data-id="feats">
+        ${isOpen ? 'Show less' : `See ${hidden} more`}
+      </button>
+    </div>` : ''}
   </section>`;
 }

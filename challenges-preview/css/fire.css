@@ -59,6 +59,11 @@
   letter-spacing: .01em;
 }
 
+/* The low end of the light-mode ramp is dark enough that near-black numerals
+   sitting on it stop being readable — flip them light. */
+:root:not([data-theme='dark']) .bar.ember .bar-value,
+:root:not([data-theme='dark']) .bar.low .bar-value { color: #FFF3DC; }
+
 /* At very low fill the number cannot sit inside the fill — it moves out and
    flips to body colour so it stays legible in both themes. */
 .bar.narrow .bar-value {

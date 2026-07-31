@@ -426,6 +426,6 @@ export function seedState() {
     submissions,
     messages,
     incentives,
-    ui: { theme: 'light', activeTab: 'submissions' }
+    ui: { theme: 'dark', activeTab: 'submissions' }
   }));
 }

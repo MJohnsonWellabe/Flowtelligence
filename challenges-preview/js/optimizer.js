@@ -287,14 +287,16 @@ function compactFraction(challenge, state) {
  * fact stated twice.
  */
 function reasoning(result, rank, state) {
+  // The card already carries a count-by-scope summary, so the reasoning must
+  // not restate it — it explains the rank, not the arithmetic.
   const usedAdvanceCount = result.cashToday === 0;
   const lead = rank === 0
     ? (result.cashToday > 0
       ? 'Highest paying single action available'
-      : `Best return on effort available today, moving ${result.advances.length} challenges at once`)
+      : 'Best return on effort available today')
     : (result.cashToday > 0
       ? `Clears ${formatMoney(result.cashToday)} on its own`
-      : `Moves ${result.advances.length} challenges forward without closing any yet`);
+      : 'Closes nothing today, but it is the strongest move toward the targets still open');
 
   if (result.protectsStreak) return `${lead}, and it protects your streak bonus.`;
 
@@ -367,13 +369,25 @@ export function recommend(state) {
     usedFamilies.add(best.candidate.family);
     best.completes.forEach((id) => satisfied.add(id));
 
+    // Rows worth spelling out are the ones that actually pay today; the rest
+    // collapse to a single count-by-scope line, because the full listing was
+    // drowning the number the panel exists to deliver. When nothing closes, the
+    // single biggest mover is promoted to a row so the card is never bare — and
+    // it is then excluded from the summary rather than counted twice.
+    const completed = best.advances.filter((a) => a.completes);
+    const rows = completed.length ? completed : best.advances.slice(0, 1);
+    const shown = new Set(rows.map((a) => a.challengeId));
+    const remaining = best.advances.filter((a) => !shown.has(a.challengeId));
+
     cards.push({
       rank: rank + 1,
       action: best.candidate.label,
       cashToday: best.cashToday,
       cashTodayText: formatMoney(best.cashToday),
       advances: best.advances,
-      advancesMore: best.advances.length - best.completes.length,
+      rows,
+      alsoAdvancesText: scopeSummary(remaining),
+      advancesMore: remaining.length,
       completesCount: best.completes.length,
       effort: best.candidate.effort,
       effortText: `Effort ${best.candidate.effort.toFixed(1)} · ${best.candidate.effortNote}`,
@@ -406,6 +420,31 @@ export function streakWarning(state) {
     text: `Your ${state.agent.streak.current} day streak ends tonight if you don't close today's challenge.`,
     subtext: `Losing it drops your daily rewards by ${pct}%.`
   };
+}
+
+/**
+ * "also advances 2 monthlies, 1 weekly and 3 career goals" — the one-line
+ * stand-in for everything an action moves without closing.
+ */
+function scopeSummary(partial) {
+  if (partial.length === 0) return '';
+  const names = {
+    daily: ['daily', 'dailies'],
+    weekly: ['weekly', 'weeklies'],
+    monthly: ['monthly', 'monthlies'],
+    career: ['career goal', 'career goals']
+  };
+  const counts = {};
+  partial.forEach((a) => { counts[a.scope] = (counts[a.scope] || 0) + 1; });
+
+  const parts = ['daily', 'weekly', 'monthly', 'career']
+    .filter((s) => counts[s])
+    .map((s) => `${counts[s]} ${names[s][counts[s] === 1 ? 0 : 1]}`);
+
+  const phrase = parts.length === 1
+    ? parts[0]
+    : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
+  return `Also advances ${phrase}.`;
 }
 
 /** Exposed for the Admin optimizer-tuning screen, which shows what it is tuning. */

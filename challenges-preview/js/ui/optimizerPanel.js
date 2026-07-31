@@ -15,9 +15,6 @@ import { esc, flameIcon } from './components.js';
 
 const COMPUTE_MS = 700;
 
-/** Rows beyond this collapse into a summary line, so a card stays readable on a
- *  phone without hiding that the action moves more than is listed. */
-const MAX_ROWS = 6;
 
 let timer = null;
 
@@ -80,8 +77,7 @@ function resultHTML(r) {
 }
 
 function cardHTML(c) {
-  const shown = c.advances.slice(0, MAX_ROWS);
-  const hidden = c.advances.length - shown.length;
+  const rows = c.rows;
 
   return `<div class="rec">
     <div class="rec-head">
@@ -90,14 +86,13 @@ function cardHTML(c) {
         <div class="rec-action">${esc(c.action)}</div>
         <div class="rec-sub">
           <span class="cash">${esc(c.cashTodayText)} today</span>
-          ${c.advancesMore > 0 ? ` · advances ${c.advancesMore} more ${c.advancesMore === 1 ? 'challenge' : 'challenges'}` : ''}
           ${c.protectsStreak ? ` <span class="chip-flame">${flameIcon(11)}protects streak</span>` : ''}
         </div>
       </div>
     </div>
 
     <table class="rec-rows">
-      <tbody>${shown.map((a) => `
+      <tbody>${rows.map((a) => `
         <tr class="${a.completes ? 'done' : ''}">
           <td class="c-name">${esc(a.label)}</td>
           <td class="c-prog">${esc(a.completes ? a.afterFraction : a.current)}</td>
@@ -107,7 +102,7 @@ function cardHTML(c) {
         </tr>`).join('')}
       </tbody>
     </table>
-    ${hidden > 0 ? `<div class="rec-more">and ${hidden} more ${hidden === 1 ? 'challenge' : 'challenges'} advanced</div>` : ''}
+    ${c.alsoAdvancesText ? `<div class="rec-more">${esc(c.alsoAdvancesText)}</div>` : ''}
 
     <div class="rec-why">${esc(c.reasoning)}</div>
     <div class="rec-effort">${esc(c.effortText)}</div>
