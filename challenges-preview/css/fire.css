@@ -1,0 +1,160 @@
+/*
+ * fire.css — the gold progress bar and its fire treatment.
+ *
+ * The fire bar is the gold bar: same rounded geometry, same right-aligned
+ * fraction inside the fill, same italic caption beneath. Only the fill colour
+ * and the leading edge change, so the component still reads as native to the
+ * product rather than as a game element bolted on.
+ *
+ * Fill runs dull ember at 0% → gold at mid → white-hot at 100%, with gold as
+ * the anchor. Intensity of the flame scales with completion via --intensity.
+ * Pure CSS: no video, no GIF, no animation library.
+ */
+
+.bar {
+  --pct: 0;
+  --intensity: 0;
+  position: relative;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--pct) * 1%);
+  min-width: 0;
+  border-radius: 999px;
+  background-image: linear-gradient(90deg, var(--flame-a), var(--flame-b));
+  transition: width .45s cubic-bezier(.22, .61, .36, 1), background-image .45s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Plain gold — the non-fire variant used by the streak banner's sibling bars
+   and anywhere the fire treatment would be noise. */
+.bar.plain .bar-fill {
+  background-image: linear-gradient(90deg, var(--gold-deep), var(--gold));
+}
+
+.bar.ember .bar-fill { background-image: linear-gradient(90deg, var(--ember-a), var(--ember-b)); }
+.bar.low   .bar-fill { background-image: linear-gradient(90deg, var(--ember-b), var(--flame-a)); }
+.bar.mid   .bar-fill { background-image: linear-gradient(90deg, var(--flame-a), var(--flame-b)); }
+.bar.high  .bar-fill { background-image: linear-gradient(90deg, var(--hot-a), var(--hot-b)); }
+.bar.done  .bar-fill { background-image: linear-gradient(90deg, var(--hot-b), var(--burn-b)); }
+
+/* An empty bar still has to show it is lit, or a 0% challenge reads as broken. */
+.bar.ember .bar-fill { min-width: 14px; }
+
+.bar-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2A1B05;
+  padding: 0 10px;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+
+/* At very low fill the number cannot sit inside the fill — it moves out and
+   flips to body colour so it stays legible in both themes. */
+.bar.narrow .bar-value {
+  position: absolute;
+  left: calc(var(--pct) * 1% + 10px);
+  color: var(--text-mid);
+}
+
+.bar-caption {
+  margin-top: 6px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-soft);
+}
+
+/* --- Flame at the leading edge ------------------------------------------- */
+
+.bar-flame {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: calc(var(--pct) * 1%);
+  width: 34px;
+  margin-left: -22px;
+  pointer-events: none;
+  opacity: calc(.15 + var(--intensity) * .85);
+  background:
+    radial-gradient(closest-side ellipse at 40% 55%, var(--burn-b) 0%, var(--hot-b) 38%, rgba(239, 195, 28, .55) 62%, rgba(239, 195, 28, 0) 100%);
+  filter: blur(calc(1px + var(--intensity) * 2px));
+  animation: flame-lick 1.05s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+.bar[style*='--pct: 0;'] .bar-flame,
+.bar.empty .bar-flame { display: none; }
+
+@keyframes flame-lick {
+  0%   { transform: scaleX(.86) scaleY(.94) translateX(-1px); opacity: calc(.12 + var(--intensity) * .7); }
+  45%  { transform: scaleX(1.08) scaleY(1.06) translateX(1px); }
+  100% { transform: scaleX(.94) scaleY(1.14) translateX(2px); opacity: calc(.22 + var(--intensity) * .95); }
+}
+
+/* Ember licks are slower and dimmer; a 12% bar should smoulder, not blaze. */
+.bar.ember .bar-flame,
+.bar.low .bar-flame { animation-duration: 1.9s; }
+
+/* --- Full burn at 100% ---------------------------------------------------- */
+
+.bar.done { animation: burn-settle 1.6s ease-out 1 both; }
+
+.bar.done .bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .75) 50%, rgba(255, 255, 255, 0) 100%);
+  animation: burn-sweep 1.6s ease-out 1 both;
+}
+
+.bar.done .bar-flame {
+  width: 100%;
+  margin-left: 0;
+  left: 0;
+  background: radial-gradient(closest-side ellipse at 70% 55%, var(--burn-b) 0%, var(--hot-b) 45%, rgba(239, 195, 28, 0) 100%);
+  animation: burn-flare 1.6s ease-out 1 both;
+}
+
+@keyframes burn-settle {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 233, 138, 0); }
+  22%  { box-shadow: 0 0 26px 6px rgba(255, 233, 138, .85); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 233, 138, 0); }
+}
+
+@keyframes burn-sweep {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes burn-flare {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  100% { opacity: .35; }
+}
+
+/* --- Reduced motion ------------------------------------------------------- */
+/*
+ * Falls all the way back to a flat gold bar: no flame element, no burn, no
+ * width transition. The fraction and caption carry the whole message.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .bar-fill {
+    transition: none;
+    background-image: linear-gradient(90deg, var(--gold-deep), var(--gold)) !important;
+  }
+  .bar-flame { display: none !important; }
+  .bar.done { animation: none; }
+  .bar.done .bar-fill::after { display: none; }
+}

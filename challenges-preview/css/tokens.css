@@ -1,0 +1,102 @@
+/*
+ * tokens.css — the MyEnroller design tokens, light and dark.
+ *
+ * Colours were sampled from the product screenshots in assets/images rather
+ * than eyeballed: the primary blue is #3063B4 (not the darker #1D5FA8 it reads
+ * as at a glance), the gold is #EFC31C, and the sidebar is a faintly warm
+ * #F6F5F3 rather than a neutral grey.
+ *
+ * Themes are driven only by data-theme on <html>, set by the gold sun toggle
+ * and persisted in the store. Deliberately not wired to prefers-color-scheme —
+ * in a live demo the theme has to be whatever was last chosen, not whatever the
+ * room's laptop is set to.
+ */
+
+:root {
+  --blue: #3063B4;
+  --blue-hover: #27528F;
+  --blue-soft: #E8F0FB;
+  --blue-border: #B9D0EE;
+
+  --gold: #EFC31C;
+  --gold-deep: #D4A916;
+  --gold-soft: #FDF3D0;
+
+  --red: #D93025;
+
+  --bg: #FEFEFE;
+  --surface: #FFFFFF;
+  --surface-alt: #F1F1F1;
+  --sidebar: #F6F5F3;
+  --border: #E2E1DE;
+  --border-strong: #CFCECA;
+
+  --text: #1B1F27;
+  --text-mid: #5C6270;
+  --text-soft: #868C99;
+  --line-art: #9A9A96;
+
+  --shadow-sm: 0 1px 2px rgba(20, 22, 28, .06);
+  --shadow-md: 0 4px 16px rgba(20, 22, 28, .10);
+  --shadow-lg: 0 18px 48px rgba(20, 22, 28, .22);
+
+  /* Fire bar — light theme */
+  --ember-a: #8A3B10;
+  --ember-b: #C2560F;
+  --flame-a: #D99A12;
+  --flame-b: #EFC31C;
+  --hot-a: #EFC31C;
+  --hot-b: #FFE98A;
+  --burn-a: #FFF0B8;
+  --burn-b: #FFFFFF;
+  --track: #ECEBE8;
+
+  --radius: 10px;
+  --radius-lg: 16px;
+  --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+:root[data-theme='dark'] {
+  --blue: #5B8FE0;
+  --blue-hover: #7BA6EA;
+  --blue-soft: #1E2A3E;
+  --blue-border: #35507A;
+
+  --gold: #F2CB33;
+  --gold-deep: #C9A417;
+  --gold-soft: #2E2712;
+
+  --red: #F26A5F;
+
+  --bg: #14171C;
+  --surface: #1C2027;
+  --surface-alt: #22262E;
+  --sidebar: #171A20;
+  --border: #2C313A;
+  --border-strong: #3A404B;
+
+  --text: #E9EBEF;
+  --text-mid: #A6ADBA;
+  --text-soft: #7C8391;
+  --line-art: #6C7280;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .40);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, .45);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, .60);
+
+  /*
+   * Fire bar — dark theme. The low-fill ember is the specific risk here: the
+   * light-theme #8A3B10 sits almost exactly on the dark surface luminance and
+   * a 0% bar vanishes. These are lifted and saturated so an ember still reads
+   * as a lit bar against #1C2027.
+   */
+  --ember-a: #C2560F;
+  --ember-b: #E87614;
+  --flame-a: #E8A81A;
+  --flame-b: #F2CB33;
+  --hot-a: #F2CB33;
+  --hot-b: #FFF0A8;
+  --burn-a: #FFF6D4;
+  --burn-b: #FFFFFF;
+  --track: #2A2F38;
+}

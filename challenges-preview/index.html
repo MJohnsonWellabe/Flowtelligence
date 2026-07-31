@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Hidden route. Nothing on the site links here; this keeps it out of any
+       crawler that finds the path some other way. Deliberately NOT listed in
+       robots.txt — naming the path there would advertise it. -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>Challenges Preview — internal wireframe</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/fire.css" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <!-- Shell. Everything below is rendered by js/main.js. -->
+  <div id="app"></div>
+
+  <!-- Modals (reward celebration, confirmations, Admin editors). -->
+  <div id="overlay"></div>
+
+  <!-- The Optimize my income today slide-over. -->
+  <div id="panel"></div>
+
+  <noscript>
+    <p style="font-family:system-ui,sans-serif;padding:24px">
+      This internal wireframe needs JavaScript enabled.
+    </p>
+  </noscript>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
